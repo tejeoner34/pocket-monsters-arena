@@ -1,1 +1,138 @@
-/* You can add global styles to this file, and also import other style files */
+@use "@angular/material" as mat;
+@include mat.core();
+
+$pocket-monsters-arena-primary: mat.define-palette(mat.$red-palette);
+$pocket-monsters-arena-accent: mat.define-palette(
+  mat.$grey-palette,
+  A200,
+  A100,
+  A400
+);
+$pocket-monsters-arena-warn: mat.define-palette(mat.$brown-palette);
+$pocket-monsters-arena-seconday: mat.define-palette(mat.$brown-palette);
+
+$pocket-monsters-arena-theme: mat.define-light-theme(
+  (
+    color: (
+      primary: $pocket-monsters-arena-primary,
+      accent: $pocket-monsters-arena-accent,
+      warn: $pocket-monsters-arena-warn,
+      secondary: $pocket-monsters-arena-seconday,
+    ),
+  )
+);
+
+$pocket-monsters-arena-primary-dark: mat.define-palette(mat.$blue-palette, 800);
+$pocket-monsters-arena-accent-dark: mat.define-palette(
+  mat.$grey-palette,
+  A200,
+  A100,
+  A400
+);
+$pocket-monsters-arena-warn-dark: mat.define-palette(mat.$light-green-palette);
+$pocket-monsters-arena-seconday-dark: mat.define-palette(
+  mat.$light-green-palette
+);
+
+$pocket-monsters-arena-theme-dark: mat.define-dark-theme(
+  (
+    color: (
+      primary: $pocket-monsters-arena-primary-dark,
+      accent: $pocket-monsters-arena-accent-dark,
+      warn: $pocket-monsters-arena-warn-dark,
+      secondary: $pocket-monsters-arena-seconday-dark,
+    ),
+  )
+);
+
+:root {
+  --pokemonRed: #e83e34;
+}
+
+* {
+  padding: 0;
+  box-sizing: border-box;
+  margin: 0;
+}
+
+@font-face {
+  font-family: "Pokemon-GB";
+  src: local("Pokemon-GB"),
+    url(./assets/fonts/Pokemon-GB.ttf) format("truetype");
+}
+
+html,
+body {
+  height: 100%;
+}
+
+.lightMode {
+  @include mat.all-component-themes($pocket-monsters-arena-theme);
+  background-color: aliceblue;
+  color: black;
+  height: 100%;
+
+  .home__button-dark {
+    box-shadow: 0px 3px 1px -2px rgb(0 0 0 / 20%),
+      0px 2px 2px 0px rgb(0 0 0 / 14%), 0px 1px 5px 0px rgb(0 0 0 / 12%);
+    background-color: rgb(51, 48, 48);
+    color: white;
+    text-align: center;
+    margin: 0;
+    min-width: 64px;
+    line-height: 36px;
+    padding: 0 16px;
+    border-radius: 4px;
+    overflow: visible;
+    border: none;
+  }
+
+  .home__button-light {
+    box-shadow: 0px 3px 1px -2px rgb(0 0 0 / 20%),
+      0px 2px 2px 0px rgb(0 0 0 / 14%), 0px 1px 5px 0px rgb(0 0 0 / 12%);
+    background-color: beige;
+    text-align: center;
+    margin: 0;
+    min-width: 64px;
+    line-height: 36px;
+    padding: 0 16px;
+    border-radius: 4px;
+    overflow: visible;
+    border: none;
+  }
+}
+
+.darkMode {
+  @include mat.all-component-themes($pocket-monsters-arena-theme-dark);
+  background-color: rgb(27, 28, 31);
+  color: #dae7f3;
+  height: 100%;
+
+  .home__button-dark {
+    box-shadow: 0px 3px 1px -2px rgb(0 0 0 / 20%),
+      0px 2px 2px 0px rgb(0 0 0 / 14%), 0px 1px 5px 0px rgb(0 0 0 / 12%);
+    background-color: rgb(119, 109, 109);
+    text-align: center;
+    margin: 0;
+    min-width: 64px;
+    line-height: 36px;
+    padding: 0 16px;
+    border-radius: 4px;
+    overflow: visible;
+    border: none;
+  }
+
+  .home__button-light {
+    box-shadow: 0px 3px 1px -2px rgb(0 0 0 / 20%),
+      0px 2px 2px 0px rgb(0 0 0 / 14%), 0px 1px 5px 0px rgb(0 0 0 / 12%);
+    background-color: bisque;
+    text-align: center;
+    margin: 0;
+    min-width: 64px;
+    line-height: 36px;
+    padding: 0 16px;
+    border-radius: 4px;
+    overflow: visible;
+    border: none;
+  }
+}

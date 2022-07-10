@@ -1,0 +1,13 @@
+// @use '~@angular/material' as mat;
+// @include mat-core();
+
+// $primary-color: mat.define-palette(mat.$red-palette);
+// $accent-color: mat.define-palette($pink-palette, A200, A100, A400);
+// $warn-color: mat.define-palette($amber-palette);
+
+// // The "warn" palette is optional and defaults to red if not specified.
+// $my-warn: mat.define-palette(mat.$red-palette);
+
+// $light-theme: mat-light-theme($primary-color, $accent-color, $warn-color);
+
+// @include angular-material-theme($light-theme);

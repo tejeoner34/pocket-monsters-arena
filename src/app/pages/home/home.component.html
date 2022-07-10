@@ -1,0 +1,27 @@
+<!-- <app-pokeball></app-pokeball> -->
+
+<ng-container *ngIf="translations">
+    <div class="home">
+        <div class="home__select-language">
+            <h2>{{translations.languageSelect}}</h2>
+            <div class="home__buttons-container">
+                <button mat-raised-button color="primary" (click)="onChangeLanguage('en')">{{translations.english}}</button>
+                <button mat-raised-button color="warn" (click)="onChangeLanguage('ja')">{{translations.japanese}}</button>
+            </div>
+        </div>
+        <div class="home__select-theme">
+            <h2>{{translations.themeSelect}}</h2>
+            <div class="home__buttons-container">
+                <button class="home__button-dark" (click)="onChangeTheme('darkMode')">{{translations.dark}}</button>
+                <button class="home__button-light" (click)="onChangeTheme('lightMode')">{{translations.light}}</button>
+            </div>
+        </div>
+        <div class="home__select-render">
+            <h2>{{translations.renderSelect}}</h2>
+            <div class="home__buttons-container">
+                <button mat-raised-button color="primary" (click)="onChangeLanguage('en')">{{translations.html}}</button>
+                <button mat-raised-button color="warn" (click)="onChangeLanguage('ja')">{{translations.canvas}}</button>
+            </div>
+        </div>
+    </div>
+</ng-container>

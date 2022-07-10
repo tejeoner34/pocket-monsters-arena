@@ -1,0 +1,15 @@
+{
+    "HOME": {
+        "test": "テスト",
+        "japanese": "日本語",
+        "english": "英語",
+        "languageSelect": "言語をお選びください",
+        "themeSelect": "テーマをお選びください",
+        "dark": "ダーク",
+        "light": "ライト",
+        "renderSelect": "レンダリングをお選びください",
+        "html": "HTML",
+        "canvas": "Canvas 2d"
+
+    }
+}

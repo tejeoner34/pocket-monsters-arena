@@ -1,0 +1,25 @@
+
+@font-face {
+    font-family: "Pokemon-GB";
+    src: local("Pokemon-GB"), url(../../../assets/fonts/Pokemon-GB.ttf) format("truetype");
+}
+
+.header {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    height: 130px;
+
+    h1{
+        font-family: 'Pokemon-GB';
+        font-size: 1.5rem;
+        text-shadow: 2px 2px #000000;
+    }
+
+    &__slider-select-container {
+        position: absolute;
+        right: 10px;
+        display: flex;
+        gap: 5px;
+    }
+}

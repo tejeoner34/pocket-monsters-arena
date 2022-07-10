@@ -1,1 +1,18 @@
-<p>arena works!</p>
+<div class="arena">
+    <ng-container *ngIf="pokemon">
+        <app-pokemon class="arena__opponent-container" [pokemonHealth]="'10%'" [pokemon]="pokemon"></app-pokemon>
+    </ng-container>
+    <ng-container *ngIf="pokemonOpponent">
+            <app-pokemon class="arena__pokemon-container" [pokemonHealth]="'30%'" [pokemon]="pokemonOpponent" [isOpponent]="true"></app-pokemon>
+    </ng-container>
+    <div class="arena__options-container">
+        <div class="arena__options__info-container">
+            <p>Elige un movimiento</p>
+        </div>
+        <div class="arena__pokemon__moves-container">
+            <div *ngFor="let move of pokemonMoves">
+                <p>{{move.move.name}}</p>
+            </div>
+        </div>
+    </div>
+</div>

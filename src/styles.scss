@@ -101,6 +101,10 @@ body {
     overflow: visible;
     border: none;
   }
+
+  .arena__pokemon__moves-container {
+    background-color: #fff;
+  }
 }
 
 .darkMode {
@@ -135,5 +139,13 @@ body {
     border-radius: 4px;
     overflow: visible;
     border: none;
+  }
+
+  .health-container__info {
+    color: gray;
+  }
+
+  .arena__pokemon__moves-container {
+    background-color: #4c4c4c;
   }
 }

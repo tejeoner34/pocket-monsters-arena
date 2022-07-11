@@ -1,17 +1,17 @@
 <div class="arena">
-    <ng-container *ngIf="pokemon">
-        <app-pokemon class="arena__opponent-container" [pokemonHealth]="'10%'" [pokemon]="pokemon"></app-pokemon>
-    </ng-container>
     <ng-container *ngIf="pokemonOpponent">
-            <app-pokemon class="arena__pokemon-container" [pokemonHealth]="'30%'" [pokemon]="pokemonOpponent" [isOpponent]="true"></app-pokemon>
+        <app-pokemon class="arena__opponent-container" [pokemonHealth]="'10%'" [pokemon]="pokemonOpponent"></app-pokemon>
+    </ng-container>
+    <ng-container *ngIf="pokemon">
+            <app-pokemon class="arena__pokemon-container" [pokemonHealth]="'30%'" [pokemon]="pokemon" [isOpponent]="true"></app-pokemon>
     </ng-container>
     <div class="arena__options-container">
         <div class="arena__options__info-container">
             <p>Elige un movimiento</p>
         </div>
         <div class="arena__pokemon__moves-container">
-            <div *ngFor="let move of pokemonMoves">
-                <p>{{move.move.name}}</p>
+            <div *ngFor="let move of pokemonMoves" (click)="chooseMove(move.move)">
+                <p>{{move.move.name | titlecase}}</p>
             </div>
         </div>
     </div>

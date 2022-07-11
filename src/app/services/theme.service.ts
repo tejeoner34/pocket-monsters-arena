@@ -13,5 +13,6 @@ export class ThemeService {
 
   updateTheme(theme: string) {
     this.$themeSubject.next(theme);
+    localStorage.setItem('theme', theme);
   }
 }

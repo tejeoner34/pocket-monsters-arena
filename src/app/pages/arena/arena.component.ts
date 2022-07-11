@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Pokemon } from 'src/app/interfaces/interfaces';
 import { PokemonService } from 'src/app/services/pokemon.service';
+import { MoveEffectivinessService } from '../../services/move-effectiviness.service';
 
 @Component({
   selector: 'app-arena',
@@ -15,7 +16,9 @@ export class ArenaComponent implements OnInit {
   pokemonOpponent!: Pokemon;
 
 
-  constructor(private pokemonService: PokemonService) { }
+  constructor(private pokemonService: PokemonService, 
+              private moveEffectivinessService: MoveEffectivinessService
+              ) { }
 
   ngOnInit(): void {
     this.pokemonService.getRandomPokemon().subscribe(pokemon => {
@@ -26,11 +29,20 @@ export class ArenaComponent implements OnInit {
         pokemon.moves.splice(randomNumber, 1);
       }
       this.pokemonMoves = [...movesArray];
-      console.log(this.pokemonMoves)
       this.pokemon = pokemon;
     });
     this.pokemonService.getRandomPokemon().subscribe(pokemon => {
       this.pokemonOpponent = pokemon;
+    });
+  }
+
+  chooseMove(move: any) {
+    console.log(move);
+    this.pokemonService.getMovementInfo(move.url).subscribe(movement => {
+      this.pokemonService.getTypeInfo(movement.type.url).subscribe(type => {
+        this.moveEffectivinessService.checkEffectiviness(type, this.pokemonOpponent.types);
+      });
+
     });
   }
 

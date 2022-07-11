@@ -12,8 +12,16 @@ import { MoveEffectivinessService } from '../../services/move-effectiviness.serv
 export class ArenaComponent implements OnInit {
 
   pokemon!: Pokemon;
+  pokemonHealth: string = '100%';
+  pokemonHealthNumber = 0;
+  pokemonHealthNumberTotal = 0
   pokemonMoves: any = [];
   pokemonOpponent!: Pokemon;
+  pokemonOpponentHealth: string = '100%';
+  pokemonOpponentHealthNumber = 0;
+  pokemonOpponentHealthNumberTotal = 0;
+
+  effectivinessIndex = 1;
 
 
   constructor(private pokemonService: PokemonService, 
@@ -30,20 +38,26 @@ export class ArenaComponent implements OnInit {
       }
       this.pokemonMoves = [...movesArray];
       this.pokemon = pokemon;
+      this.pokemonHealthNumber = this.pokemonService.calculatePokemonsHealth(pokemon.stats[0].base_stat);
+      this.pokemonHealthNumberTotal = this.pokemonHealthNumber;
     });
+
     this.pokemonService.getRandomPokemon().subscribe(pokemon => {
       this.pokemonOpponent = pokemon;
+      this.pokemonOpponentHealthNumber = this.pokemonService.calculatePokemonsHealth(pokemon.stats[0].base_stat);
+      this.pokemonOpponentHealthNumberTotal = this.pokemonOpponentHealthNumber;
     });
   }
 
   chooseMove(move: any) {
-    console.log(move);
     this.pokemonService.getMovementInfo(move.url).subscribe(movement => {
       this.pokemonService.getTypeInfo(movement.type.url).subscribe(type => {
-        this.moveEffectivinessService.checkEffectiviness(type, this.pokemonOpponent.types);
+        this.effectivinessIndex = this.moveEffectivinessService.checkEffectiviness(type, this.pokemonOpponent.types);
+        this.pokemonOpponentHealthNumber = this.pokemonService.calculateHealthAfterAttack(this.effectivinessIndex, this.pokemonOpponentHealthNumber, movement.power);
+        this.pokemonOpponentHealth = (this.pokemonOpponentHealthNumber / this.pokemonOpponentHealthNumberTotal)*100 + '%';
+        console.log(this.pokemonOpponentHealth); 
+        // hay que gestionar que el porcentaje de vida no baje del 0% y gestionar el orden de los turnos
       });
-
     });
   }
-
 }

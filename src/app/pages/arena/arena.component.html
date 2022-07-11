@@ -1,9 +1,9 @@
 <div class="arena">
     <ng-container *ngIf="pokemonOpponent">
-        <app-pokemon class="arena__opponent-container" [pokemonHealth]="'10%'" [pokemon]="pokemonOpponent"></app-pokemon>
+        <app-pokemon class="arena__opponent-container" [pokemonHealth]="pokemonOpponentHealth" [pokemon]="pokemonOpponent"></app-pokemon>
     </ng-container>
     <ng-container *ngIf="pokemon">
-            <app-pokemon class="arena__pokemon-container" [pokemonHealth]="'30%'" [pokemon]="pokemon" [isOpponent]="true"></app-pokemon>
+            <app-pokemon class="arena__pokemon-container" [pokemonHealth]="pokemonHealth" [pokemon]="pokemon" [isOpponent]="true"></app-pokemon>
     </ng-container>
     <div class="arena__options-container">
         <div class="arena__options__info-container">

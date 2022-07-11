@@ -25,6 +25,15 @@ export class PokemonService {
     return this.http.get<TypeData>(url);
   }
 
+  calculatePokemonsHealth(hpStat: number) {
+    return Math.floor(0.01*(2*hpStat + 30 + Math.floor(0.25 * 500)) * 100) + 5;
+  }
+
+  calculateHealthAfterAttack(index: number, pokemonHealth: number, attackPower: number) {
+    const damage = index * attackPower;
+    return pokemonHealth - damage;
+  }
+
   generateRandomNumber(min: number, max: number) {
     return Math.floor(Math.random() * (max - min + 1) + min);
   }

@@ -25,7 +25,8 @@ export class MoveEffectivinessService {
   constructor() { }
 
   checkEffectiviness(moveType: TypeData, pokemonTypes: Type[]) {
-    console.log(pokemonTypes);
+
+    let effectivenessIndex = 1;
 
     const damageRelationsArray = Object.entries(moveType.damage_relations).filter(([key, value]) => 
       key.includes('_to'));
@@ -35,22 +36,30 @@ export class MoveEffectivinessService {
         types: [...relation[1]]
       }
     });
-    console.log(mappedRelations);
 
     const relationsToApply = [];
 
     for(let i = 0; i < mappedRelations.length; i++) {
       for(let j = 0; j< mappedRelations[i].types.length; j++) {
         for(let h = 0; h < pokemonTypes.length; h++) {
-          console.log(mappedRelations[i])
           if(pokemonTypes[h].type.name === mappedRelations[i].types[j].name) {
             relationsToApply.push(mappedRelations[i].relation)
           }
         }
+        if(relationsToApply.length === pokemonTypes.length) break;
       }
+      if(relationsToApply.length === pokemonTypes.length) break;
     }
 
-    console.log(relationsToApply);
+    for(let i = 0; i < relationsToApply.length; i++){
+      effectivenessIndex = effectivenessIndex * this.damageRelations[relationsToApply[i] as keyof damageRelations];
+    }
+
+    // if(relationsToApply.length === 1) {
+    //   return this.damageRelations[relationsToApply[0] as keyof damageRelations];
+    // }else {
+    //   return this.damageRelations[relationsToApply[0] as keyof damageRelations] *  this.damageRelations[relationsToApply[1] as keyof damageRelations];
+    // }
     // if(pokemonTypes.length === 1) {
     //   let relation = mappedRelations.find(element => element.types.filter(type => type.name === pokemonTypes[0].type.name));
     //   if(relation === undefined) return this.damageRelations['neutral'];
@@ -60,7 +69,7 @@ export class MoveEffectivinessService {
 
     // }
 
-    return
+    return effectivenessIndex;
   }
 
 

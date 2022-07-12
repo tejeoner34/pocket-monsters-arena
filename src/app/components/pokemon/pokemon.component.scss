@@ -49,3 +49,29 @@
         width: 100%;
     }
 }
+
+.damage {
+    animation: damage 0.3s 0.3s infinite;
+}
+
+@keyframes damage {
+    0% {
+      opacity: 0;
+    }
+    50% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+    }
+  }
+
+.player .attack {
+    transition: 0.1s;
+    transform: translateX(100px);
+}
+
+.opponent .attack {
+    transition: 0.1s;
+    transform: translateX(-100px);
+}

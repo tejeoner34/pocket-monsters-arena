@@ -11,6 +11,7 @@ export class PokemonComponent implements OnInit {
   @Input() pokemon!: Pokemon;
   @Input() isOpponent: boolean = false;
   @Input() pokemonHealth = '100%';
+  @Input() className!: string;
   pokemonHealthNumber = parseInt(this.pokemonHealth.split('%')[0]);
 
   constructor() { }

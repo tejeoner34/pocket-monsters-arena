@@ -12,5 +12,6 @@
         "canvas": "Canvas 2d"
     },
     "moveUse": "{{pokemon}} used {{move}}!",
-    "chooseActionMessage": "What will {{pokemon}} do?"
+    "chooseActionMessage": "What will {{pokemon}} do?",
+    "nextTurn": "{{pokemon}}, your turn!"
 }

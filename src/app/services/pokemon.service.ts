@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { Pokemon } from '../interfaces/interfaces';
 import { MoveData } from '../interfaces/movements.interface';
 import { TypeData } from '../interfaces/type.interface';
@@ -10,7 +10,14 @@ import { TypeData } from '../interfaces/type.interface';
 })
 export class PokemonService {
 
+  turn$ = new BehaviorSubject(0);
+  turnObservable$ = this.turn$.asObservable();
+
   constructor(private http: HttpClient) { }
+
+  updateTurn(turn: number) {
+    this.turn$.next(turn);
+  }
 
   getRandomPokemon(): Observable<Pokemon> {
     const randomPokemonId = this.generateRandomNumber(1, 150);

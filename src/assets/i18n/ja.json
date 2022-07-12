@@ -11,5 +11,9 @@
         "html": "HTML",
         "canvas": "Canvas 2d"
 
-    }
+    },
+    "moveUse": "{{pokemon}}は{{move}}を使った!",
+    "chooseActionMessage": "{{pokemon}}、これからどうしますか?",
+    "nextTurn": "{{pokemon}}, 君の番だよ！!"
+
 }

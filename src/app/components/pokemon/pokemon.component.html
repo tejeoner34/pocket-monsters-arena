@@ -1,8 +1,9 @@
-<div class="pokemon__img-container">
+<div class="pokemon__img-container" [ngClass]="isOpponent? 'opponent' : 'player'">
   <img
     [src]="
-      isOpponent ? pokemon.sprites.back_default : pokemon.sprites.front_default
+      isOpponent ? pokemon.sprites.front_default : pokemon.sprites.back_default
     "
+    [ngClass]="className"
     alt="pokemon"
   />
 </div>

@@ -7,7 +7,10 @@
     </ng-container>
     <div class="arena__options-container">
         <div class="arena__options__info-container">
-            <p>Elige un movimiento</p>
+            <p class="info-container__action"
+              [translate]="boxMessage"
+              [translateParams]="{pokemon: currentPokemonName | titlecase, move: usedMove}">
+            </p>
         </div>
         <div class="arena__pokemon__moves-container">
             <div *ngFor="let move of pokemonMoves" (click)="chooseMove(move.move)">

@@ -4,6 +4,7 @@ import { HomeComponent } from './home/home.component';
 import { ComponentsModule } from '../components/components.module';
 import { MaterialModule } from '../material.module';
 import { ArenaComponent } from './arena/arena.component';
+import { TranslateModule } from '@ngx-translate/core';
 
 
 
@@ -18,7 +19,8 @@ import { ArenaComponent } from './arena/arena.component';
   imports: [
     CommonModule,
     ComponentsModule,
-    MaterialModule
+    MaterialModule,
+    TranslateModule
   ]
 })
 export class PagesModule { }

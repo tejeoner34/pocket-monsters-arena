@@ -39,6 +39,11 @@
         display: flex;
         align-items: center;
         justify-content: center;
+        padding: 1rem;
+
+        .info-container__action {
+          line-height: 30px;
+        }
     }
 
     .arena__pokemon__moves-container {

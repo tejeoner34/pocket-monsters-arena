@@ -31,7 +31,11 @@ export class PokemonService {
 
   calculateHealthAfterAttack(index: number, pokemonHealth: number, attackPower: number) {
     const damage = index * attackPower;
-    return pokemonHealth - damage;
+    const finalHealth = pokemonHealth - damage;
+    if(finalHealth < 0) {
+      return 0;
+    }
+    return finalHealth;
   }
 
   generateRandomNumber(min: number, max: number) {

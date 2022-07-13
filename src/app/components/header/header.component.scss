@@ -1,25 +1,45 @@
-
 @font-face {
-    font-family: "Pokemon-GB";
-    src: local("Pokemon-GB"), url(../../../assets/fonts/Pokemon-GB.ttf) format("truetype");
+  font-family: "Pokemon-GB";
+  src: local("Pokemon-GB"),
+    url(../../../assets/fonts/Pokemon-GB.ttf) format("truetype");
 }
 
 .header {
-    position: relative;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  height: 100%;
+
+  h1 {
+    font-family: "Pokemon-GB";
+    font-size: 1.5rem;
+    text-shadow: 2px 2px #000000;
+    margin: 0 5px 0 5px;
+  }
+
+  &__slider-select-container {
+    position: absolute;
+    right: 10px;
     display: flex;
-    justify-content: center;
-    height: 130px;
+    gap: 5px;
+  }
 
-    h1{
-        font-family: 'Pokemon-GB';
-        font-size: 1.5rem;
-        text-shadow: 2px 2px #000000;
+  .header__pokeball-container-reverse {
+    width: 50px;
+    img {
+      width: 100%;
+      transform: scaleX(-1);
+      -webkit-filter: drop-shadow(-5px 5px 5px #222);
+      filter: drop-shadow(-5px 5px 5px #222);
     }
+  }
 
-    &__slider-select-container {
-        position: absolute;
-        right: 10px;
-        display: flex;
-        gap: 5px;
+  .header__pokeball-container {
+    width: 50px;
+    img {
+      width: 100%;
+      -webkit-filter: drop-shadow(5px 5px 5px #222);
+      filter: drop-shadow(5px 5px 5px #222);
     }
+  }
 }

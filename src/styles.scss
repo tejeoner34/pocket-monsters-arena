@@ -1,6 +1,13 @@
 @use "@angular/material" as mat;
 @include mat.core();
 
+@font-face {
+  font-family: "Pokemon-GB";
+  src: local("Pokemon-GB"),
+    url(./assets/fonts/Pokemon-GB.ttf) format("truetype");
+}
+
+
 $pocket-monsters-arena-primary: mat.define-palette(mat.$red-palette);
 $pocket-monsters-arena-accent: mat.define-palette(
   mat.$grey-palette,
@@ -55,16 +62,11 @@ $pocket-monsters-arena-theme-dark: mat.define-dark-theme(
   margin: 0;
 }
 
-@font-face {
-  font-family: "Pokemon-GB";
-  src: local("Pokemon-GB"),
-    url(./assets/fonts/Pokemon-GB.ttf) format("truetype");
-}
 
 html,
 body {
   height: 100%;
-  font-family: "Pokemon-GB";
+  font-family: "Pokemon-GB" !important;
 }
 
 .lightMode {
@@ -72,6 +74,10 @@ body {
   background-color: aliceblue;
   color: black;
   height: 100%;
+
+  .home__buttons-container {
+    font-size: 16px;
+  }
 
   .home__button-dark {
     box-shadow: 0px 3px 1px -2px rgb(0 0 0 / 20%),
@@ -113,10 +119,17 @@ body {
   color: #dae7f3;
   height: 100%;
 
+  .home__buttons-container {
+    button {
+      font-size: 16px;
+    }
+  }
+
   .home__button-dark {
     box-shadow: 0px 3px 1px -2px rgb(0 0 0 / 20%),
       0px 2px 2px 0px rgb(0 0 0 / 14%), 0px 1px 5px 0px rgb(0 0 0 / 12%);
-    background-color: rgb(119, 109, 109);
+    background-color: #745c5c;
+    color: #e9eef3;
     text-align: center;
     margin: 0;
     min-width: 64px;
@@ -125,6 +138,7 @@ body {
     border-radius: 4px;
     overflow: visible;
     border: none;
+
   }
 
   .home__button-light {
@@ -139,6 +153,7 @@ body {
     border-radius: 4px;
     overflow: visible;
     border: none;
+
   }
 
   .health-container__info {

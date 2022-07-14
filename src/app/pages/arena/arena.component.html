@@ -1,10 +1,16 @@
 <div class="arena">
     <div class="arena-wrapper">
       <ng-container *ngIf="pokemonOpponent">
-          <app-pokemon class="arena__opponent-container" [className]="pokemonOpponentClassName" [pokemonHealth]="pokemonOpponentHealth" [pokemon]="pokemonOpponent" [isOpponent]="true"></app-pokemon>
+        <app-pokemon class="arena__opponent-container" [className]="pokemonOpponentClassName" [pokemonHealth]="pokemonOpponentHealth" [pokemon]="pokemonOpponent" [isOpponent]="true"></app-pokemon>
       </ng-container>
       <ng-container *ngIf="pokemon">
-              <app-pokemon class="arena__pokemon-container" [className]="pokemonClassName" [pokemonHealth]="pokemonHealth" [pokemon]="pokemon" ></app-pokemon>
+        <app-pokemon class="arena__pokemon-container" 
+                     [className]="pokemonClassName"
+                     [pokemonHealth]="pokemonHealth"
+                     [pokemon]="pokemon"
+                     [lifePoints]="pokemonHealthNumber"
+                     [totalLifePoints]="pokemonHealthNumberTotal" >
+        </app-pokemon>
       </ng-container>
       <div class="arena__options-container">
           <div class="arena__options__info-container">

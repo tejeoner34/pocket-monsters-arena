@@ -11,14 +11,22 @@
   <div class="pokemon__health__pointer-div"></div>
   <div class="pokemon__health-container">
     <div class="health-container__info">
-      <h4>{{ pokemon.name | titlecase }}</h4>
+      <h3>{{ pokemon.name | uppercase }}</h3>
     </div>
     <div class="health-container__life-bar">
-      <div 
-        [style.width]="pokemonHealth"
-        [style.background]="pokemonHealthNumber < 20 ? 'red' : ''"
-        class="health-bar">
+      <div class="life-bar__text">
+        <p>HP</p>
       </div>
+      <div class="health-bar__wrapper">
+        <div 
+          [style.width]="pokemonHealth"
+          [style.background]="pokemonHealthNumber < 20 ? 'red' : ''"
+          class="health-bar">
+        </div>
+      </div>
+    </div>
+    <div class="health-container__life-points" *ngIf="!isOpponent">
+      <p>{{lifePoints}}/{{totalLifePoints}}</p>
     </div>
   </div>
 </div>

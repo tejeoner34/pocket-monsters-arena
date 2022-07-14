@@ -7,7 +7,6 @@
     url(./assets/fonts/Pokemon-GB.ttf) format("truetype");
 }
 
-
 $pocket-monsters-arena-primary: mat.define-palette(mat.$red-palette);
 $pocket-monsters-arena-accent: mat.define-palette(
   mat.$grey-palette,
@@ -29,7 +28,7 @@ $pocket-monsters-arena-theme: mat.define-light-theme(
   )
 );
 
-$pocket-monsters-arena-primary-dark: mat.define-palette(mat.$blue-palette, 800);
+$pocket-monsters-arena-primary-dark: mat.define-palette(mat.$blue-palette, 500);
 $pocket-monsters-arena-accent-dark: mat.define-palette(
   mat.$grey-palette,
   A200,
@@ -62,7 +61,6 @@ $pocket-monsters-arena-theme-dark: mat.define-dark-theme(
   margin: 0;
 }
 
-
 html,
 body {
   height: 100%;
@@ -76,18 +74,21 @@ body {
 }
 
 .header-container {
-  height: 20%
+  height: 20%;
 }
 
-.content-container {
-  height: 80%;
-}
+
 
 .lightMode {
   @include mat.all-component-themes($pocket-monsters-arena-theme);
   background-color: aliceblue;
   color: black;
   height: 100%;
+
+  .content-container {
+    height: 80%;
+    background-color: #f44336;
+  }
 
   .home__buttons-container {
     font-size: 16px;
@@ -122,16 +123,35 @@ body {
     border: none;
   }
 
+  .arena-wrapper {
+    border: 20px solid #f7f0f0;
+  }
+
   .arena__pokemon__moves-container {
     background-color: #fff;
+  }
+
+  .home__background {
+    background-color: #94caaf;
+    border-right: 45px solid #f44336;
+    border-left: 45px solid #f44336;
+    border-bottom: 25px solid #f44336;
   }
 }
 
 .darkMode {
   @include mat.all-component-themes($pocket-monsters-arena-theme-dark);
-  background-color: rgb(27, 28, 31);
   color: #dae7f3;
   height: 100%;
+
+  .content-container {
+    height: 80%;
+    background-color: #424d5a;
+  }
+
+  .header {
+    background-color: #424d5a;
+  }
 
   .home__buttons-container {
     button {
@@ -152,7 +172,6 @@ body {
     border-radius: 4px;
     overflow: visible;
     border: none;
-
   }
 
   .home__button-light {
@@ -167,14 +186,32 @@ body {
     border-radius: 4px;
     overflow: visible;
     border: none;
-
   }
 
   .health-container__info {
     color: gray;
   }
 
+  .arena-wrapper {
+    border: 20px solid #ddece0;
+  }
+
   .arena__pokemon__moves-container {
     background-color: #4c4c4c;
+  }
+
+  .home__background {
+    background-color: #547263;
+    border-right: 45px solid #424d5a;
+    border-left: 45px solid #424d5a;
+    border-bottom: 25px solid #424d5a;
+  }
+}
+
+@media (max-width: 600px) {
+  .home__content-container {
+    h2 {
+      font-size: 18px;
+    }
   }
 }

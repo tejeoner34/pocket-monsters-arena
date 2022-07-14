@@ -1,21 +1,23 @@
 <div class="arena">
-    <ng-container *ngIf="pokemonOpponent">
-        <app-pokemon class="arena__opponent-container" [className]="pokemonOpponentClassName" [pokemonHealth]="pokemonOpponentHealth" [pokemon]="pokemonOpponent" [isOpponent]="true"></app-pokemon>
-    </ng-container>
-    <ng-container *ngIf="pokemon">
-            <app-pokemon class="arena__pokemon-container" [className]="pokemonClassName" [pokemonHealth]="pokemonHealth" [pokemon]="pokemon" ></app-pokemon>
-    </ng-container>
-    <div class="arena__options-container">
-        <div class="arena__options__info-container">
-            <p class="info-container__action"
-              [translate]="boxMessage"
-              [translateParams]="{pokemon: currentPokemonName | titlecase, move: usedMove}">
-            </p>
-        </div>
-        <div class="arena__pokemon__moves-container">
-            <div *ngFor="let move of pokemonMoves" (click)="chooseMove(move.move)">
-                <p>{{move.move.name | titlecase}}</p>
-            </div>
-        </div>
+    <div class="arena-wrapper">
+      <ng-container *ngIf="pokemonOpponent">
+          <app-pokemon class="arena__opponent-container" [className]="pokemonOpponentClassName" [pokemonHealth]="pokemonOpponentHealth" [pokemon]="pokemonOpponent" [isOpponent]="true"></app-pokemon>
+      </ng-container>
+      <ng-container *ngIf="pokemon">
+              <app-pokemon class="arena__pokemon-container" [className]="pokemonClassName" [pokemonHealth]="pokemonHealth" [pokemon]="pokemon" ></app-pokemon>
+      </ng-container>
+      <div class="arena__options-container">
+          <div class="arena__options__info-container">
+              <p class="info-container__action"
+                [translate]="boxMessage"
+                [translateParams]="{pokemon: currentPokemonName | titlecase, move: usedMove}">
+              </p>
+          </div>
+          <div class="arena__pokemon__moves-container">
+              <div *ngFor="let move of pokemonMoves" (click)="chooseMove(move.move)">
+                  <p>{{move.move.name | titlecase}}</p>
+              </div>
+          </div>
+      </div>
     </div>
 </div>

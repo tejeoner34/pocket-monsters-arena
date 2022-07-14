@@ -1,4 +1,5 @@
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { ThemeService } from 'src/app/services/theme.service';
 
@@ -13,7 +14,8 @@ export class HomeComponent implements OnInit {
 
   constructor(
     public translateService: TranslateService,
-    private themeService: ThemeService) {
+    private themeService: ThemeService,
+    private router: Router) {
 
    }
 
@@ -29,6 +31,10 @@ export class HomeComponent implements OnInit {
 
   onChangeLanguage(language: string) {
     this.translateService.use(language);
+  }
+
+  goToArenaPage() {
+    this.router.navigate(['/arena']);
   }
 
 }

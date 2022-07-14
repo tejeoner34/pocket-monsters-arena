@@ -6,6 +6,7 @@
     [ngClass]="className"
     alt="pokemon"
   />
+  <div class="img-container__pokemon-base"></div>
 </div>
 <div class="health-overcontainer">
   <div class="pokemon__health__pointer-div"></div>
@@ -20,7 +21,7 @@
       <div class="health-bar__wrapper">
         <div 
           [style.width]="pokemonHealth"
-          [style.background]="pokemonHealthNumber < 20 ? 'red' : ''"
+          [style.background]="calculateLifeBarColor(pokemonHealthNumber)"
           class="health-bar">
         </div>
       </div>

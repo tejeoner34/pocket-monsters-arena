@@ -127,6 +127,7 @@ export class ArenaComponent implements OnInit {
   }
 
   chooseMove(move: Species) {
+    if(this.hasSelectedMove) return;
     this.chosenMove = move;
     this.hasSelectedMove = true;
     this.pokemonService.updateTurn(this.currentTurn);

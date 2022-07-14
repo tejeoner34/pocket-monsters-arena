@@ -99,10 +99,9 @@
       height: 100%;
       border-radius: 10px;
     }
-
   }
 
-  &__life-points {
+  .health-container__life-points {
     color: black;
   }
 }
@@ -110,8 +109,24 @@
 .pokemon__img-container {
   width: 50%;
   max-width: 200px;
+  position: relative;
   img {
     width: 100%;
+    position: relative;
+    z-index: 100;
+  }
+
+  .img-container__pokemon-base {
+    width: 240px;
+    height: 85px;
+    border-radius: 124px/50px;
+    background-color: gray;
+    position: absolute;
+    bottom: 13px;
+    left: -22px;
+    background: #746e54a6;
+    border: 7px solid #ffffffa1;
+    transform: rotateX(51deg);
   }
 }
 

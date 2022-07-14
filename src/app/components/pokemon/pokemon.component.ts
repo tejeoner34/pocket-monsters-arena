@@ -1,13 +1,18 @@
-import { Component, Input, OnInit } from '@angular/core';
+import {
+  Component,
+  Input,
+  OnChanges,
+  OnInit,
+  SimpleChanges,
+} from '@angular/core';
 import { Pokemon } from 'src/app/interfaces/interfaces';
 
 @Component({
   selector: 'app-pokemon',
   templateUrl: './pokemon.component.html',
-  styleUrls: ['./pokemon.component.scss']
+  styleUrls: ['./pokemon.component.scss'],
 })
-export class PokemonComponent implements OnInit {
-
+export class PokemonComponent implements OnChanges {
   @Input() pokemon!: Pokemon;
   @Input() isOpponent: boolean = false;
   @Input() pokemonHealth = '100%';
@@ -16,10 +21,20 @@ export class PokemonComponent implements OnInit {
   @Input() totalLifePoints!: number;
   pokemonHealthNumber = parseInt(this.pokemonHealth.split('%')[0]);
 
-  constructor() { }
+  constructor() {}
 
-  ngOnInit(): void {
+  ngOnChanges(changes: SimpleChanges): void {
     this.pokemonHealthNumber = parseInt(this.pokemonHealth.split('%')[0]);
+    console.log(this.pokemonHealthNumber);
   }
 
+  calculateLifeBarColor(life: number) {
+    if(life < 40 && life > 20){
+      return "orange";
+    }else if(life <= 20) {
+      return "red";
+    }else {
+      return "";
+    }
+  }
 }

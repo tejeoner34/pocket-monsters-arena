@@ -11,7 +11,11 @@
         "html": "HTML",
         "canvas": "Canvas 2d"
     },
+    "ARENA": {
+      "opponent": "Foe "
+    },
     "moveUse": "{{pokemon}} used {{move}}!",
     "chooseActionMessage": "What will {{pokemon}} do?",
     "nextTurn": "{{pokemon}}, your turn!"
+    
 }

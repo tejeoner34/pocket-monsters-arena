@@ -12,7 +12,10 @@
         "canvas": "Canvas 2d"
 
     },
-    "moveUse": "{{pokemon}}は{{move}}を使った!",
+    "ARENA": {
+      "opponent": "相手の "
+    },
+    "moveUse": "{{pokemon}}の{{move}}攻撃!!",
     "chooseActionMessage": "{{pokemon}}、これからどうしますか?",
     "nextTurn": "{{pokemon}}, 君の番だよ！!"
 

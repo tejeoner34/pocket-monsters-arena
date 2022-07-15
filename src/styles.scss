@@ -129,7 +129,10 @@ body {
   }
 
   .home__buttons-container {
-    font-size: 16px;
+    button {
+      font-size: 16px;
+      cursor: pointer;
+    }
   }
 
   .home__button-dark {
@@ -193,6 +196,7 @@ body {
   .home__buttons-container {
     button {
       font-size: 16px;
+      cursor: pointer;
     }
   }
 

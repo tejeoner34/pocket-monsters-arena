@@ -38,7 +38,7 @@ export class PokemonService {
 
   calculateHealthAfterAttack(index: number, pokemonHealth: number, attackPower: number) {
     const damage = index * attackPower;
-    const finalHealth = pokemonHealth - damage;
+    const finalHealth = Math.floor(pokemonHealth - damage);
     if(finalHealth < 0) {
       return 0;
     }

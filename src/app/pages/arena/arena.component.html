@@ -1,6 +1,8 @@
+<app-pokeball [openPokeball]="openPokeball"></app-pokeball>
 <div class="arena">
   <div class="arena-wrapper">
-    <ng-container *ngIf="pokemonOpponent">
+ 
+    <ng-container *ngIf="pokemon && pokemonOpponent">
       <app-pokemon
         class="arena__opponent-container"
         [className]="pokemonOpponentClassName"
@@ -8,8 +10,8 @@
         [pokemon]="pokemonOpponent"
         [isOpponent]="true"
       ></app-pokemon>
-    </ng-container>
-    <ng-container *ngIf="pokemon">
+
+    
       <app-pokemon
         class="arena__pokemon-container"
         [className]="pokemonClassName"
@@ -20,6 +22,7 @@
       >
       </app-pokemon>
     </ng-container>
+ 
     <div class="arena__options-container">
       <div class="arena__options__info-container">
         <p
@@ -32,7 +35,7 @@
         ></p>
       </div>
       <div class="arena__pokemon__moves-container">
-        <div class="moves-container__move" *ngFor="let move of pokemonMoves" (click)="chooseMove(move.move)">
+        <div class="moves-container__move" *ngFor="let move of pokemonMoves; let i = index;" (click)="chooseMove(move.move, i)">
           <p>{{ move.move.name | titlecase }}</p>
         </div>
         <div class="arena__moves-container-popover" *ngIf="hasSelectedMove"></div>

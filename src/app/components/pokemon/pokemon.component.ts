@@ -5,6 +5,7 @@ import {
   OnInit,
   SimpleChanges,
 } from '@angular/core';
+import { Observable } from 'rxjs';
 import { Pokemon } from 'src/app/interfaces/interfaces';
 
 @Component({
@@ -14,6 +15,7 @@ import { Pokemon } from 'src/app/interfaces/interfaces';
 })
 export class PokemonComponent implements OnChanges {
   @Input() pokemon!: Pokemon;
+  @Input() pokemonName$!: Observable<string>;
   @Input() isOpponent: boolean = false;
   @Input() pokemonHealth = '100%';
   @Input() className!: string;

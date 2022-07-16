@@ -8,6 +8,7 @@
         [className]="pokemonOpponentClassName"
         [pokemonHealth]="pokemonOpponentHealth"
         [pokemon]="pokemonOpponent"
+        [pokemonName$]="pokemonOpponentName$"
         [isOpponent]="true"
       ></app-pokemon>
 
@@ -17,6 +18,7 @@
         [className]="pokemonClassName"
         [pokemonHealth]="pokemonHealth"
         [pokemon]="pokemon"
+        [pokemonName$]="pokemonName$"
         [lifePoints]="pokemonHealthNumber"
         [totalLifePoints]="pokemonHealthNumberTotal"
       >
@@ -27,16 +29,11 @@
       <div class="arena__options__info-container">
         <p
           class="info-container__action"
-          [translate]="boxMessage"
-          [translateParams]="{
-            pokemon: currentPokemonName | titlecase,
-            move: usedMove
-          }"
-        ></p>
+        >{{boxMessage | translate: {pokemon: currentPokemonName | titlecase, move: usedMove} | typeMessage | async }}</p>
       </div>
       <div class="arena__pokemon__moves-container">
-        <div class="moves-container__move" *ngFor="let move of pokemonMoves; let i = index;" (click)="chooseMove(move.move, i)">
-          <p>{{ move.move.name | titlecase }}</p>
+        <div class="moves-container__move" *ngFor="let move of pokemonMoves; let i = index;" (click)="chooseMove(move, i)">
+          <p>{{ move.name | titlecase }}</p>
         </div>
         <div class="arena__moves-container-popover" *ngIf="hasSelectedMove"></div>
       </div>

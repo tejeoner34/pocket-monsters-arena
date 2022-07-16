@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable } from 'rxjs';
-import { Pokemon } from '../interfaces/interfaces';
+import { BehaviorSubject, map, Observable, tap } from 'rxjs';
+import { Name, Pokemon, PokemonSpecies } from '../interfaces/interfaces';
 import { MoveData } from '../interfaces/movements.interface';
 import { TypeData } from '../interfaces/type.interface';
+import { TranslateService } from '@ngx-translate/core';
 
 @Injectable({
   providedIn: 'root'
@@ -12,20 +13,40 @@ export class PokemonService {
 
   turn$ = new BehaviorSubject(0);
   turnObservable$ = this.turn$.asObservable();
+  _pokemonMoves: MoveData[] = [];
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private translateService: TranslateService) { }
 
   updateTurn(turn: number) {
     this.turn$.next(turn);
   }
 
   getRandomPokemon(): Observable<Pokemon> {
+    console.log(this.translateService.currentLang)
     const randomPokemonId = this.generateRandomNumber(1, 150);
     return this.http.get<Pokemon>(`https://pokeapi.co/api/v2/pokemon/${randomPokemonId}/`);
   }
 
+  getLocalizedPokemonName(pokemonId: number): Observable<string> {
+    return this.http.get(`https://pokeapi.co/api/v2/pokemon-species/${pokemonId}/`).pipe(
+      map((pokemon: any) => {
+        const pokemonName = pokemon.names.find((name: Name) => name.language.name === this.translateService.currentLang)?.name;
+        return pokemonName
+      })
+    );
+  }
+
   getMovementInfo(url: string):Observable<MoveData> {
     return this.http.get<MoveData>(url);
+  }
+
+  saveMovesInService(moves: MoveData) {
+    this._pokemonMoves.push(moves);
+    console.log(this._pokemonMoves)
+  }
+
+  getServiceMoves() {
+    return [...this._pokemonMoves];
   }
 
   getTypeInfo(url: string): Observable<TypeData> {

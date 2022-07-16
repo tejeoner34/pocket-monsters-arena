@@ -5,12 +5,14 @@ import {
   OnInit,
 } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
+import { Observable } from 'rxjs';
 import {
   KEY_CODE,
   Move,
   Pokemon,
   Species,
 } from 'src/app/interfaces/interfaces';
+import { MoveData } from 'src/app/interfaces/movements.interface';
 import { PokemonService } from 'src/app/services/pokemon.service';
 import { wait } from 'src/app/shared/helpers';
 import { MoveEffectivinessService } from '../../services/move-effectiviness.service';
@@ -28,13 +30,15 @@ export class ArenaComponent implements OnInit, AfterViewChecked {
 
   openPokeball: boolean = false;
   pokemon!: Pokemon;
+  pokemonName$!: Observable<string>;
   pokemonHealth: string = '100%';
   pokemonHealthNumber = 1;
   pokemonHealthNumberTotal = 0;
   pokemonSpeed = 0;
-  pokemonMoves!: Move[];
+  pokemonMoves!: MoveData[];
   pokemonOpponentMoves: any = [];
   pokemonOpponent!: Pokemon;
+  pokemonOpponentName$!: Observable<string>;
   pokemonOpponentHealth: string = '100%';
   pokemonOpponentHealthNumber = 1;
   pokemonOpponentHealthNumberTotal = 0;
@@ -44,7 +48,7 @@ export class ArenaComponent implements OnInit, AfterViewChecked {
   currentPokemonName = '';
   hasSelectedMove = false;
   opponentHasSelectedMove = false;
-  chosenMove!: Species;
+  chosenMove!: MoveData;
   pokemonClassName = '';
   pokemonOpponentClassName = '';
   currentTurn!: number;
@@ -62,7 +66,7 @@ export class ArenaComponent implements OnInit, AfterViewChecked {
   ) {}
 
   ngOnInit(): void {
-    this.translateService.get('ARENA').subscribe(data => {
+    this.translateService.get('ARENA').subscribe((data) => {
       this.opponentTextPlaceholder = data.opponent;
     });
 
@@ -74,7 +78,7 @@ export class ArenaComponent implements OnInit, AfterViewChecked {
           this.currentTurn,
           this.pokemonOpponentMoves[
             Math.floor(Math.random() * this.pokemonOpponentMoves.length)
-          ].move
+          ]
         );
       }
       if (this.currentTurn === 0 && this.hasSelectedMove) {
@@ -83,17 +87,40 @@ export class ArenaComponent implements OnInit, AfterViewChecked {
     });
 
     this.pokemonService.getRandomPokemon().subscribe((pokemon) => {
+      this.pokemonName$ = this.pokemonService.getLocalizedPokemonName(
+        pokemon.id
+      );
       this.pokemonSpeed = pokemon.stats[5].base_stat;
-      let movesArray = [];
+      let movesArray: MoveData | any = [];
       for (let i = 0; i < 4; i++) {
+        console.log('loop');
         const randomNumber = this.pokemonService.generateRandomNumber(
           0,
           pokemon.moves.length - 1
         );
-        movesArray.push(pokemon.moves[randomNumber]);
-        pokemon.moves.splice(randomNumber, 1);
+        this.pokemonService
+          .getMovementInfo(pokemon.moves[randomNumber].move.url)
+          .subscribe((move) => {
+            movesArray.push(move);
+            pokemon.moves.splice(randomNumber, 1);
+            if (i >= 3) {
+              const checkMovesTypeArray = movesArray.filter(
+                (move: MoveData) => move.damage_class.name === 'status'
+              );
+              if (checkMovesTypeArray.length >= 3) {
+                console.log('enters');
+                const indexToDelete = movesArray.indexOf(
+                  (move: MoveData) => move.damage_class.name === 'status'
+                );
+                movesArray.splice(indexToDelete, 1);
+                i = i - 1;
+              }
+            }
+            this.pokemonService.saveMovesInService(move);
+            this.pokemonMoves = [...movesArray];
+          });
+        // movesArray.push(pokemon.moves[randomNumber]);
       }
-      this.pokemonMoves = [...movesArray];
       this.pokemon = pokemon;
       this.currentPokemonName = pokemon.name;
       this.pokemonHealthNumber = this.pokemonService.calculatePokemonsHealth(
@@ -103,17 +130,38 @@ export class ArenaComponent implements OnInit, AfterViewChecked {
     });
 
     this.pokemonService.getRandomPokemon().subscribe((pokemon) => {
+      this.pokemonOpponentName$ = this.pokemonService.getLocalizedPokemonName(
+        pokemon.id
+      );
       this.pokemonOpponentSpeed = pokemon.stats[5].base_stat;
-      let movesArray = [];
+      let movesArray: MoveData | any = [];
       for (let i = 0; i < 4; i++) {
         const randomNumber = this.pokemonService.generateRandomNumber(
           0,
           pokemon.moves.length - 1
         );
-        movesArray.push(pokemon.moves[randomNumber]);
-        pokemon.moves.splice(randomNumber, 1);
+        this.pokemonService
+          .getMovementInfo(pokemon.moves[randomNumber].move.url)
+          .subscribe((move) => {
+            movesArray.push(move);
+            pokemon.moves.splice(randomNumber, 1);
+            if (i >= 3) {
+              const checkMovesTypeArray = movesArray.filter(
+                (move: MoveData) => move.damage_class.name === 'status'
+              );
+              if (checkMovesTypeArray.length >= 3) {
+                console.log('enters');
+                const indexToDelete = movesArray.indexOf(
+                  (move: MoveData) => move.damage_class.name === 'status'
+                );
+                movesArray.splice(indexToDelete, 1);
+                i = i - 1;
+              }
+            }
+            this.pokemonService.saveMovesInService(move);
+            this.pokemonOpponentMoves = [...movesArray];
+          });
       }
-      this.pokemonOpponentMoves = [...movesArray];
       this.pokemonOpponent = pokemon;
       this.pokemonOpponentHealthNumber =
         this.pokemonService.calculatePokemonsHealth(pokemon.stats[0].base_stat);
@@ -139,55 +187,62 @@ export class ArenaComponent implements OnInit, AfterViewChecked {
     }
   }
 
-  attack(move: Species) {
-    (async () => {
-      this.pokemonService.getMovementInfo(move.url).subscribe((movement) => {
-        this.pokemonService.getTypeInfo(movement.type.url).subscribe((type) => {
-          this.effectivinessIndex =
-            this.moveEffectivinessService.checkEffectiviness(
-              type,
-              this.pokemonOpponent.types
-            );
-          this.pokemonOpponentHealthNumber =
-            this.pokemonService.calculateHealthAfterAttack(
-              this.effectivinessIndex,
-              this.pokemonOpponentHealthNumber,
-              movement.power
-            );
-          this.pokemonOpponentHealth =
-            (this.pokemonOpponentHealthNumber /
-              this.pokemonOpponentHealthNumberTotal) *
-              100 +
-            '%';
-        });
-      });
-    })();
-  }
-
-  opponentAttacks(move: Species) {
-    this.pokemonService.getMovementInfo(move.url).subscribe((movement) => {
-      this.pokemonService.getTypeInfo(movement.type.url).subscribe((type) => {
+  attack(move: MoveData) {
+    this.pokemonService.getTypeInfo(move.type.url).subscribe((type) => {
+      (async () => {
         this.effectivinessIndex =
           this.moveEffectivinessService.checkEffectiviness(
             type,
-            this.pokemon.types
+            this.pokemonOpponent.types
           );
-        this.pokemonHealthNumber =
+        if (this.effectivinessIndex === 0) {
+          this.boxMessage = 'noEffect';
+          await wait(1000);
+          return;
+        }
+        this.pokemonOpponentHealthNumber =
           this.pokemonService.calculateHealthAfterAttack(
             this.effectivinessIndex,
-            this.pokemonHealthNumber,
-            movement.power
+            this.pokemonOpponentHealthNumber,
+            move.power
           );
-        this.pokemonHealth =
-          (this.pokemonHealthNumber / this.pokemonHealthNumberTotal) * 100 +
+        this.pokemonOpponentHealth =
+          (this.pokemonOpponentHealthNumber /
+            this.pokemonOpponentHealthNumberTotal) *
+            100 +
           '%';
-      });
+      })();
     });
+  }
+
+  opponentAttacks(move: MoveData) {
+    this.pokemonService.getTypeInfo(move.type.url).subscribe((type) => {
+      (async () => {
+        this.effectivinessIndex =
+        this.moveEffectivinessService.checkEffectiviness(
+          type,
+          this.pokemon.types
+        );
+        if (this.effectivinessIndex === 0) {
+          this.boxMessage = 'noEffect';
+          await wait(1000);
+          return;
+        }
+      this.pokemonHealthNumber = this.pokemonService.calculateHealthAfterAttack(
+        this.effectivinessIndex,
+        this.pokemonHealthNumber,
+        move.power
+      );
+      this.pokemonHealth =
+        (this.pokemonHealthNumber / this.pokemonHealthNumberTotal) * 100 + '%';
+      })();
+    });
+
     this.opponentHasSelectedMove = false;
     // this.attack(move);
   }
 
-  chooseMove(move: Species, i: number) {
+  chooseMove(move: MoveData, i: number) {
     if (this.hasSelectedMove) return;
     this.chosenMove = move;
     this.hasSelectedMove = true;
@@ -211,16 +266,17 @@ export class ArenaComponent implements OnInit, AfterViewChecked {
     return false;
   }
 
-  gameLoop(turn: number, move: Species) {
-
+  gameLoop(turn: number, move: MoveData) {
     const attacker = turn === 0 ? this.pokemon : this.pokemonOpponent;
     const receiver = turn === 0 ? this.pokemonOpponent : this.pokemon;
+
 
     (async () => {
       await wait(300);
       turn === 0
-        ? this.currentPokemonName = attacker.name
-        : this.currentPokemonName = this.opponentTextPlaceholder + attacker.name;
+        ? (this.currentPokemonName = attacker.name)
+        : (this.currentPokemonName =
+            this.opponentTextPlaceholder + attacker.name);
 
       this.usedMove = move.name;
       this.boxMessage = 'moveUse';
@@ -327,13 +383,13 @@ export class ArenaComponent implements OnInit, AfterViewChecked {
   onPressEnter() {
     const move = this.pokemonMoves.find(
       (move) =>
-        move.move.name ===
+        move.name ===
         this.movesContainerArray[
           this.currentMovePosition
         ].textContent?.toLowerCase()
     );
     if (move !== undefined) {
-      this.chooseMove(move.move, this.currentMovePosition);
+      this.chooseMove(move, this.currentMovePosition);
     }
   }
 }

@@ -187,7 +187,6 @@ export class ArenaComponent implements OnInit, AfterViewChecked {
     this.pokemonService
       .getMovementInfo(pokemon.moves[randomNumber].move.url)
       .subscribe((move) => {
-        move.name = this.pokemonService.getLocalizedPokemonMoves(move);
         if (isOpponent) {
           this.petitionsCountOpponent = this.petitionsCountOpponent + 1;
           const petitionsDone = this.petitionsCountOpponent;
@@ -199,6 +198,7 @@ export class ArenaComponent implements OnInit, AfterViewChecked {
             (movement) =>
               movement.move.name.toLowerCase() === move.name.toLowerCase()
           );
+          move.name = this.pokemonService.getLocalizedPokemonMoves(move);
           this.pokemonOpponent.moves.splice(moveIndex, 1);
           this.pokemonOpponent.pokemonMoves.push(move);
           this.pokemonService.saveMovesInService(move);
@@ -217,7 +217,6 @@ export class ArenaComponent implements OnInit, AfterViewChecked {
         }
         if (!isOpponent) {
           let movesArray = [];
-
           this.petitionsCount = this.petitionsCount + 1;
           const petitionsDone = this.petitionsCount;
           if (move.damage_class.name === 'status' && petitionsDone < 8) {
@@ -228,6 +227,7 @@ export class ArenaComponent implements OnInit, AfterViewChecked {
             (movement) =>
               movement.move.name.toLowerCase() === move.name.toLowerCase()
           );
+          move.name = this.pokemonService.getLocalizedPokemonMoves(move);
           this.pokemon.moves.splice(moveIndex, 1);
           movesArray.push(move);
           this.pokemon.pokemonMoves = [
@@ -297,6 +297,12 @@ export class ArenaComponent implements OnInit, AfterViewChecked {
         : (this.pokemonOpponentClassName = '');
       if (this.moveEffectivinessService.hasMovedMissed(move)) {
         this.boxMessage = 'moveMissed';
+        await wait(2000);
+        this.goToNextTurn(turn);
+        return;
+      }
+      if(move.power === null) {
+        this.boxMessage = 'withoutEffect';
         await wait(2000);
         this.goToNextTurn(turn);
         return;

@@ -20,6 +20,7 @@
     "nextTurn": "{{pokemon}}, 君の番だよ！!",
     "noEffect": "攻撃は効果しなかった。",
     "moveMissed": "攻撃は当てなかった！",
-    "defeat": "{{pokemon}}は倒れた！"
+    "defeat": "{{pokemon}}は倒れた！",
+    "withoutEffect": "この攻撃は効果はしません..."
 
 }

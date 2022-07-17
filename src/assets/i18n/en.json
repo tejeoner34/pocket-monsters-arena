@@ -19,7 +19,8 @@
     "nextTurn": "{{pokemon}}, your turn!",
     "noEffect": "The move is not effective",
     "moveMissed": "The attack missed",
-    "defeat": "{{pokemon}} was defeated!"
+    "defeat": "{{pokemon}} was defeated!",
+    "withoutEffect": "The move has no effect..."
 
     
 }

@@ -156,3 +156,17 @@
   transition: 0.1s;
   transform: translateX(-100px);
 }
+
+.defeat {
+  animation: defeat 1s forwards;
+}
+
+@keyframes defeat {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
+}

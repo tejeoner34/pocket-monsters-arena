@@ -31,6 +31,7 @@ export class HomeComponent implements OnInit {
 
   onChangeLanguage(language: string) {
     this.translateService.use(language);
+    localStorage.setItem('language', language);
   }
 
   goToArenaPage() {

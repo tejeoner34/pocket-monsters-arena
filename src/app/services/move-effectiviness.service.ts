@@ -56,29 +56,12 @@ export class MoveEffectivinessService {
       effectivenessIndex = effectivenessIndex * this.damageRelations[relationsToApply[i] as keyof damageRelations];
     }
 
-    // if(relationsToApply.length === 1) {
-    //   return this.damageRelations[relationsToApply[0] as keyof damageRelations];
-    // }else {
-    //   return this.damageRelations[relationsToApply[0] as keyof damageRelations] *  this.damageRelations[relationsToApply[1] as keyof damageRelations];
-    // }
-    // if(pokemonTypes.length === 1) {
-    //   let relation = mappedRelations.find(element => element.types.filter(type => type.name === pokemonTypes[0].type.name));
-    //   if(relation === undefined) return this.damageRelations['neutral'];
-    //   console.log(relation)
-    //   return this.damageRelations[relation.relation as keyof damageRelations];
-    // }else {
-
-    // }
-
     return effectivenessIndex;
   }
 
   hasMovedMissed(move: MoveData) {
     const accuracy = move.accuracy ?? 100 /  100;
     const random = Math.random();
-
-    console.log(random)
-    console.log(accuracy)
 
     return random < accuracy ? false : true;
   }

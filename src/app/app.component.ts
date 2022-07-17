@@ -15,7 +15,7 @@ export class AppComponent {
     private translateService: TranslateService,
     public themeService: ThemeService
     ) {
-    translateService.setDefaultLang('en');
+    translateService.setDefaultLang(localStorage.getItem('language') ?? 'en');
     translateService.use(localStorage.getItem('language') ?? 'en');
   }
 

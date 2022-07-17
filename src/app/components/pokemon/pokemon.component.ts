@@ -15,7 +15,6 @@ import { Pokemon, PokemonEdit } from 'src/app/interfaces/interfaces';
 })
 export class PokemonComponent implements OnChanges {
   @Input() pokemon!: PokemonEdit;
-  @Input() pokemonName$!: Observable<string>;
   @Input() isOpponent: boolean = false;
   @Input() className!: string;
 

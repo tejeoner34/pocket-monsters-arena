@@ -1,10 +1,22 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, map, Observable, tap } from 'rxjs';
-import { Name, Pokemon, PokemonSpecies } from '../interfaces/interfaces';
+import { Name, Pokemon, PokemonSpecies, Type } from '../interfaces/interfaces';
 import { MoveData } from '../interfaces/movements.interface';
 import { TypeData } from '../interfaces/type.interface';
 import { TranslateService } from '@ngx-translate/core';
+import { MoveEffectivinessService } from './move-effectiviness.service';
+
+interface MovesDamage {
+  opponent: MoveDamage[];
+  pokemon: MoveDamage[]
+}
+
+type MoveDamage = {
+  name: string;
+  damage: number;
+  index: number;
+}
 
 @Injectable({
   providedIn: 'root'
@@ -14,8 +26,16 @@ export class PokemonService {
   turn$ = new BehaviorSubject(0);
   turnObservable$ = this.turn$.asObservable();
   _pokemonMoves: MoveData[] = [];
+  _movesDamage: MovesDamage = {
+    opponent: [],
+    pokemon: []
+  }
 
-  constructor(private http: HttpClient, private translateService: TranslateService) { }
+  constructor(
+    private http: HttpClient, 
+    private translateService: TranslateService,
+    private moveService: MoveEffectivinessService
+    ) { }
 
   updateTurn(turn: number) {
     this.turn$.next(turn);
@@ -33,6 +53,11 @@ export class PokemonService {
         return pokemonName
       })
     );
+  }
+
+  getLocalizedPokemonMoves(move: MoveData) {
+    const translatedMove = move.names.find((name: Name) => name.language.name === this.translateService.currentLang)?.name;
+    return translatedMove ?? move.name;
   }
 
   getMovementInfo(url: string):Observable<MoveData> {
@@ -62,6 +87,62 @@ export class PokemonService {
       return 0;
     }
     return finalHealth;
+  }
+
+  calculateDamage(index: number, attackPower: number) {
+    return index * attackPower;
+  }
+
+  calculateEachMoveDamage(moves: MoveData[], opponentTypes: Type[], isOpponent: boolean = false) {
+    
+    if(isOpponent) {
+      for(let i = 0; i < moves.length; i++){
+        this.getTypeInfo(moves[i].type.url).subscribe(type => {
+          let effectivinessIndex = this.moveService.checkEffectiviness(type, opponentTypes);
+          const damage = this.calculateDamage(effectivinessIndex, moves[i].power);
+          this._movesDamage.opponent.push({name: moves[i].name, damage: damage, index: effectivinessIndex});
+        })
+      }
+    }
+
+    if(!isOpponent) {
+      for(let i = 0; i < moves.length; i++){
+        this.getTypeInfo(moves[i].type.url).subscribe(type => {
+          let effectivinessIndex = this.moveService.checkEffectiviness(type, opponentTypes);
+          const damage = this.calculateDamage(effectivinessIndex, moves[i].power);
+          this._movesDamage.pokemon.push({name: moves[i].name ,damage: damage, index: effectivinessIndex});
+        })
+      }
+    }
+
+  }
+
+  getMostPowerfulAttack() {
+    let powerfulAttack = '';
+    let power = 0;
+    this._movesDamage.opponent.forEach(move => {
+      if(move.damage >= power) {
+        power = move.damage;
+        powerfulAttack = move.name;
+      }
+    })
+    return powerfulAttack.toLowerCase();
+  }
+
+  getSelectedMoveEffectiviness(move: MoveData) {
+    let index = 1;
+    console.log(move)
+    for(let i in this._movesDamage) {
+      const foundIndex = this._movesDamage[i as keyof MovesDamage].find(movement => movement.name.toLowerCase() === move.name.toLowerCase())?.index;
+      foundIndex === undefined 
+        ? null 
+        : index = foundIndex;
+    }
+    return index;
+  }
+
+  getMovesDamage() {
+    return this._movesDamage;
   }
 
   generateRandomNumber(min: number, max: number) {

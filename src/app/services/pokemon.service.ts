@@ -22,7 +22,6 @@ export class PokemonService {
   }
 
   getRandomPokemon(): Observable<Pokemon> {
-    console.log(this.translateService.currentLang)
     const randomPokemonId = this.generateRandomNumber(1, 150);
     return this.http.get<Pokemon>(`https://pokeapi.co/api/v2/pokemon/${randomPokemonId}/`);
   }
@@ -42,7 +41,6 @@ export class PokemonService {
 
   saveMovesInService(moves: MoveData) {
     this._pokemonMoves.push(moves);
-    console.log(this._pokemonMoves)
   }
 
   getServiceMoves() {

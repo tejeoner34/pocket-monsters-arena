@@ -17,6 +17,7 @@
     "moveUse": "{{pokemon}} used {{move}}!",
     "chooseActionMessage": "What will {{pokemon}} do?",
     "nextTurn": "{{pokemon}}, your turn!",
-    "noEffect": "The move it is not effective"
+    "noEffect": "The move is not effective",
+    "moveMissed": "The attack missed"
     
 }

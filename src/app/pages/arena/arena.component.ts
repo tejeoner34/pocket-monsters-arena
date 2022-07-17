@@ -5,12 +5,11 @@ import {
   OnInit,
 } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { Observable } from 'rxjs';
+import { forkJoin, Observable } from 'rxjs';
 import {
   KEY_CODE,
-  Move,
   Pokemon,
-  Species,
+  PokemonEdit,
 } from 'src/app/interfaces/interfaces';
 import { MoveData } from 'src/app/interfaces/movements.interface';
 import { PokemonService } from 'src/app/services/pokemon.service';
@@ -29,20 +28,12 @@ export class ArenaComponent implements OnInit, AfterViewChecked {
   }
 
   openPokeball: boolean = false;
-  pokemon!: Pokemon;
+  pokemon!: PokemonEdit;
   pokemonName$!: Observable<string>;
-  pokemonHealth: string = '100%';
-  pokemonHealthNumber = 1;
-  pokemonHealthNumberTotal = 0;
-  pokemonSpeed = 0;
-  pokemonMoves!: MoveData[];
-  pokemonOpponentMoves: any = [];
-  pokemonOpponent!: Pokemon;
+  pokemonMoves: MoveData[] = [];
+  pokemonOpponentMoves: MoveData[] = [];
+  pokemonOpponent!: PokemonEdit;
   pokemonOpponentName$!: Observable<string>;
-  pokemonOpponentHealth: string = '100%';
-  pokemonOpponentHealthNumber = 1;
-  pokemonOpponentHealthNumberTotal = 0;
-  pokemonOpponentSpeed = 0;
   boxMessage = 'chooseActionMessage';
   usedMove = '';
   currentPokemonName = '';
@@ -76,8 +67,8 @@ export class ArenaComponent implements OnInit, AfterViewChecked {
       if (this.currentTurn === 1 && this.hasSelectedMove) {
         this.gameLoop(
           this.currentTurn,
-          this.pokemonOpponentMoves[
-            Math.floor(Math.random() * this.pokemonOpponentMoves.length)
+          this.pokemonOpponent.pokemonMoves![
+            Math.floor(Math.random() * this.pokemonOpponent.pokemonMoves!.length)
           ]
         );
       }
@@ -86,90 +77,50 @@ export class ArenaComponent implements OnInit, AfterViewChecked {
       }
     });
 
-    this.pokemonService.getRandomPokemon().subscribe((pokemon) => {
-      this.pokemonName$ = this.pokemonService.getLocalizedPokemonName(
-        pokemon.id
-      );
-      this.pokemonSpeed = pokemon.stats[5].base_stat;
-      let movesArray: MoveData | any = [];
-      for (let i = 0; i < 4; i++) {
-        console.log('loop');
-        const randomNumber = this.pokemonService.generateRandomNumber(
-          0,
-          pokemon.moves.length - 1
+    forkJoin([this.pokemonService.getRandomPokemon(), this.pokemonService.getRandomPokemon()])
+      .subscribe(pokemons => {
+        //Pokemon data
+        this.pokemonName$ = this.pokemonService.getLocalizedPokemonName(
+          pokemons[0].id
         );
-        this.pokemonService
-          .getMovementInfo(pokemon.moves[randomNumber].move.url)
-          .subscribe((move) => {
-            movesArray.push(move);
-            pokemon.moves.splice(randomNumber, 1);
-            if (i >= 3) {
-              const checkMovesTypeArray = movesArray.filter(
-                (move: MoveData) => move.damage_class.name === 'status'
-              );
-              if (checkMovesTypeArray.length >= 3) {
-                console.log('enters');
-                const indexToDelete = movesArray.indexOf(
-                  (move: MoveData) => move.damage_class.name === 'status'
-                );
-                movesArray.splice(indexToDelete, 1);
-                i = i - 1;
-              }
-            }
-            this.pokemonService.saveMovesInService(move);
-            this.pokemonMoves = [...movesArray];
-          });
-        // movesArray.push(pokemon.moves[randomNumber]);
-      }
-      this.pokemon = pokemon;
-      this.currentPokemonName = pokemon.name;
-      this.pokemonHealthNumber = this.pokemonService.calculatePokemonsHealth(
-        pokemon.stats[0].base_stat
-      );
-      this.pokemonHealthNumberTotal = this.pokemonHealthNumber;
-    });
+        this.pokemon = {
+          ...pokemons[0],
+          pokemonMoves: [],
+          pokemonHealth: '100%',
+          pokemonSpeed: pokemons[0].stats[5].base_stat,
+          pokemonHealthNumber: this.pokemonService.calculatePokemonsHealth(
+            pokemons[0].stats[0].base_stat
+          ),
+          pokemonHealthNumberTotal: this.pokemonService.calculatePokemonsHealth(
+            pokemons[0].stats[0].base_stat
+          ),
+        };
+        this.getPokemonMoves(this.pokemon);
+        this.currentPokemonName = pokemons[0].name;
 
-    this.pokemonService.getRandomPokemon().subscribe((pokemon) => {
-      this.pokemonOpponentName$ = this.pokemonService.getLocalizedPokemonName(
-        pokemon.id
-      );
-      this.pokemonOpponentSpeed = pokemon.stats[5].base_stat;
-      let movesArray: MoveData | any = [];
-      for (let i = 0; i < 4; i++) {
-        const randomNumber = this.pokemonService.generateRandomNumber(
-          0,
-          pokemon.moves.length - 1
+        //Opponent data
+
+        this.pokemonOpponentName$ = this.pokemonService.getLocalizedPokemonName(
+          pokemons[1].id
         );
-        this.pokemonService
-          .getMovementInfo(pokemon.moves[randomNumber].move.url)
-          .subscribe((move) => {
-            movesArray.push(move);
-            pokemon.moves.splice(randomNumber, 1);
-            if (i >= 3) {
-              const checkMovesTypeArray = movesArray.filter(
-                (move: MoveData) => move.damage_class.name === 'status'
-              );
-              if (checkMovesTypeArray.length >= 3) {
-                console.log('enters');
-                const indexToDelete = movesArray.indexOf(
-                  (move: MoveData) => move.damage_class.name === 'status'
-                );
-                movesArray.splice(indexToDelete, 1);
-                i = i - 1;
-              }
-            }
-            this.pokemonService.saveMovesInService(move);
-            this.pokemonOpponentMoves = [...movesArray];
-          });
-      }
-      this.pokemonOpponent = pokemon;
-      this.pokemonOpponentHealthNumber =
-        this.pokemonService.calculatePokemonsHealth(pokemon.stats[0].base_stat);
-      this.pokemonOpponentHealthNumberTotal = this.pokemonOpponentHealthNumber;
-      this.pokemonService.updateTurn(
-        this.pokemonSpeed > this.pokemonOpponentSpeed ? 0 : 1
-      );
-    });
+        this.pokemonOpponent = {
+          ...pokemons[1],
+          pokemonMoves: [],
+          pokemonHealth: '100%',
+          pokemonSpeed: pokemons[0].stats[5].base_stat,
+          pokemonHealthNumber: this.pokemonService.calculatePokemonsHealth(
+            pokemons[1].stats[0].base_stat
+          ),
+          pokemonHealthNumberTotal: this.pokemonService.calculatePokemonsHealth(
+            pokemons[1].stats[0].base_stat
+          ),
+        };
+        this.getPokemonMoves(this.pokemonOpponent, true);
+        this.pokemonService.updateTurn(
+          this.pokemon.pokemonSpeed > this.pokemonOpponent.pokemonSpeed ? 0 : 1
+        );
+
+      })
 
     setTimeout(() => {
       this.openPokeball = true;
@@ -188,58 +139,72 @@ export class ArenaComponent implements OnInit, AfterViewChecked {
   }
 
   attack(move: MoveData) {
-    this.pokemonService.getTypeInfo(move.type.url).subscribe((type) => {
-      (async () => {
-        this.effectivinessIndex =
-          this.moveEffectivinessService.checkEffectiviness(
-            type,
-            this.pokemonOpponent.types
-          );
-        if (this.effectivinessIndex === 0) {
-          this.boxMessage = 'noEffect';
-          await wait(1000);
-          return;
-        }
-        this.pokemonOpponentHealthNumber =
-          this.pokemonService.calculateHealthAfterAttack(
-            this.effectivinessIndex,
-            this.pokemonOpponentHealthNumber,
-            move.power
-          );
-        this.pokemonOpponentHealth =
-          (this.pokemonOpponentHealthNumber /
-            this.pokemonOpponentHealthNumberTotal) *
-            100 +
-          '%';
-      })();
-    });
+    (async () => {
+      this.pokemonOpponent.pokemonHealthNumber =
+        this.pokemonService.calculateHealthAfterAttack(
+          this.effectivinessIndex,
+          this.pokemonOpponent.pokemonHealthNumber!,
+          move.power
+        );
+      this.pokemonOpponent.pokemonHealth =
+        (this.pokemonOpponent.pokemonHealthNumber /
+          this.pokemonOpponent.pokemonHealthNumberTotal!) *
+          100 +
+        '%';
+    })();
   }
 
   opponentAttacks(move: MoveData) {
-    this.pokemonService.getTypeInfo(move.type.url).subscribe((type) => {
-      (async () => {
-        this.effectivinessIndex =
-        this.moveEffectivinessService.checkEffectiviness(
-          type,
-          this.pokemon.types
-        );
-        if (this.effectivinessIndex === 0) {
-          this.boxMessage = 'noEffect';
-          await wait(1000);
-          return;
-        }
-      this.pokemonHealthNumber = this.pokemonService.calculateHealthAfterAttack(
+    (async () => {
+      this.pokemon.pokemonHealthNumber = this.pokemonService.calculateHealthAfterAttack(
         this.effectivinessIndex,
-        this.pokemonHealthNumber,
+        this.pokemon.pokemonHealthNumber!,
         move.power
       );
-      this.pokemonHealth =
-        (this.pokemonHealthNumber / this.pokemonHealthNumberTotal) * 100 + '%';
-      })();
-    });
+      this.pokemon.pokemonHealth =
+        (this.pokemon.pokemonHealthNumber / this.pokemon.pokemonHealthNumberTotal!) * 100 + '%';
+    })();
 
     this.opponentHasSelectedMove = false;
-    // this.attack(move);
+  }
+
+  getPokemonMoves(pokemon: Pokemon, isOpponent = false) {
+    if (!isOpponent && this.pokemon.pokemonMoves.length > 3) return;
+    if (isOpponent && this.pokemonOpponent.pokemonMoves.length > 3) return;
+    const randomNumber = this.pokemonService.generateRandomNumber(
+      0,
+      pokemon.moves.length - 1
+    );
+    this.pokemonService
+      .getMovementInfo(pokemon.moves[randomNumber].move.url)
+      .subscribe((move) => {
+        if (move.damage_class.name === 'status') {
+          pokemon.moves.splice(randomNumber, 1);
+          isOpponent
+            ? this.getPokemonMoves(pokemon, true)
+            : this.getPokemonMoves(pokemon);
+          return;
+        }
+        const isInMovesArray = !isOpponent
+          ? this.pokemon.pokemonMoves.find((movement) => movement.name === move.name)
+          : this.pokemonOpponent.pokemonMoves.find(
+              (movement) => movement.name === move.name
+            );
+        if (!isOpponent && isInMovesArray === undefined) {
+          console.log(move.name)
+          this.pokemon.pokemonMoves.push(move);
+        }
+        if (isOpponent && isInMovesArray === undefined) {
+          this.pokemonOpponent.pokemonMoves.push(move);
+        }
+        this.pokemonService.saveMovesInService(move);
+        if (!isOpponent && this.pokemon.pokemonMoves.length < 4) {
+          this.getPokemonMoves(pokemon);
+        }
+        if (isOpponent && this.pokemonOpponent.pokemonMoves.length < 4) {
+          this.getPokemonMoves(pokemon, true);
+        }
+      });
   }
 
   chooseMove(move: MoveData, i: number) {
@@ -255,11 +220,11 @@ export class ArenaComponent implements OnInit, AfterViewChecked {
   }
 
   isGameOver() {
-    if (this.pokemonHealthNumber > 0) {
+    if (this.pokemon.pokemonHealthNumber! > 0) {
       alert('You lose');
       return true;
     }
-    if (this.pokemonOpponentHealthNumber > 0) {
+    if (this.pokemonOpponent.pokemonHealthNumber! > 0) {
       alert('You win');
       return true;
     }
@@ -267,53 +232,70 @@ export class ArenaComponent implements OnInit, AfterViewChecked {
   }
 
   gameLoop(turn: number, move: MoveData) {
-    const attacker = turn === 0 ? this.pokemon : this.pokemonOpponent;
-    const receiver = turn === 0 ? this.pokemonOpponent : this.pokemon;
+    this.pokemonService.getTypeInfo(move.type.url).subscribe((type) => {
+      const attacker = turn === 0 ? this.pokemon : this.pokemonOpponent;
+      const receiver = turn === 0 ? this.pokemonOpponent : this.pokemon;
+      this.effectivinessIndex =
+        this.moveEffectivinessService.checkEffectiviness(type, receiver.types);
+      (async () => {
+        await wait(300);
+        turn === 0
+          ? (this.currentPokemonName = attacker.name)
+          : (this.currentPokemonName =
+              this.opponentTextPlaceholder + attacker.name);
 
+        this.usedMove = move.name;
+        this.boxMessage = 'moveUse';
+        await wait(1000);
+        if (this.effectivinessIndex === 0) {
+          await wait(1000);
+          this.boxMessage = 'noEffect';
+          await wait(1500);
+          this.goToNextTurn(turn);
+          return;
+        }
+        turn === 0
+          ? (this.pokemonClassName = 'attack')
+          : (this.pokemonOpponentClassName = 'attack');
+        await wait(100);
+        turn === 0
+          ? (this.pokemonClassName = '')
+          : (this.pokemonOpponentClassName = '');
+        if (this.moveEffectivinessService.hasMovedMissed(move)) {
+          this.boxMessage = 'moveMissed';
+          await wait(2000);
+          this.goToNextTurn(turn);
+          return;
+        }
+        await wait(500);
+        turn === 0
+          ? (this.pokemonOpponentClassName = 'damage')
+          : (this.pokemonClassName = 'damage');
+        await wait(600);
+        this.pokemonOpponentClassName = '';
+        this.pokemonClassName = '';
+        turn === 0 ? this.attack(move) : this.opponentAttacks(move);
 
-    (async () => {
-      await wait(300);
-      turn === 0
-        ? (this.currentPokemonName = attacker.name)
-        : (this.currentPokemonName =
-            this.opponentTextPlaceholder + attacker.name);
+        await wait(1000);
 
-      this.usedMove = move.name;
-      this.boxMessage = 'moveUse';
-      await wait(1000);
-      turn === 0
-        ? (this.pokemonClassName = 'attack')
-        : (this.pokemonOpponentClassName = 'attack');
-      await wait(100);
-      turn === 0
-        ? (this.pokemonClassName = '')
-        : (this.pokemonOpponentClassName = '');
-      await wait(500);
-      turn === 0
-        ? (this.pokemonOpponentClassName = 'damage')
-        : (this.pokemonClassName = 'damage');
-      await wait(600);
-      this.pokemonOpponentClassName = '';
-      this.pokemonClassName = '';
-      turn === 0 ? this.attack(move) : this.opponentAttacks(move);
-
-      await wait(1000);
-
-      // if(turn === 1)this.boxMessage = 'chooseActionMessage';
-      this.turnCount = this.turnCount + 1;
-      if (this.turnCount === 2) {
-        console.log('finish');
-        this.hasSelectedMove = false;
-        this.turnCount = 0;
-        this.currentPokemonName = this.pokemon.name;
-        this.boxMessage = 'chooseActionMessage';
-      }
-      await wait(100);
-      turn === 0
-        ? this.pokemonService.updateTurn(1)
-        : this.pokemonService.updateTurn(0);
-    })();
+        this.goToNextTurn(turn);
+      })();
+    });
   } // falta modificar un poco las velocidades
+
+  goToNextTurn(turn: number) {
+    this.turnCount = this.turnCount + 1;
+    if (this.turnCount === 2) {
+      console.log('finish');
+      this.hasSelectedMove = false;
+      this.turnCount = 0;
+      this.currentPokemonName = this.pokemon.name;
+      this.boxMessage = 'chooseActionMessage';
+    }
+    turn === 0
+      ? this.pokemonService.updateTurn(1)
+      : this.pokemonService.updateTurn(0);
+  }
 
   onMoveArrow(event: KeyboardEvent) {
     const keycode = event.key;

@@ -20,14 +20,14 @@
       </div>
       <div class="health-bar__wrapper">
         <div 
-          [style.width]="pokemonHealth"
+          [style.width]="pokemon.pokemonHealth"
           [style.background]="calculateLifeBarColor(pokemonHealthNumber)"
           class="health-bar">
         </div>
       </div>
     </div>
     <div class="health-container__life-points" *ngIf="!isOpponent">
-      <p>{{lifePoints}}/{{totalLifePoints}}</p>
+      <p>{{pokemon.pokemonHealthNumber}}/{{pokemon.pokemonHealthNumberTotal}}</p>
     </div>
   </div>
 </div>

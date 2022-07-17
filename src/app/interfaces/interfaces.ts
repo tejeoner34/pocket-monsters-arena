@@ -1,22 +1,50 @@
+import { MoveData } from "./movements.interface";
+
 export interface Pokemon {
-    abilities:                Ability[];
-    base_experience:          number;
-    forms:                    Species[];
-    game_indices:             GameIndex[];
-    height:                   number;
-    held_items:               HeldItem[];
-    id:                       number;
-    is_default:               boolean;
-    location_area_encounters: string;
-    moves:                    Move[];
-    name:                     string;
-    order:                    number;
-    past_types:               any[];
-    species:                  Species;
-    sprites:                  Sprites;
-    stats:                    Stat[];
-    types:                    Type[];
-    weight:                   number;
+    abilities:                   Ability[];
+    base_experience:             number;
+    forms:                       Species[];
+    game_indices:                GameIndex[];
+    height:                      number;
+    held_items:                  HeldItem[];
+    id:                          number;
+    is_default:                  boolean;
+    location_area_encounters:    string;
+    moves:                       Move[];
+    name:                        string;
+    order:                       number;
+    past_types:                  any[];
+    species:                     Species;
+    sprites:                     Sprites;
+    stats:                       Stat[];
+    types:                       Type[];
+    weight:                      number;
+}
+
+export interface PokemonEdit {
+    abilities:                   Ability[];
+    base_experience:             number;
+    forms:                       Species[];
+    game_indices:                GameIndex[];
+    height:                      number;
+    held_items:                  HeldItem[];
+    id:                          number;
+    is_default:                  boolean;
+    location_area_encounters:    string;
+    moves:                       Move[];
+    name:                        string;
+    order:                       number;
+    past_types:                  any[];
+    species:                     Species;
+    sprites:                     Sprites;
+    stats:                       Stat[];
+    types:                       Type[];
+    weight:                      number;
+    pokemonHealth:              string;
+    pokemonHealthNumber:        number;
+    pokemonHealthNumberTotal:   number;
+    pokemonSpeed:               number;
+    pokemonMoves:               MoveData[];
 }
 
 export interface PokemonSpecies {

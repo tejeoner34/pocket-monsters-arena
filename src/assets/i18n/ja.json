@@ -18,6 +18,7 @@
     "moveUse": "{{pokemon}}の{{move}}攻撃!!",
     "chooseActionMessage": "{{pokemon}}、これからどうしますか?",
     "nextTurn": "{{pokemon}}, 君の番だよ！!",
-    "noEffect": "攻撃は効果しなかった。"
+    "noEffect": "攻撃は効果しなかった。",
+    "moveMissed": "攻撃は当てなかった！"
 
 }

@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Type } from '../interfaces/interfaces';
+import { MoveData } from '../interfaces/movements.interface';
 import { TypeData } from '../interfaces/type.interface';
 
 type damageRelations = {
@@ -70,6 +71,16 @@ export class MoveEffectivinessService {
     // }
 
     return effectivenessIndex;
+  }
+
+  hasMovedMissed(move: MoveData) {
+    const accuracy = move.accuracy ?? 100 /  100;
+    const random = Math.random();
+
+    console.log(random)
+    console.log(accuracy)
+
+    return random < accuracy ? false : true;
   }
 
 

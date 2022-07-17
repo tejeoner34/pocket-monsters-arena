@@ -6,7 +6,7 @@ import {
   SimpleChanges,
 } from '@angular/core';
 import { Observable } from 'rxjs';
-import { Pokemon } from 'src/app/interfaces/interfaces';
+import { Pokemon, PokemonEdit } from 'src/app/interfaces/interfaces';
 
 @Component({
   selector: 'app-pokemon',
@@ -14,20 +14,17 @@ import { Pokemon } from 'src/app/interfaces/interfaces';
   styleUrls: ['./pokemon.component.scss'],
 })
 export class PokemonComponent implements OnChanges {
-  @Input() pokemon!: Pokemon;
+  @Input() pokemon!: PokemonEdit;
   @Input() pokemonName$!: Observable<string>;
   @Input() isOpponent: boolean = false;
-  @Input() pokemonHealth = '100%';
   @Input() className!: string;
-  @Input() lifePoints!: number;
-  @Input() totalLifePoints!: number;
-  pokemonHealthNumber = parseInt(this.pokemonHealth.split('%')[0]);
+
+  pokemonHealthNumber = parseInt(this.pokemon?.pokemonHealth!.split('%')[0]) ?? 100;
 
   constructor() {}
 
   ngOnChanges(changes: SimpleChanges): void {
-    this.pokemonHealthNumber = parseInt(this.pokemonHealth.split('%')[0]);
-    console.log(this.pokemonHealthNumber);
+    this.pokemonHealthNumber = parseInt(this.pokemon.pokemonHealth!.split('%')[0]);
   }
 
   calculateLifeBarColor(life: number) {

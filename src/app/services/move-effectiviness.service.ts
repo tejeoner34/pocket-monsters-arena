@@ -10,6 +10,20 @@ type damageRelations = {
   neutral: number;
 }
 
+type EffectMessages = {
+  "1": string;
+  "2": string;
+  "0.5": string;
+  "0": string
+}
+
+const messsages: EffectMessages = {
+  "1": "",
+  "2": "superEffective",
+  "0.5": "notVeryEffective",
+  "0": "noEffect"
+}
+
 
 @Injectable({
   providedIn: 'root'
@@ -64,6 +78,12 @@ export class MoveEffectivinessService {
     const random = Math.random();
 
     return random < accuracy ? false : true;
+  }
+
+  messageByEffectiviness(index: number) {
+    const indextoString = index.toString();
+    const message = messsages[indextoString as keyof EffectMessages];
+    return message;
   }
 
 

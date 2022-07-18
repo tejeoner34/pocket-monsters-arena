@@ -43,6 +43,8 @@ export class ArenaComponent implements OnInit, AfterViewChecked {
   opponentTextPlaceholder = '';
   petitionsCount: number = 0;
   petitionsCountOpponent: number = 0;
+  winner: string = '';
+  gameOver = false;
 
   effectivinessIndex = 1;
 
@@ -315,6 +317,11 @@ export class ArenaComponent implements OnInit, AfterViewChecked {
       this.pokemonOpponentClassName = '';
       this.pokemonClassName = '';
       turn === 0 ? this.attack(move) : this.opponentAttacks(move);
+      
+      if(this.effectivinessIndex !== 1) {
+        this.boxMessage = this.moveEffectivinessService.messageByEffectiviness(this.effectivinessIndex);
+        await wait(1500);
+      }
 
       await wait(1000);
 
@@ -328,6 +335,8 @@ export class ArenaComponent implements OnInit, AfterViewChecked {
           : (this.pokemonClassName = 'defeat');
         this.currentPokemonName = receiver.name;
         this.boxMessage = 'defeat';
+        this.winner = attacker.name;
+        this.gameOver = true;
         return;
       }
 

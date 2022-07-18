@@ -14,13 +14,20 @@
     "ARENA": {
       "opponent": "Foe "
     },
+    "GAME_OVER": {
+      "gameOver": "GAME OVER",
+      "message": "The winner is {{pokemon}}!",
+      "playAgain": "Play again"
+    },
     "moveUse": "{{pokemon}} used {{move}}!",
     "chooseActionMessage": "What will {{pokemon}} do?",
     "nextTurn": "{{pokemon}}, your turn!",
     "noEffect": "The move is not effective",
     "moveMissed": "The attack missed",
     "defeat": "{{pokemon}} was defeated!",
-    "withoutEffect": "The move has no effect..."
-
+    "withoutEffect": "The move has no effect...",
+    "notVeryEffective": "The move is not very effective...",
+    "superEffective": "The move is super Effective!",
+    "criticalHit": "Critical hit!"
     
 }

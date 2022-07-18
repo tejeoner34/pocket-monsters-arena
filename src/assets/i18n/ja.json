@@ -15,12 +15,21 @@
     "ARENA": {
       "opponent": "相手の "
     },
+    "GAME_OVER": {
+      "gameOver": "ゲームオーバー",
+      "message": "勝者は{{pokemon}}!",
+      "playAgain": "リトライ"
+    },
     "moveUse": "{{pokemon}}の{{move}}攻撃!!",
     "chooseActionMessage": "{{pokemon}}、これからどうしますか?",
     "nextTurn": "{{pokemon}}, 君の番だよ！!",
     "noEffect": "攻撃は効果しなかった。",
     "moveMissed": "攻撃は当てなかった！",
     "defeat": "{{pokemon}}は倒れた！",
-    "withoutEffect": "この攻撃は効果はしません..."
+    "withoutEffect": "この攻撃は効果はしません...",
+    "notVeryEffective": "攻撃はあまり効果的ではなかった...",
+    "superEffective": "kouka ha batsugun da!",
+    "criticalHit": "kyuujo ni atatta!"
+    
 
 }

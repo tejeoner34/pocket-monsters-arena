@@ -6,6 +6,7 @@ import { ArenaComponent } from './arena/arena.component';
 import { TranslateModule } from '@ngx-translate/core';
 import { MaterialModule } from '../material/material.module';
 import { TypeMessagePipe } from '../shared/pipes/type-message.pipe';
+import { ArenaCanvasComponent } from './arena-canvas/arena-canvas.component';
 
 
 
@@ -13,7 +14,8 @@ import { TypeMessagePipe } from '../shared/pipes/type-message.pipe';
   declarations: [
     HomeComponent,
     ArenaComponent,
-    TypeMessagePipe
+    TypeMessagePipe,
+    ArenaCanvasComponent
   ],
   exports: [
     HomeComponent

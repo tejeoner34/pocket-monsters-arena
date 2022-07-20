@@ -38,4 +38,8 @@ export class HomeComponent implements OnInit {
     this.router.navigate(['/arena']);
   }
 
+  goToArenaCanvasPage() {
+    this.router.navigate(['/arena-canvas'])
+  }
+
 }

@@ -7,7 +7,7 @@ import {
 } from 'src/app/interfaces/interfaces';
 import { MoveData } from 'src/app/interfaces/movements.interface';
 import { PokemonService } from 'src/app/services/pokemon.service';
-import { PokemonClass } from '../../shared/game-classes/game-classes';
+import { LifeContainer, PokemonClass } from '../../shared/game-classes/game-classes';
 import { gsap } from 'gsap';
 
 @Component({
@@ -24,10 +24,12 @@ export class ArenaCanvasComponent implements OnInit {
   openPokeball: boolean = false;
   pokemon!: PokemonEdit;
   pokemonInstance: any;
+  pokemonLifecontainer: any;
   pokemonMoves: MoveData[] = [];
   pokemonOpponentMoves: MoveData[] = [];
   pokemonOpponent!: PokemonEdit;
   pokemonOpponentIntance: any;
+  pokemonOpponentLifecontainer: any;
   boxMessage = 'chooseActionMessage';
   usedMove = '';
   currentPokemonName = '';
@@ -55,17 +57,18 @@ export class ArenaCanvasComponent implements OnInit {
       this.pokemonService.getRandomPokemon(),
     ]).subscribe((pokemons: any) => {
       //Pokemon data
-      // this.pokemonService
-      //   .getLocalizedPokemonName(pokemons[0].id)
-      //   .subscribe((name) => {
-      //     this.pokemon.name = name;
-      //     this.currentPokemonName = name;
-      //   });
+      this.pokemonService
+        .getLocalizedPokemonName(pokemons[0].id)
+        .subscribe((name) => {
+          this.pokemon.name = name;
+          this.currentPokemonName = name;
+          this.pokemonLifecontainer.updateName(this.pokemon.name);
+        });
 
-      this.pokemonImg.src = pokemons[0].sprites.front_default;
+      this.pokemonImg.src = pokemons[0].sprites.back_default;
       this.pokemonInstance = new PokemonClass(
-        { x: 50, y: 250 },
-        this.pokemonOpponentImg,
+        { x: 50, y: 225 },
+        this.pokemonImg,
         'pepe',
         false,
       );
@@ -82,17 +85,30 @@ export class ArenaCanvasComponent implements OnInit {
           pokemons[0].stats[0].base_stat
         ),
       };
+
+      this.pokemonLifecontainer = new LifeContainer(
+        this.pokemon.name,
+        this.pokemon.pokemonHealthNumberTotal / this.pokemon.pokemonHealthNumberTotal,
+        this.ctx,
+        {
+          x: 400,
+          y: 250
+        }
+      );
       // this.getPokemonMoves(this.pokemon);
 
       // Opponent data
-      // this.pokemonService
-      //   .getLocalizedPokemonName(pokemons[1].id)
-      //   .subscribe((name) => (this.pokemonOpponent.name = name));
+      this.pokemonService
+        .getLocalizedPokemonName(pokemons[1].id)
+        .subscribe((name) => { 
+          this.pokemonOpponent.name = name;
+          this.pokemonOpponentLifecontainer.updateName(name);
+        });
 
-      this.pokemonOpponentImg.src = pokemons[1].sprites.back_default;
+      this.pokemonOpponentImg.src = pokemons[1].sprites.front_default;
       this.pokemonOpponentIntance = new PokemonClass(
         { x: 550, y: 50 },
-        this.pokemonImg,
+        this.pokemonOpponentImg,
         'pepe',
         true,
       );
@@ -110,6 +126,16 @@ export class ArenaCanvasComponent implements OnInit {
         ),
       };
 
+      this.pokemonOpponentLifecontainer = new LifeContainer(
+        this.pokemonOpponent.name,
+        this.pokemonOpponent.pokemonHealthNumberTotal / this.pokemonOpponent.pokemonHealthNumberTotal,
+        this.ctx,
+        {
+          x: 20,
+          y: 30
+        }
+      );
+
       // this.getPokemonMoves(this.pokemonOpponent, true);
       this.pokemonService.updateTurn(
         this.pokemon.pokemonSpeed > this.pokemonOpponent.pokemonSpeed ? 0 : 1
@@ -125,9 +151,11 @@ export class ArenaCanvasComponent implements OnInit {
     this.ctx.clearRect(0, 0, 800, 500);
     this.pokemonOpponentIntance.draw(this.ctx);
     this.pokemonInstance.draw(this.ctx);
+    this.pokemonLifecontainer.draw();
+    this.pokemonOpponentLifecontainer.draw();
   }
 
   move() {
-    this.pokemonOpponentIntance.attack(this.pokemonInstance);
+    this.pokemonLifecontainer.updateLife(0.5);
   }
 }

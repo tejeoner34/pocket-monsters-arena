@@ -7,7 +7,13 @@ export class PokemonClass {
   isOpponent: boolean;
   opacity: number;
 
-  constructor(position: any, img: any, name: string, isOpponent = false, opacity: number = 1) {
+  constructor(
+    position: any,
+    img: any,
+    name: string,
+    isOpponent = false,
+    opacity: number = 1
+  ) {
     this.img = img;
     this.name = name;
     this.position = position;
@@ -43,11 +49,11 @@ export class PokemonClass {
               duration: 0.05,
             });
             gsap.to(recepient, {
-                opacity: 0,
-                yoyo: true,
-                repeat: 3,
-                duration: 0.1
-            })
+              opacity: 0,
+              yoyo: true,
+              repeat: 3,
+              duration: 0.1,
+            });
           },
         })
         .to(this.position, {
@@ -70,11 +76,11 @@ export class PokemonClass {
               duration: 0.05,
             });
             gsap.to(recepient, {
-                opacity: 0,
-                yoyo: true,
-                repeat: 3,
-                duration: 0.1
-            })
+              opacity: 0,
+              yoyo: true,
+              repeat: 3,
+              duration: 0.1,
+            });
           },
         })
         .to(this.position, {
@@ -84,4 +90,64 @@ export class PokemonClass {
   }
 
   receiveAttack() {}
+}
+
+export class LifeContainer {
+  name: string;
+  life: number;
+  ctx: any;
+  position: any;
+  currentLife: number;
+
+  constructor(name: string, life: number, ctx: any, position: any) {
+    this.name = name;
+    this.life = life;
+    this.ctx = ctx;
+    this.position = position;
+    this.currentLife = life;
+  }
+
+  draw() {
+    const lifebarWidth = this.currentLife === 1 ? 270 : this.currentLife*270; 
+    this.ctx.beginPath();
+    this.ctx.fillStyle = '#f5f6da';
+    this.ctx.fillRect(this.position.x, this.position.y, 350, 100);
+    // this.ctx.rect();
+    this.ctx.stroke();
+    this.ctx.font = '20px Pokemon-GB';
+    this.ctx.fillStyle = '#646161';
+    this.ctx.fillText(
+      this.name,
+      this.position.x + 20,
+      this.position.y + 30
+    ); 
+    this.ctx.beginPath();
+    this.ctx.lineWidth = '3';
+    this.ctx.strokeStyle = '#646161';
+    this.ctx.rect(this.position.x, this.position.y, 350, 100);
+    this.ctx.stroke();
+    this.ctx.beginPath();
+    this.ctx.fillStyle = '#646161';
+    this.ctx.fillRect(this.position.x + 20, this.position.y + 50, 300, 20);
+    this.ctx.stroke();
+    this.ctx.beginPath();
+    this.ctx.fillStyle = 'green';
+    this.ctx.fillRect(this.position.x + 50, this.position.y + 52, lifebarWidth, 16);
+    this.ctx.stroke();
+    this.ctx.font = '12px Pokemon-GB';
+    this.ctx.fillStyle = '#ffffff';
+    this.ctx.fillText(
+      'HP',
+      this.position.x + 23,
+      this.position.y + 65
+    ); 
+  }
+
+  updateName(name: string) {
+    this.name = name;
+  }
+
+  updateLife(lifePercentage: number) {
+    this.currentLife = this.currentLife * lifePercentage;
+  }
 }

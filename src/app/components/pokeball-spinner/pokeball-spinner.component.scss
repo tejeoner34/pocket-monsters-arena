@@ -1,0 +1,29 @@
+.spinner-container {
+  padding: 1rem;
+  width: 100px;
+  height: 100px;
+
+  img {
+    width: 100%;
+    animation: spinner 2s infinite linear;
+  }
+
+}
+
+@keyframes spinner {
+  0% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(50deg);
+  }
+  50% {
+    transform: rotate(-50deg);
+  }
+  75% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
+}

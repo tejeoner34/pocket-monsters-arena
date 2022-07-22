@@ -94,21 +94,34 @@ export class PokemonClass {
 
 export class LifeContainer {
   name: string;
-  life: number;
   ctx: any;
   position: any;
+  currentLifePercentage: number;
+  totalLife: number;
   currentLife: number;
+  isOpponent: boolean;
 
-  constructor(name: string, life: number, ctx: any, position: any) {
+  constructor(
+    name: string,
+    currentLifePercentage: number,
+    currentLife: number,
+    totalLife: number,
+    ctx: any,
+    position: any,
+    isOpponent = false
+  ) {
     this.name = name;
-    this.life = life;
+    this.currentLifePercentage = currentLifePercentage;
+    this.currentLife = currentLife;
+    this.totalLife = totalLife;
     this.ctx = ctx;
     this.position = position;
-    this.currentLife = life;
+    this.isOpponent = isOpponent;
   }
 
   draw() {
-    const lifebarWidth = this.currentLife === 1 ? 270 : this.currentLife*270; 
+    const lifebarWidth =
+      this.currentLifePercentage === 1 ? 270 : this.currentLifePercentage * 270;
     this.ctx.beginPath();
     this.ctx.fillStyle = '#f5f6da';
     this.ctx.fillRect(this.position.x, this.position.y, 350, 100);
@@ -116,11 +129,7 @@ export class LifeContainer {
     this.ctx.stroke();
     this.ctx.font = '20px Pokemon-GB';
     this.ctx.fillStyle = '#646161';
-    this.ctx.fillText(
-      this.name,
-      this.position.x + 20,
-      this.position.y + 30
-    ); 
+    this.ctx.fillText(this.name, this.position.x + 20, this.position.y + 30);
     this.ctx.beginPath();
     this.ctx.lineWidth = '3';
     this.ctx.strokeStyle = '#646161';
@@ -132,15 +141,26 @@ export class LifeContainer {
     this.ctx.stroke();
     this.ctx.beginPath();
     this.ctx.fillStyle = 'green';
-    this.ctx.fillRect(this.position.x + 50, this.position.y + 52, lifebarWidth, 16);
+    this.ctx.fillRect(
+      this.position.x + 50,
+      this.position.y + 52,
+      lifebarWidth,
+      16
+    );
     this.ctx.stroke();
     this.ctx.font = '12px Pokemon-GB';
     this.ctx.fillStyle = '#ffffff';
-    this.ctx.fillText(
-      'HP',
-      this.position.x + 23,
-      this.position.y + 65
-    ); 
+    this.ctx.fillText('HP', this.position.x + 23, this.position.y + 65);
+
+    if (!this.isOpponent) {
+      this.ctx.font = '12px Pokemon-GB';
+      this.ctx.fillStyle = '#646161';
+      this.ctx.fillText(
+        `${this.currentLife} / ${this.totalLife}`,
+        this.position.x + 50,
+        this.position.y + 85
+      );
+    }
   }
 
   updateName(name: string) {
@@ -151,3 +171,22 @@ export class LifeContainer {
     this.currentLife = this.currentLife * lifePercentage;
   }
 }
+
+// export class InfoContainer {
+//     message: string;
+//   constructor(message: string) {
+//     this.message = message;
+//   }
+
+//   draw(ctx: any) {
+//     console.log('dsafdsfsdf')
+//     ctx.beginPath();
+//     ctx.fillStyle = '#f5f6da';
+//     ctx.fillRect(0, 350, 350, 100);
+//     ctx.stroke();
+//     ctx.font = '12px Pokemon-GB';
+//     ctx.fillStyle = '#ffffff';
+//     ctx.fillText(this.message , this.position.x + 23, this.position.y + 65);
+    
+//   }
+// }

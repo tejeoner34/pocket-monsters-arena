@@ -32,7 +32,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     PagesModule,
     MaterialModule,
     TranslateModule.forRoot({
-      defaultLanguage: localStorage.getItem('language') ?? 'en',
+      defaultLanguage: 'en',
       loader: {
         provide: TranslateLoader,
         useFactory: HttpLoaderFactory,

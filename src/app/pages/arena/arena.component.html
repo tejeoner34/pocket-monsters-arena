@@ -28,9 +28,14 @@
         >{{boxMessage | translate: {pokemon: currentPokemonName | titlecase, move: usedMove} | typeMessage | async }}</p>
       </div>
       <div class="arena__pokemon__moves-container">
-        <div class="moves-container__move" *ngFor="let move of pokemon?.pokemonMoves; let i = index;" (click)="chooseMove(move, i)">
-          <p>{{ move.name | titlecase }}</p>
-        </div>
+        <ng-container *ngIf="pokemon?.pokemonMoves !== undefined && pokemon?.pokemonMoves?.length === 4; else spinner">
+          <div class="moves-container__move" *ngFor="let move of pokemon?.pokemonMoves; let i = index;" (click)="chooseMove(move, i)">
+            <p>{{ move.name | titlecase }}</p>
+          </div>
+        </ng-container>
+        <ng-template #spinner>
+          <app-pokeball-spinner></app-pokeball-spinner>
+        </ng-template>
         <div class="arena__moves-container-popover" *ngIf="hasSelectedMove"></div>
       </div>
     </div>

@@ -67,7 +67,6 @@ export class ArenaCanvasComponent implements OnInit {
       this.currentTurn = turn;
 
       if (this.currentTurn === 1 && this.hasSelectedMove) {
-        console.log(this.pokemonService.getMovesDamage());
         const mostPowerFulAttack = this.pokemonService.getMostPowerfulAttack();
         const mostPowerfulMoveIndex =
           this.pokemonOpponent.pokemonMoves.findIndex(
@@ -186,6 +185,9 @@ export class ArenaCanvasComponent implements OnInit {
       );
 
       this.animate();
+      setTimeout(() => {
+        this.openPokeball = true;
+      }, 800);
     });
 
   }
@@ -277,11 +279,11 @@ export class ArenaCanvasComponent implements OnInit {
     if (this.hasSelectedMove) return;
     this.chosenMove = move;
     this.hasSelectedMove = true;
-    this.movesContainerArray[this.currentMovePosition].classList.remove(
-      'arrow'
-    );
-    this.currentMovePosition = i;
-    this.movesContainerArray[this.currentMovePosition].classList.add('arrow');
+    // this.movesContainerArray[this.currentMovePosition].classList.remove(
+    //   'arrow'
+    // );
+    // this.currentMovePosition = i;
+    // this.movesContainerArray[this.currentMovePosition].classList.add('arrow');
     this.pokemonService.updateTurn(this.currentTurn);
   }
 
@@ -293,11 +295,9 @@ export class ArenaCanvasComponent implements OnInit {
           this.pokemonOpponent.pokemonHealthNumber!,
           move.power
         );
-      this.pokemonOpponent.pokemonHealth =
-        (this.pokemonOpponent.pokemonHealthNumber /
-          this.pokemonOpponent.pokemonHealthNumberTotal!) *
-          100 +
-        '%';
+      
+        this.pokemonOpponentLifecontainer.updateLife(this.pokemonOpponent.pokemonHealthNumber /
+          this.pokemonOpponent.pokemonHealthNumberTotal);
     })();
   }
 
@@ -309,11 +309,9 @@ export class ArenaCanvasComponent implements OnInit {
           this.pokemon.pokemonHealthNumber,
           move.power
         );
-      this.pokemon.pokemonHealth =
-        (this.pokemon.pokemonHealthNumber /
-          this.pokemon.pokemonHealthNumberTotal) *
-          100 +
-        '%';
+
+        this.pokemonLifecontainer.updateLife(this.pokemon.pokemonHealthNumber /
+          this.pokemon.pokemonHealthNumberTotal);
     })();
 
     this.opponentHasSelectedMove = false;
@@ -321,6 +319,7 @@ export class ArenaCanvasComponent implements OnInit {
 
   gameLoop(turn: number, move: MoveData) {
     this.effectivinessIndex = this.pokemonService.getSelectedMoveEffectiviness(move);
+    console.log(this.effectivinessIndex);
     const attacker = turn === 0 ? this.pokemon : this.pokemonOpponent;
     const receiver = turn === 0 ? this.pokemonOpponent : this.pokemon;
     (async () => {
@@ -332,7 +331,8 @@ export class ArenaCanvasComponent implements OnInit {
 
       this.usedMove = move.name;
       this.boxMessage = 'moveUse';
-      await wait(1000);
+      await wait(1500);
+
       if (this.effectivinessIndex === 0) {
         await wait(1000);
         this.boxMessage = 'noEffect';
@@ -340,49 +340,42 @@ export class ArenaCanvasComponent implements OnInit {
         this.goToNextTurn(turn);
         return;
       }
+
       turn === 0
-        ? (this.pokemonClassName = 'attack')
-        : (this.pokemonOpponentClassName = 'attack');
-      await wait(100);
-      turn === 0
-        ? (this.pokemonClassName = '')
-        : (this.pokemonOpponentClassName = '');
+        ? (this.pokemonInstance.attack(this.pokemonOpponentIntance))
+        : (this.pokemonOpponentIntance.attack(this.pokemonInstance));
+      await wait(1500);
+
       if (this.moveEffectivinessService.hasMovedMissed(move)) {
         this.boxMessage = 'moveMissed';
         await wait(2000);
         this.goToNextTurn(turn);
         return;
       }
+
       if(move.power === null) {
         this.boxMessage = 'withoutEffect';
         await wait(2000);
         this.goToNextTurn(turn);
         return;
       }
-      await wait(500);
-      turn === 0
-        ? (this.pokemonOpponentClassName = 'damage')
-        : (this.pokemonClassName = 'damage');
-      await wait(600);
-      this.pokemonOpponentClassName = '';
-      this.pokemonClassName = '';
+      
       turn === 0 ? this.attack(move) : this.opponentAttacks(move);
       
       if(this.effectivinessIndex !== 1) {
         this.boxMessage = this.moveEffectivinessService.messageByEffectiviness(this.effectivinessIndex);
-        await wait(1500);
+        console.log(this.boxMessage);
+        await wait(1000);
       }
 
       await wait(1000);
 
       if (this.isGameOver(receiver.pokemonHealthNumber)) {
         turn === 0
-          ? (this.pokemonOpponentClassName = 'damage')
-          : (this.pokemonClassName = 'damage');
+          ? (this.pokemonOpponentIntance.defeat())
+          : (this.pokemonInstance.defeat())
         await wait(1000);
-        turn === 0
-          ? (this.pokemonOpponentClassName = 'defeat')
-          : (this.pokemonClassName = 'defeat');
+  
         this.currentPokemonName = receiver.name;
         this.boxMessage = 'defeat';
         this.winner = attacker.name;
@@ -412,4 +405,5 @@ export class ArenaCanvasComponent implements OnInit {
   isGameOver(life: number) {
     return life <= 0 ? true : false;
   }
+
 }

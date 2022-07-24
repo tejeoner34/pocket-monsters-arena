@@ -41,7 +41,6 @@ export class PokemonClass {
           x: this.position.x - 40,
           duration: 0.1,
           onComplete() {
-            console.log(recepient);
             gsap.to(recepient.position, {
               x: recepient.position.x - 20,
               yoyo: true,
@@ -68,7 +67,6 @@ export class PokemonClass {
           x: this.position.x + 40,
           duration: 0.1,
           onComplete() {
-            console.log(recepient);
             gsap.to(recepient.position, {
               x: recepient.position.x + 20,
               yoyo: true,
@@ -89,7 +87,14 @@ export class PokemonClass {
     }
   }
 
-  receiveAttack() {}
+  defeat() {
+    gsap.to(this.position, {
+      y: this.position.y + 20
+    });
+    gsap.to(this, {
+      opacity: 0
+    })
+  }
 }
 
 export class LifeContainer {
@@ -100,6 +105,7 @@ export class LifeContainer {
   totalLife: number;
   currentLife: number;
   isOpponent: boolean;
+  lifeBarWidth: number = 0;
 
   constructor(
     name: string,
@@ -120,7 +126,7 @@ export class LifeContainer {
   }
 
   draw() {
-    const lifebarWidth =
+    this.lifeBarWidth =
       this.currentLifePercentage === 1 ? 270 : this.currentLifePercentage * 270;
     this.ctx.beginPath();
     this.ctx.fillStyle = '#f5f6da';
@@ -140,11 +146,11 @@ export class LifeContainer {
     this.ctx.fillRect(this.position.x + 20, this.position.y + 50, 300, 20);
     this.ctx.stroke();
     this.ctx.beginPath();
-    this.ctx.fillStyle = 'green';
+    this.ctx.fillStyle = '#77dea9';
     this.ctx.fillRect(
       this.position.x + 50,
       this.position.y + 52,
-      lifebarWidth,
+      this.lifeBarWidth,
       16
     );
     this.ctx.stroke();
@@ -168,7 +174,8 @@ export class LifeContainer {
   }
 
   updateLife(lifePercentage: number) {
-    this.currentLife = this.currentLife * lifePercentage;
+    this.currentLife = Math.floor(this.currentLife * lifePercentage);
+    this.currentLifePercentage = lifePercentage;
   }
 }
 

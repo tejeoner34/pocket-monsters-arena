@@ -1,0 +1,10 @@
+<div class="user-data-container" *ngIf="userData$ | async as userData">
+    <div>
+        <p>{{'USER_DATA.name' | translate}}: {{userData.userName}}</p>
+    </div>
+    <div class="user-data__stats">
+        <p>{{'USER_DATA.wins' | translate}}:{{userData.wins}}</p>
+        <p>{{'USER_DATA.defeats' | translate}}:{{userData.defeats}}</p>
+        <p>{{'USER_DATA.points' | translate}}:{{userData.points}}</p>
+    </div>
+</div>

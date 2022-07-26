@@ -22,6 +22,12 @@
       "message": "The winner is {{pokemon}}!",
       "playAgain": "Play again"
     },
+    "USER_DATA": {
+      "wins": "Wins",
+      "defeats": "Defeats",
+      "points": "Points",
+      "name": "Name"
+    },
     "moveUse": "{{pokemon}} used {{move}}!",
     "chooseActionMessage": "What will {{pokemon}} do?",
     "nextTurn": "{{pokemon}}, your turn!",

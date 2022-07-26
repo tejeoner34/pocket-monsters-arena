@@ -23,6 +23,12 @@
       "message": "勝者は{{pokemon}}!",
       "playAgain": "リトライ"
     },
+    "USER_DATA": {
+      "wins": "勝利",
+      "defeats": "敗北",
+      "points": "ポイント",
+      "name": "ニックネーム"
+    },
     "moveUse": "{{pokemon}}の{{move}}攻撃!!",
     "chooseActionMessage": "{{pokemon}}、これからどうしますか?",
     "nextTurn": "{{pokemon}}, 君の番だよ！!",

@@ -8,6 +8,7 @@ import { PokeballSpinnerComponent } from './pokeball-spinner/pokeball-spinner.co
 import { LoginFormComponent } from './login-form/login-form.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MaterialModule } from '../material/material.module';
+import { UserDataComponent } from './user-data/user-data.component';
 
 
 
@@ -25,7 +26,7 @@ import { MaterialModule } from '../material/material.module';
     PokemonComponent,
     GameOverModalComponent,
     PokeballSpinnerComponent,
-    LoginFormComponent
+    LoginFormComponent,
     
   ],
   imports: [

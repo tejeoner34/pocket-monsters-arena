@@ -5,7 +5,6 @@ import { ComponentsModule } from '../components/components.module';
 import { ArenaComponent } from './arena/arena.component';
 import { TranslateModule } from '@ngx-translate/core';
 import { MaterialModule } from '../material/material.module';
-import { TypeMessagePipe } from '../shared/pipes/type-message.pipe';
 import { ArenaCanvasComponent } from './arena-canvas/arena-canvas.component';
 import { PipeModule } from '../shared/pipes/pipe.module';
 
@@ -25,7 +24,7 @@ import { PipeModule } from '../shared/pipes/pipe.module';
     ComponentsModule,
     MaterialModule,
     TranslateModule,
-    PipeModule
+    PipeModule,
   ]
 })
 export class PagesModule { }

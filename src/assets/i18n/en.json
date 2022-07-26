@@ -9,7 +9,10 @@
         "light": "Light",
         "renderSelect": "Select render type",
         "html": "HTML",
-        "canvas": "Canvas 2d"
+        "canvas": "Canvas 2d",
+        "send": "Send",
+        "userName": "Username...",
+        "chooseUsername": "Choose an username!"
     },
     "ARENA": {
       "opponent": "Foe "

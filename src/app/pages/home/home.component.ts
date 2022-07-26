@@ -11,6 +11,7 @@ import { ThemeService } from 'src/app/services/theme.service';
 export class HomeComponent implements OnInit {
 
   translations: any;
+  showLoginForm: boolean = true;
 
   constructor(
     public translateService: TranslateService,
@@ -41,5 +42,9 @@ export class HomeComponent implements OnInit {
   goToArenaCanvasPage() {
     this.router.navigate(['/arena-canvas'])
   }
+
+  // crear funcion que esconde el login
+
+  
 
 }

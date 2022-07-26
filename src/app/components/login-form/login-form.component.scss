@@ -1,0 +1,37 @@
+.login-form {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 1.5rem;
+  position: absolute;
+  padding: 1rem;
+  width: 400px;
+  min-height: 230px;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2000;
+
+  input {
+    padding: 1rem;
+  }
+
+  button {
+    padding: 1rem;
+    max-width: 100px;
+    cursor: pointer;
+  }
+
+}
+
+.form__background {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    background-color: black;
+    opacity: .3;
+    width: 100vw;
+    height: 100vh;
+    z-index: 1000;
+}

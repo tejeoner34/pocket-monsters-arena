@@ -9,7 +9,10 @@
         "light": "ライト",
         "renderSelect": "レンダリングをお選びください",
         "html": "HTML",
-        "canvas": "Canvas 2d"
+        "canvas": "Canvas 2d",
+        "send": "選ぶ",
+        "userName": "ニックネーム...",
+        "chooseUsername": "ニックネームを選んでください!"
 
     },
     "ARENA": {

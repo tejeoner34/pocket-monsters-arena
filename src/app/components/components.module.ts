@@ -5,6 +5,9 @@ import { PokemonComponent } from './pokemon/pokemon.component';
 import { GameOverModalComponent } from './game-over-modal/game-over-modal.component';
 import { TranslateModule } from '@ngx-translate/core';
 import { PokeballSpinnerComponent } from './pokeball-spinner/pokeball-spinner.component';
+import { LoginFormComponent } from './login-form/login-form.component';
+import { ReactiveFormsModule } from '@angular/forms';
+import { MaterialModule } from '../material/material.module';
 
 
 
@@ -14,18 +17,22 @@ import { PokeballSpinnerComponent } from './pokeball-spinner/pokeball-spinner.co
     PokemonComponent,
     GameOverModalComponent,
     PokeballSpinnerComponent,
+    LoginFormComponent,
 
   ],
   exports: [
     PokeballComponent,
     PokemonComponent,
     GameOverModalComponent,
-    PokeballSpinnerComponent
+    PokeballSpinnerComponent,
+    LoginFormComponent
     
   ],
   imports: [
     CommonModule,
-    TranslateModule
+    TranslateModule,
+    ReactiveFormsModule,
+    MaterialModule
   ]
 })
 export class ComponentsModule { }

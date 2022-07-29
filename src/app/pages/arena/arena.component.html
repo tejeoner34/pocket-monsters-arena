@@ -2,6 +2,7 @@
 <app-pokeball [openPokeball]="openPokeball"></app-pokeball>
 <app-game-over-modal [winner]="winner" *ngIf="gameOver"></app-game-over-modal>
 <div class="arena">
+
   <div class="arena-wrapper">
  
     <ng-container *ngIf="pokemon && pokemonOpponent">
@@ -39,5 +40,8 @@
         <div class="arena__moves-container-popover" *ngIf="hasSelectedMove"></div>
       </div>
     </div>
+  </div>
+  <div class="arena__top-users-container">
+    <app-show-users-button></app-show-users-button>
   </div>
 </div>

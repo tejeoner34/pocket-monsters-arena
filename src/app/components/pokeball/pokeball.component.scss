@@ -6,7 +6,7 @@
     height: 50vh;
     top: 0;
     left: 0;
-    z-index: 1010;
+    z-index: 30010;
 }
 
 .pokeball-top {
@@ -19,7 +19,7 @@
 }
 
 .pokeball-center {
-    z-index: 1010;
+    z-index: 30010;
     position: absolute;
     background-color: white;
     border: 30px solid black;
@@ -52,7 +52,7 @@
     height: 50vh;
     width: 100%;
     border-top: 10px solid black;
-    z-index: 1000;
+    z-index: 30000;
 
 }
 

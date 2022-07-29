@@ -83,6 +83,7 @@ export class MoveEffectivinessService {
   messageByEffectiviness(index: number) {
     const indextoString = index.toString();
     const message = messsages[indextoString as keyof EffectMessages];
+    console.log(message)
     return message;
   }
 

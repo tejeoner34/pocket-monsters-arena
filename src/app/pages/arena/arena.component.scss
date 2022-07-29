@@ -4,6 +4,10 @@
   margin: auto;
   padding: 1rem 1rem 0 1rem;
   position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 1rem;
 }
 
 .arena-wrapper {
@@ -98,4 +102,9 @@
     opacity: .5;
     left: 0px;
   }
+}
+
+.arena__top-users-container {
+  display: flex;
+  justify-content: center;
 }

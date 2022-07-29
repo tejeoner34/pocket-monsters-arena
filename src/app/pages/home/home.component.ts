@@ -2,6 +2,7 @@ import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { ThemeService } from 'src/app/services/theme.service';
+import { UserService } from 'src/app/services/user.service';
 
 @Component({
   selector: 'app-home',
@@ -16,7 +17,8 @@ export class HomeComponent implements OnInit {
   constructor(
     public translateService: TranslateService,
     private themeService: ThemeService,
-    private router: Router) {
+    private router: Router,
+    public userService: UserService) {
 
    }
 

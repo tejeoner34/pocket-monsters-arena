@@ -12,6 +12,7 @@
   top: 50%;
   transform: translate(-50%, -50%);
   z-index: 2000;
+  border: 2px solid white;
 
   input {
     padding: 1rem;
@@ -30,7 +31,7 @@
     top: 0px;
     left: 0px;
     background-color: black;
-    opacity: .3;
+    opacity: .5;
     width: 100vw;
     height: 100vh;
     z-index: 1000;

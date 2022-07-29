@@ -37,8 +37,9 @@
     "defeat": "{{pokemon}}は倒れた！",
     "withoutEffect": "この攻撃は効果はしません...",
     "notVeryEffective": "攻撃はあまり効果的ではなかった...",
-    "superEffective": "kouka ha batsugun da!",
-    "criticalHit": "kyuujo ni atatta!"
+    "superEffective": "効果はバツグンだ!",
+    "criticalHit": "急所に当たった!",
+    "showUsers": "トップユーザー"
     
 
 }

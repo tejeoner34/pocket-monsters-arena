@@ -37,6 +37,7 @@
     "withoutEffect": "The move has no effect...",
     "notVeryEffective": "The move is not very effective...",
     "superEffective": "The move is super Effective!",
-    "criticalHit": "Critical hit!"
+    "criticalHit": "Critical hit!",
+    "showUsers": "Show top Users"
     
 }

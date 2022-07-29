@@ -1,7 +1,6 @@
-<!-- <app-pokeball></app-pokeball> -->
+<app-pokeball></app-pokeball>
 
 <ng-container *ngIf="translations">
-    <app-login-form></app-login-form>
     <div class="home">
         <div class="home__background">
             <div class="background__balls-container">
@@ -46,6 +45,7 @@
                     <button mat-raised-button color="warn" (click)="goToArenaCanvasPage()">{{translations.canvas}}</button>
                 </div>
             </div>
+            <app-show-users-button></app-show-users-button>
         </div>
     </div>
 </ng-container>

@@ -9,6 +9,9 @@ import { LoginFormComponent } from './login-form/login-form.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MaterialModule } from '../material/material.module';
 import { UserDataComponent } from './user-data/user-data.component';
+import { TopUsersComponent } from './top-users/top-users.component';
+import { PipeModule } from '../shared/pipes/pipe.module';
+import { ShowUsersButtonComponent } from './show-users-button/show-users-button.component';
 
 
 
@@ -19,6 +22,8 @@ import { UserDataComponent } from './user-data/user-data.component';
     GameOverModalComponent,
     PokeballSpinnerComponent,
     LoginFormComponent,
+    TopUsersComponent,
+    ShowUsersButtonComponent,
 
   ],
   exports: [
@@ -27,13 +32,16 @@ import { UserDataComponent } from './user-data/user-data.component';
     GameOverModalComponent,
     PokeballSpinnerComponent,
     LoginFormComponent,
+    TopUsersComponent,
+    ShowUsersButtonComponent
     
   ],
   imports: [
     CommonModule,
     TranslateModule,
     ReactiveFormsModule,
-    MaterialModule
+    MaterialModule,
+    PipeModule
   ]
 })
 export class ComponentsModule { }

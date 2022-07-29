@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
+import { LoadingService } from './services/loading.service';
 import { ThemeService } from './services/theme.service';
+import { UserService } from './services/user.service';
 
 @Component({
   selector: 'app-root',
@@ -13,7 +15,9 @@ export class AppComponent {
 
   constructor(
     private translateService: TranslateService,
-    public themeService: ThemeService
+    public themeService: ThemeService,
+    public loadingService: LoadingService,
+    public userService: UserService
     ) {
     translateService.setDefaultLang(localStorage.getItem('language') ?? 'en');
     translateService.use(localStorage.getItem('language') ?? 'en');

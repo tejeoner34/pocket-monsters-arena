@@ -8,7 +8,10 @@ import { TranslateService } from '@ngx-translate/core';
 import { forkJoin, Observable } from 'rxjs';
 import { KEY_CODE, Pokemon, PokemonEdit } from 'src/app/interfaces/interfaces';
 import { MoveData } from 'src/app/interfaces/movements.interface';
+import { User } from 'src/app/interfaces/user.interface';
+import { PointsService } from 'src/app/services/points.service';
 import { PokemonService } from 'src/app/services/pokemon.service';
+import { UserService } from 'src/app/services/user.service';
 import { wait } from 'src/app/shared/helpers';
 import { MoveEffectivinessService } from '../../services/move-effectiviness.service';
 
@@ -23,6 +26,7 @@ export class ArenaComponent implements OnInit, AfterViewChecked {
     this.onMoveArrow(event);
   }
 
+  user!: User | null;
   openPokeball: boolean = false;
   pokemon!: PokemonEdit;
   pokemonMoves: MoveData[] = [];
@@ -51,13 +55,17 @@ export class ArenaComponent implements OnInit, AfterViewChecked {
   constructor(
     private pokemonService: PokemonService,
     private moveEffectivinessService: MoveEffectivinessService,
-    public translateService: TranslateService
+    public translateService: TranslateService,
+    private userService: UserService,
+    private pointsService: PointsService
   ) {}
 
   ngOnInit(): void {
     this.translateService.get('ARENA').subscribe((data) => {
       this.opponentTextPlaceholder = data.opponent;
     });
+
+    this.userService.user$.subscribe(res => this.user = res);
 
     this.pokemonService.turnObservable$.subscribe((turn) => {
       this.currentTurn = turn;
@@ -153,6 +161,11 @@ export class ArenaComponent implements OnInit, AfterViewChecked {
           this.pokemonOpponent.pokemonHealthNumber!,
           move.power
         );
+      this.pointsService.updateUserPoints(this.pokemonOpponent.pokemonHealthNumberTotal - this.pokemonOpponent.pokemonHealthNumber);
+      if(this.user) {
+        this.user.points = this.pointsService.getUserPoints();
+        this.userService.updateUserData(this.user)
+      }
       this.pokemonOpponent.pokemonHealth =
         (this.pokemonOpponent.pokemonHealthNumber /
           this.pokemonOpponent.pokemonHealthNumberTotal!) *

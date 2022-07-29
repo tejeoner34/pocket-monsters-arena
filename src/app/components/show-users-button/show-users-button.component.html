@@ -1,0 +1,4 @@
+<button (click)="onClick()" 
+        class="show-users-button" 
+        *ngIf="userService.topUsers$ | async">{{'showUsers' | translate}}
+</button>

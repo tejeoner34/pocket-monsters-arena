@@ -14,6 +14,7 @@ import {TranslateHttpLoader} from '@ngx-translate/http-loader';
 import { HeaderComponent } from './components/header/header.component';
 import { MaterialModule } from './material/material.module';
 import { UserDataComponent } from './components/user-data/user-data.component';
+import { ComponentsModule } from './components/components.module';
 
 export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http);
@@ -32,6 +33,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     AppRoutingModule,
     NoopAnimationsModule,
     PagesModule,
+    ComponentsModule,
     MaterialModule,
     TranslateModule.forRoot({
       defaultLanguage: 'en',

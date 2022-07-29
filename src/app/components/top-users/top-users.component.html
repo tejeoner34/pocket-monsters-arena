@@ -1,0 +1,10 @@
+<div class="top-users__container" *ngIf="topUsers$ | async as topUsers">
+    <div class="top-users__top-3">
+        <h3>Top Players</h3>
+        <p *ngFor="let user of topUsers">{{user.userName | longString}}: {{user.points}}</p>
+    </div>
+    <div class="top-users__user" *ngIf="user$ | async as user">
+        <p>{{user.userName | longString}}: {{user.points}}</p>
+    </div>
+</div>
+<div (click)="hideModal()" class="top-users__background"></div>

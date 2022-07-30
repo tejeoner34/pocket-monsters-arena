@@ -11,6 +11,7 @@ import { MoveData } from 'src/app/interfaces/movements.interface';
 import { User } from 'src/app/interfaces/user.interface';
 import { PointsService } from 'src/app/services/points.service';
 import { PokemonService } from 'src/app/services/pokemon.service';
+import { RestartService } from 'src/app/services/restart.service';
 import { UserService } from 'src/app/services/user.service';
 import { wait } from 'src/app/shared/helpers';
 import { MoveEffectivinessService } from '../../services/move-effectiviness.service';
@@ -57,10 +58,13 @@ export class ArenaComponent implements OnInit, AfterViewChecked {
     private moveEffectivinessService: MoveEffectivinessService,
     public translateService: TranslateService,
     private userService: UserService,
-    private pointsService: PointsService
+    private pointsService: PointsService,
+    private restartService: RestartService
   ) {}
 
   ngOnInit(): void {
+    this.restartService.restart$.subscribe(res => this.restartService.resetPage('arena'));
+
     this.translateService.get('ARENA').subscribe((data) => {
       this.opponentTextPlaceholder = data.opponent;
     });
@@ -71,7 +75,6 @@ export class ArenaComponent implements OnInit, AfterViewChecked {
       this.currentTurn = turn;
 
       if (this.currentTurn === 1 && this.hasSelectedMove) {
-        console.log(this.pokemonService.getMovesDamage());
         const mostPowerFulAttack = this.pokemonService.getMostPowerfulAttack();
         const mostPowerfulMoveIndex =
           this.pokemonOpponent.pokemonMoves.findIndex(
@@ -284,6 +287,7 @@ export class ArenaComponent implements OnInit, AfterViewChecked {
 
   gameLoop(turn: number, move: MoveData) {
     this.effectivinessIndex = this.pokemonService.getSelectedMoveEffectiviness(move);
+    console.log(this.effectivinessIndex)
     const attacker = turn === 0 ? this.pokemon : this.pokemonOpponent;
     const receiver = turn === 0 ? this.pokemonOpponent : this.pokemon;
     (async () => {
@@ -329,7 +333,9 @@ export class ArenaComponent implements OnInit, AfterViewChecked {
       await wait(600);
       this.pokemonOpponentClassName = '';
       this.pokemonClassName = '';
-      turn === 0 ? this.attack(move) : this.opponentAttacks(move);
+      turn === 0 
+        ? this.attack(move) 
+        : this.opponentAttacks(move);
       
       if(this.effectivinessIndex !== 1) {
         this.boxMessage = this.moveEffectivinessService.messageByEffectiviness(this.effectivinessIndex);
@@ -339,17 +345,24 @@ export class ArenaComponent implements OnInit, AfterViewChecked {
       await wait(1000);
 
       if (this.isGameOver(receiver.pokemonHealthNumber)) {
-        turn === 0
-          ? (this.pokemonOpponentClassName = 'damage')
-          : (this.pokemonClassName = 'damage');
-        await wait(1000);
-        turn === 0
-          ? (this.pokemonOpponentClassName = 'defeat')
-          : (this.pokemonClassName = 'defeat');
+        if(turn === 0) {
+          this.pokemonOpponentClassName = 'damage';
+          await wait (1000);
+          this.pokemonOpponentClassName = 'defeat';
+          this.user !== null ? this.user.wins += 1 : null;
+        } else {
+          this.pokemonClassName = 'damage';
+          await wait (1000);
+          this.pokemonClassName = 'defeat';
+          this.user !== null ? this.user.defeats += 1 : null;
+        }
+        this.userService.patchUserData(this.user!).subscribe();
         this.currentPokemonName = receiver.name;
         this.boxMessage = 'defeat';
         this.winner = attacker.name;
+        await wait(1000);
         this.gameOver = true;
+        this.hasSelectedMove = false;
         return;
       }
 
@@ -427,7 +440,6 @@ export class ArenaComponent implements OnInit, AfterViewChecked {
   }
 
   moveDown() {
-    console.log(this.currentMovePosition);
     if (this.currentMovePosition === 2 || this.currentMovePosition === 3)
       return;
     this.movesContainerArray[this.currentMovePosition].classList.remove(
@@ -449,4 +461,5 @@ export class ArenaComponent implements OnInit, AfterViewChecked {
       this.chooseMove(move, this.currentMovePosition);
     }
   }
+
 }

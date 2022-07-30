@@ -12,6 +12,9 @@ import { gsap } from 'gsap';
 import { TranslateService } from '@ngx-translate/core';
 import { wait } from 'src/app/shared/helpers';
 import { MoveEffectivinessService } from 'src/app/services/move-effectiviness.service';
+import { RestartService } from 'src/app/services/restart.service';
+import { UserService } from 'src/app/services/user.service';
+import { User } from 'src/app/interfaces/user.interface';
 
 @Component({
   selector: 'app-arena-canvas',
@@ -22,6 +25,7 @@ export class ArenaCanvasComponent implements OnInit {
   @ViewChild('canvas', { static: true })
   canvas!: ElementRef<HTMLCanvasElement>;
   ctx!: CanvasRenderingContext2D;
+  user!: User | null;
   infoContainer: any;
   pokemonImg = new Image();
   pokemonOpponentImg = new Image();
@@ -56,12 +60,19 @@ export class ArenaCanvasComponent implements OnInit {
 
   constructor(private pokemonService: PokemonService, 
     private translateService: TranslateService,
-    private moveEffectivinessService: MoveEffectivinessService) {}
+    private moveEffectivinessService: MoveEffectivinessService,
+    private restartService: RestartService,
+    private userService: UserService) {}
 
   ngOnInit(): void {
+    this.restartService.restart$.subscribe(res => this.restartService.resetPage('arena-canvas'));
+
     this.translateService.get('ARENA').subscribe((data) => {
       this.opponentTextPlaceholder = data.opponent;
     });
+
+    this.userService.user$.subscribe(res => this.user = res);
+
 
     this.pokemonService.turnObservable$.subscribe((turn) => {
       this.currentTurn = turn;
@@ -371,14 +382,22 @@ export class ArenaCanvasComponent implements OnInit {
       await wait(1000);
 
       if (this.isGameOver(receiver.pokemonHealthNumber)) {
-        turn === 0
-          ? (this.pokemonOpponentIntance.defeat())
-          : (this.pokemonInstance.defeat())
+        if(turn === 0){
+          this.pokemonOpponentIntance.defeat();
+          this.user !== null ? this.user.wins += 1 : null;
+        } else {
+          this.pokemonInstance.defeat();
+          this.user !== null ? this.user.defeats += 1 : null;
+        }
+        this.userService.patchUserData(this.user!).subscribe();
+        // turn === 0
+        //   ? (this.pokemonOpponentIntance.defeat())
+        //   : (this.pokemonInstance.defeat())
         await wait(1000);
-  
         this.currentPokemonName = receiver.name;
         this.boxMessage = 'defeat';
         this.winner = attacker.name;
+        await wait(1000);
         this.gameOver = true;
         return;
       }

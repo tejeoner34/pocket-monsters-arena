@@ -146,7 +146,13 @@ export class LifeContainer {
     this.ctx.fillRect(this.position.x + 20, this.position.y + 50, 300, 20);
     this.ctx.stroke();
     this.ctx.beginPath();
-    this.ctx.fillStyle = '#77dea9';
+    if(this.currentLifePercentage < 0.4) {
+      this.ctx.fillStyle = 'orange';
+    } else if(this.currentLifePercentage < 0.2) {
+      this.ctx.fillStyle = 'red';
+    } else {
+      this.ctx.fillStyle = '#77dea9';
+    }
     this.ctx.fillRect(
       this.position.x + 50,
       this.position.y + 52,

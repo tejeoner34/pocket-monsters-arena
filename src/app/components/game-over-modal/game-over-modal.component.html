@@ -1,6 +1,7 @@
 <div class="game-over-modal">
   <h2>{{'GAME_OVER.gameOver' | translate}}</h2>
   <p>{{'GAME_OVER.message' | translate:{pokemon: winner} }}</p>
+  <p *ngIf="user$ | async as user">{{'GAME_OVER.yourPoints' | translate }} {{user.points}}</p>
   <button class="game-over__button" (click)="restartGame()">{{'GAME_OVER.playAgain' | translate}}</button>
 </div>
 <div class="game-over-background"></div>

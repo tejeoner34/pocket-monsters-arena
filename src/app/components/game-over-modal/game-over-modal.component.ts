@@ -1,4 +1,8 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
+import { Observable } from 'rxjs';
+import { User } from 'src/app/interfaces/user.interface';
+import { RestartService } from 'src/app/services/restart.service';
+import { UserService } from 'src/app/services/user.service';
 
 @Component({
   selector: 'app-game-over-modal',
@@ -8,14 +12,21 @@ import { Component, Input, OnInit } from '@angular/core';
 export class GameOverModalComponent implements OnInit {
 
   @Input() winner: string = '';
+  // @Output() clickEmitter = new EventEmitter();
+  user$!: Observable<User | null>;
 
-  constructor() { }
+
+  constructor(private userService: UserService,
+              private restartService: RestartService) { }
 
   ngOnInit(): void {
+    this.user$ = this.userService.user$;
   }
 
   restartGame() {
-    window.location.reload();
+    // window.location.reload();
+    // this.clickEmitter.emit();
+    this.restartService.updateRestart();
   }
 
 }

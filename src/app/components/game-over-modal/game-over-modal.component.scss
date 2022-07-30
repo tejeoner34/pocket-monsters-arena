@@ -1,13 +1,15 @@
 .game-over-modal {
   position: absolute;
   width: 300px;
-  min-height: 150px;
+  min-height: 180px;
+  padding: 1rem;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  text-align: center;
   gap: 1rem;
-  background-color: #765353;
+  background-color: #535576;
   border: 2px solid rgb(228, 225, 225);
   border-radius: 5px;
   left: 50%;

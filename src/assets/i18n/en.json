@@ -20,7 +20,8 @@
     "GAME_OVER": {
       "gameOver": "GAME OVER",
       "message": "The winner is {{pokemon}}!",
-      "playAgain": "Play again"
+      "playAgain": "Play again",
+      "yourPoints": "Your Points:"
     },
     "USER_DATA": {
       "wins": "Wins",

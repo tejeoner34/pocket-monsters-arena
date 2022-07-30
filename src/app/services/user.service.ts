@@ -41,6 +41,16 @@ export class UserService {
     );
   }
 
+  patchUserData(user: User): Observable<User> {
+    const headers = {'content-type': 'application/json'};
+    const body = JSON.stringify(user)
+    return this.http.patch<User>(this.url, body, {'headers': headers}).pipe(
+      tap(res => {
+        console.log(res);
+        this.updateUserData(res)})
+    );
+  }
+
   updateUserData(user: User) {
     this.userSubject$.next(user);
   }

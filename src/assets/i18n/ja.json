@@ -21,7 +21,9 @@
     "GAME_OVER": {
       "gameOver": "ゲームオーバー",
       "message": "勝者は{{pokemon}}!",
-      "playAgain": "リトライ"
+      "playAgain": "リトライ",
+      "yourPoints": "ポイント量:"
+
     },
     "USER_DATA": {
       "wins": "勝利",

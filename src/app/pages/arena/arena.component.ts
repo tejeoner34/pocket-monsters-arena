@@ -303,7 +303,7 @@ export class ArenaComponent implements OnInit, AfterViewChecked {
       if (this.effectivinessIndex === 0) {
         await wait(1000);
         this.boxMessage = 'noEffect';
-        await wait(1500);
+        await wait(1200);
         this.goToNextTurn(turn);
         return;
       }
@@ -316,13 +316,13 @@ export class ArenaComponent implements OnInit, AfterViewChecked {
         : (this.pokemonOpponentClassName = '');
       if (this.moveEffectivinessService.hasMovedMissed(move)) {
         this.boxMessage = 'moveMissed';
-        await wait(2000);
+        await wait(1000);
         this.goToNextTurn(turn);
         return;
       }
       if(move.power === null) {
         this.boxMessage = 'withoutEffect';
-        await wait(2000);
+        await wait(1000);
         this.goToNextTurn(turn);
         return;
       }
@@ -339,7 +339,7 @@ export class ArenaComponent implements OnInit, AfterViewChecked {
       
       if(this.effectivinessIndex !== 1) {
         this.boxMessage = this.moveEffectivinessService.messageByEffectiviness(this.effectivinessIndex);
-        await wait(1500);
+        await wait(1200);
       }
 
       await wait(1000);

@@ -342,12 +342,12 @@ export class ArenaCanvasComponent implements OnInit {
 
       this.usedMove = move.name;
       this.boxMessage = 'moveUse';
-      await wait(1500);
+      await wait(1200);
 
       if (this.effectivinessIndex === 0) {
         await wait(1000);
         this.boxMessage = 'noEffect';
-        await wait(1500);
+        await wait(1200);
         this.goToNextTurn(turn);
         return;
       }
@@ -355,18 +355,18 @@ export class ArenaCanvasComponent implements OnInit {
       turn === 0
         ? (this.pokemonInstance.attack(this.pokemonOpponentIntance))
         : (this.pokemonOpponentIntance.attack(this.pokemonInstance));
-      await wait(1500);
+      await wait(1200);
 
       if (this.moveEffectivinessService.hasMovedMissed(move)) {
         this.boxMessage = 'moveMissed';
-        await wait(2000);
+        await wait(1200);
         this.goToNextTurn(turn);
         return;
       }
 
       if(move.power === null) {
         this.boxMessage = 'withoutEffect';
-        await wait(2000);
+        await wait(1200);
         this.goToNextTurn(turn);
         return;
       }

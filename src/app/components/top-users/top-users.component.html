@@ -3,6 +3,7 @@
         <h3>Top Players</h3>
         <p *ngFor="let user of topUsers">{{user.userName | longString}}: {{user.points}}</p>
     </div>
+    <p>------</p>
     <div class="top-users__user" *ngIf="user$ | async as user">
         <p>{{user.userName | longString}}: {{user.points}}</p>
     </div>

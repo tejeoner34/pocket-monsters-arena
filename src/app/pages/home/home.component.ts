@@ -42,11 +42,11 @@ export class HomeComponent implements OnInit {
   }
 
   goToArenaCanvasPage() {
-    this.router.navigate(['/arena-canvas'])
+    this.router.navigate(['/arena-canvas']);
   }
 
-  // crear funcion que esconde el login
-
-  
+  goToChallengePage() {
+    this.router.navigate(['/challenge']);
+  }
 
 }

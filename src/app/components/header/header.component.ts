@@ -1,4 +1,5 @@
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 
 @Component({
@@ -12,11 +13,16 @@ export class HeaderComponent implements OnInit {
 
   @Output() emitThemeChange = new EventEmitter();
 
-  constructor(private translateService: TranslateService) {
+  constructor(private translateService: TranslateService,
+              private router: Router) {
     this.selectedLanguage = translateService.currentLang;
    }
 
   ngOnInit(): void {
+  }
+
+  goToHome() {
+    this.router.navigate(['/home']);
   }
 
 }

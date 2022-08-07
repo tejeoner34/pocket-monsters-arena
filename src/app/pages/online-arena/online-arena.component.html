@@ -1,0 +1,4 @@
+<form #testForm="ngForm" (ngSubmit)="sendMessage(testForm.value)">
+    <input ngModel name="text" type="text" #input>
+    <button type="submit">Enviar</button>
+</form>

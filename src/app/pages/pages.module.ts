@@ -7,6 +7,9 @@ import { TranslateModule } from '@ngx-translate/core';
 import { MaterialModule } from '../material/material.module';
 import { ArenaCanvasComponent } from './arena-canvas/arena-canvas.component';
 import { PipeModule } from '../shared/pipes/pipe.module';
+import { ChallengeComponent } from './challenge/challenge.component';
+import { OnlineArenaComponent } from './online-arena/online-arena.component';
+import { FormsModule } from '@angular/forms';
 
 
 
@@ -14,7 +17,9 @@ import { PipeModule } from '../shared/pipes/pipe.module';
   declarations: [
     HomeComponent,
     ArenaComponent,
-    ArenaCanvasComponent
+    ArenaCanvasComponent,
+    ChallengeComponent,
+    OnlineArenaComponent
   ],
   exports: [
     HomeComponent,
@@ -25,6 +30,7 @@ import { PipeModule } from '../shared/pipes/pipe.module';
     MaterialModule,
     TranslateModule,
     PipeModule,
+    FormsModule
   ]
 })
 export class PagesModule { }

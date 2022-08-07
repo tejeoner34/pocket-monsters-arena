@@ -12,6 +12,7 @@ import { UserDataComponent } from './user-data/user-data.component';
 import { TopUsersComponent } from './top-users/top-users.component';
 import { PipeModule } from '../shared/pipes/pipe.module';
 import { ShowUsersButtonComponent } from './show-users-button/show-users-button.component';
+import { ChallengedModalComponent } from './challenged-modal/challenged-modal.component';
 
 
 
@@ -24,6 +25,7 @@ import { ShowUsersButtonComponent } from './show-users-button/show-users-button.
     LoginFormComponent,
     TopUsersComponent,
     ShowUsersButtonComponent,
+    ChallengedModalComponent,
 
   ],
   exports: [
@@ -33,7 +35,8 @@ import { ShowUsersButtonComponent } from './show-users-button/show-users-button.
     PokeballSpinnerComponent,
     LoginFormComponent,
     TopUsersComponent,
-    ShowUsersButtonComponent
+    ShowUsersButtonComponent,
+    ChallengedModalComponent
     
   ],
   imports: [

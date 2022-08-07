@@ -12,10 +12,28 @@
         "canvas": "Canvas 2d",
         "send": "Send",
         "userName": "Username...",
-        "chooseUsername": "Choose an username!"
+        "chooseUsername": "Choose an username!",
+        "multiplayer": "Multiplayer",
+        "playMultiplayer": "Play Multiplayer",
+        "battle": "Battle"
     },
     "ARENA": {
       "opponent": "Foe "
+    },
+    "CHALLENGE": {
+      "yourId": "Your online ID is: ",
+      "typeRivalId": "Type your rival´s id",
+      "challenge": "Challenge",
+      "challengeInfo": "*Introduce the id of your rival or wait until your rival introduces your id. In that case, you will receive an invitation.",
+      "challengeMessage": "{{challenger}} is challenging you!",
+      "noUser": "No user found with this ID.",
+      "accept": "Accept",
+      "decline": "Decline",
+      "waiting": "Waiting for rival´s response.",
+      "rivalDidNotAccept": "Rival did not accept your challenge.",
+      "rivalAccept": "Rival accepted the challenge",
+      "goToBattle": "Go to battle"
+
     },
     "GAME_OVER": {
       "gameOver": "GAME OVER",

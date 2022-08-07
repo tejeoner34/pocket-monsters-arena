@@ -12,11 +12,27 @@
         "canvas": "Canvas 2d",
         "send": "選ぶ",
         "userName": "ニックネーム...",
-        "chooseUsername": "ニックネームを選んでください!"
-
+        "chooseUsername": "ニックネームを選んでください!",
+        "multiplayer": "マルチプレイ",
+        "playMultiplayer": "マルチプレイゲーム",
+        "battle": "戦い"
     },
     "ARENA": {
       "opponent": "相手の "
+    },
+    "CHALLENGE": {
+      "yourId": "オンラインイド ",
+      "typeRivalId": "ライバルのイドを入力してください",
+      "challenge": "挑戦する",
+      "challengeInfo": "*ライバルの ID を入力して、それとも、ライバルがあなたの ID を入力するまで待ちます。その場合、招待状が届きます.",
+      "challengeMessage": "{{challenger}}に挑戦された！",
+      "noUser": "No user found with this ID.",
+      "accept": "受ける",
+      "decline": "却下",
+      "waiting": "ライバルの答えを待つ.",
+      "rivalDidNotAccept": "ライバルは挑戦を受けなかった。",
+      "rivalAccept": "ライバルは挑戦を受けました！",
+      "goToBattle": "戦場へ行こう"
     },
     "GAME_OVER": {
       "gameOver": "ゲームオーバー",

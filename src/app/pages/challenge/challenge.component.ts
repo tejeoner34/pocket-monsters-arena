@@ -22,9 +22,6 @@ export class ChallengeComponent implements OnInit {
               private router: Router) { }
 
   ngOnInit(): void {
-    // this.userId = this.webSocket.userId$;
-    console.log('se ejecuta el challenge')
-
     this.webSocket.userId$.subscribe(res => this._userId = res);
 
     this.webSocket.listen('get user id').subscribe(res => this.webSocket.setUserId(res));
@@ -38,6 +35,7 @@ export class ChallengeComponent implements OnInit {
       this.rivalHasAccepted = res.accept;
       if(res.accept) {
         this.webSocket.setRoomId(res.roomId);
+        this.webSocket.setOpponentId(res.userId);
       }
     });
   }

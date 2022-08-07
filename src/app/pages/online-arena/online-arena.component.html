@@ -1,4 +1,48 @@
-<form #testForm="ngForm" (ngSubmit)="sendMessage(testForm.value)">
+<!-- <form #testForm="ngForm" (ngSubmit)="sendMessage(testForm.value)">
     <input ngModel name="text" type="text" #input>
     <button type="submit">Enviar</button>
-</form>
+</form> -->
+<div class="arena">
+
+    <div class="arena-wrapper">
+   
+      <ng-container *ngIf="pokemon">
+        <!-- <app-pokemon
+          class="arena__opponent-container"
+          [className]="pokemonOpponentClassName"
+          [pokemon]="pokemonOpponent"
+          [isOpponent]="true"
+        ></app-pokemon> -->
+  
+      
+        <app-pokemon
+          class="arena__pokemon-container"
+          [className]="pokemonClassName"
+          [pokemon]="pokemon"
+        >
+        </app-pokemon>
+      </ng-container>
+   
+      <div class="arena__options-container">
+        <div class="arena__options__info-container">
+          <p
+            class="info-container__action"
+          >{{boxMessage | translate: {pokemon: currentPokemonName | titlecase, move: usedMove} | typeMessage | async }}</p>
+        </div>
+        <div class="arena__pokemon__moves-container">
+          <ng-container *ngIf="pokemon?.pokemonMoves !== undefined && pokemon?.pokemonMoves?.length === 4; else spinner">
+            <div class="moves-container__move" *ngFor="let move of pokemon?.pokemonMoves; let i = index;" (click)="chooseMove(move, i)">
+              <p>{{ move.name | titlecase }}</p>
+            </div>
+          </ng-container>
+          <ng-template #spinner>
+            <app-pokeball-spinner></app-pokeball-spinner>
+          </ng-template>
+          <div class="arena__moves-container-popover" *ngIf="hasSelectedMove"></div>
+        </div>
+      </div>
+    </div>
+    <div class="arena__top-users-container">
+      <app-show-users-button></app-show-users-button>
+    </div>
+  </div>

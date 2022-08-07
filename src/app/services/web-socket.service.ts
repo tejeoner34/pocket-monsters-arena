@@ -11,6 +11,7 @@ export class WebSocketService {
   userId$ = new BehaviorSubject<string | null>(null);
   challenger$ = new BehaviorSubject<any | null>(null);
   roomId! : string;
+  opponentId!: string;
 
   constructor() {
     this.socket = io('ws://localhost:5000');
@@ -30,6 +31,10 @@ export class WebSocketService {
 
   setUserId(userId: string) {
     this.userId$.next(userId);
+  }
+
+  setOpponentId(id: string) {
+    this.opponentId = id;
   }
 
   setChallengerData(data: any) {

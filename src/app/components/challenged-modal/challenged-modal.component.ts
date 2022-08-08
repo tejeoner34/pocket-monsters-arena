@@ -18,6 +18,7 @@ export class ChallengedModalComponent implements OnInit {
 
   ngOnInit(): void {
     this.webSocket.userId$.subscribe(res => this._userId = res);
+    this.webSocket.setOpponentId(this.challenger);
   }
 
   acceptChallenge() {

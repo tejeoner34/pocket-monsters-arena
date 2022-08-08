@@ -10,6 +10,7 @@ export class WebSocketService {
   socket: any;
   userId$ = new BehaviorSubject<string | null>(null);
   challenger$ = new BehaviorSubject<any | null>(null);
+  roomIsFull$ = new BehaviorSubject(false);
   roomId! : string;
   opponentId!: string;
 

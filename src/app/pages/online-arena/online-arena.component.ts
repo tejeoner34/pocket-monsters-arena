@@ -12,6 +12,8 @@ import { WebSocketService } from 'src/app/services/web-socket.service';
 export class OnlineArenaComponent implements OnInit {
   pokemon!: PokemonEdit;
   pokemonClassName = '';
+  pokemonOpponent!: PokemonEdit;
+  pokemonOpponentClassName = '';
   currentPokemonName = '';
   httpMovesPetitionsCount: number = 0;
 
@@ -34,6 +36,23 @@ export class OnlineArenaComponent implements OnInit {
   ngOnInit(): void {
     this.webSocket.userId$.subscribe((res) => (this._userId = res));
     // this.webSocket.listen('get message').subscribe(console.log);
+
+    // this.webSocket.roomIsFull$.subscribe(res => {
+    //   console.log(res)
+    //   if(res === true) {
+    //     this.webSocket.emit('send-pokemon-data', {
+    //       pokemon: this.pokemon,
+    //       opponentUserId: this.webSocket.opponentId
+    //     }); 
+    //   }
+    // })
+
+    //Get opponents pokemon data
+
+    this.webSocket.listen('get-pokemon-data').subscribe(({pokemon}) => {
+      this.pokemonOpponent = pokemon;
+      console.log(pokemon);
+    });
 
     this.pokemonService.getRandomPokemon().subscribe((pokemon) => {
       //Pokemon data
@@ -111,11 +130,15 @@ export class OnlineArenaComponent implements OnInit {
           //   );
           //   return;
           // }
-          console.log('ejecuta')
-          this.webSocket.emit('send-pokemon-data', {
-            pokemon: this.pokemon,
-            opponentUserId: this.webSocket.opponentId
-          });  
+          this.webSocket.roomIsFull$.subscribe(res => {
+            if(res){
+              this.webSocket.emit('send-pokemon-data', {
+                pokemon: this.pokemon,
+                opponentUserId: this.webSocket.opponentId
+              }); 
+            }
+          })
+          
       });
   }
 

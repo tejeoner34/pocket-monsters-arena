@@ -7,12 +7,13 @@
     <div class="arena-wrapper">
    
       <ng-container *ngIf="pokemon">
-        <!-- <app-pokemon
+        <app-pokemon
+          *ngIf="pokemonOpponent"
           class="arena__opponent-container"
           [className]="pokemonOpponentClassName"
           [pokemon]="pokemonOpponent"
           [isOpponent]="true"
-        ></app-pokemon> -->
+        ></app-pokemon>
   
       
         <app-pokemon

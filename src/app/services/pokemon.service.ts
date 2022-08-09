@@ -80,7 +80,9 @@ export class PokemonService {
     return Math.floor(0.01*(2*hpStat + 30 + Math.floor(0.25 * 500)) * 100) + 5;
   }
 
-  calculateHealthAfterAttack(index: number, pokemonHealth: number, attackPower: number) {
+  calculateHealthAfterAttack(index: number, pokemonHealth: number, attackPower: number, isCritical = false) {
+    if(isCritical) index = index * 2;
+    
     const damage = index * attackPower;
     const finalHealth = Math.floor(pokemonHealth - damage);
     if(finalHealth < 0) {

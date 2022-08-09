@@ -87,5 +87,10 @@ export class MoveEffectivinessService {
     return message;
   }
 
+  isCriticalMove() {
+    const criticalRate = 0.1;
+    return Math.random() < 0.1;
+  }
+
 
 }

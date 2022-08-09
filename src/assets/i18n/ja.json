@@ -18,7 +18,8 @@
         "battle": "戦い"
     },
     "ARENA": {
-      "opponent": "相手の "
+      "opponent": "相手の ",
+      "waitingForRival": "相手の攻撃を待ってる。"
     },
     "CHALLENGE": {
       "yourId": "オンラインイド ",

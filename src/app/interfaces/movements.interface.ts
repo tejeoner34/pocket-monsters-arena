@@ -23,6 +23,8 @@ export interface MoveData {
   super_contest_effect: ContestEffect;
   target:               ContestType;
   type:                 ContestType;
+  hasMoveMissed?:       boolean;
+  isCritical?:            boolean;
 }
 
 export interface ContestCombos {

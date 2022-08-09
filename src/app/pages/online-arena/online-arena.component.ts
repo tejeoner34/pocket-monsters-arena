@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
 import { Pokemon, PokemonEdit } from 'src/app/interfaces/interfaces';
 import { MoveData } from 'src/app/interfaces/movements.interface';
 import { User } from 'src/app/interfaces/user.interface';
@@ -42,6 +43,7 @@ export class OnlineArenaComponent implements OnInit {
 
   currentTurn!: number;
   turnCount = 0;
+  waitingForRival = false;
 
   _userId!: string | null;
 
@@ -50,10 +52,17 @@ export class OnlineArenaComponent implements OnInit {
     private pokemonService: PokemonService,
     private moveEffectivinessService: MoveEffectivinessService,
     private userService: UserService,
-    private pointsService: PointsService
+    private pointsService: PointsService,
+    private translateService: TranslateService
   ) {}
 
   ngOnInit(): void {
+    this.translateService.get('ARENA').subscribe((data) => {
+      this.opponentTextPlaceholder = data.opponent;
+    });
+
+    this.userService.user$.subscribe(res => this.user = res);
+
     this.webSocket.userId$.subscribe((res) => (this._userId = res));
 
     this.webSocket.listen('get-opponents-move').subscribe(res => {
@@ -66,7 +75,6 @@ export class OnlineArenaComponent implements OnInit {
     //turn Observable
     this.pokemonService.turnObservable$.subscribe((turn) => {
       this.currentTurn = turn;
-      console.log(this.currentTurn);
 
       if (this.currentTurn === 1 && this.hasSelectedMove && this.opponentHasSelectedMove) {
         const mostPowerFulAttack = this.pokemonService.getMostPowerfulAttack();
@@ -197,6 +205,7 @@ export class OnlineArenaComponent implements OnInit {
 
   chooseMove(move: MoveData, i: number) {
     if (this.hasSelectedMove) return;
+    this.waitingForRival = true;
     this.chosenMove = move;
     this.hasSelectedMove = true;
     // this.movesContainerArray[this.currentMovePosition].classList.remove(
@@ -205,6 +214,11 @@ export class OnlineArenaComponent implements OnInit {
     // this.currentMovePosition = i;
     // this.movesContainerArray[this.currentMovePosition].classList.add('arrow');
     this.pokemonService.updateTurn(this.currentTurn);
+    move = {
+      ...move,
+      hasMoveMissed: this.moveEffectivinessService.hasMovedMissed(move),
+      isCritical: this.moveEffectivinessService.isCriticalMove()
+    }
     this.webSocket.emit('select-move', {
       moveData: move,
       attackerId: this._userId,
@@ -215,17 +229,21 @@ export class OnlineArenaComponent implements OnInit {
 
   attack(move: MoveData) {
     (async () => {
+      console.log(this.pokemonOpponent.pokemonHealthNumber, 'attack')
+
       this.pokemonOpponent.pokemonHealthNumber =
         this.pokemonService.calculateHealthAfterAttack(
           this.effectivinessIndex,
           this.pokemonOpponent.pokemonHealthNumber!,
-          move.power
+          move.power,
+          move.isCritical
         );
-      this.pointsService.updateUserPoints(this.pokemonOpponent.pokemonHealthNumberTotal - this.pokemonOpponent.pokemonHealthNumber);
-      if(this.user) {
-        this.user.points = this.pointsService.getUserPoints();
-        this.userService.updateUserData(this.user)
-      }
+      console.log(this.pokemonOpponent.pokemonHealthNumber, 'attack')
+      // this.pointsService.updateUserPoints(this.pokemonOpponent.pokemonHealthNumberTotal - this.pokemonOpponent.pokemonHealthNumber);
+      // if(this.user) {
+      //   this.user.points = this.pointsService.getUserPoints();
+      //   this.userService.updateUserData(this.user)
+      // }
       this.pokemonOpponent.pokemonHealth =
         (this.pokemonOpponent.pokemonHealthNumber /
           this.pokemonOpponent.pokemonHealthNumberTotal!) *
@@ -240,8 +258,10 @@ export class OnlineArenaComponent implements OnInit {
         this.pokemonService.calculateHealthAfterAttack(
           this.effectivinessIndex,
           this.pokemon.pokemonHealthNumber,
-          move.power
+          move.power,
+          move.isCritical
         );
+      console.log(this.pokemon.pokemonHealthNumber, 'opponentAttack')
       this.pokemon.pokemonHealth =
         (this.pokemon.pokemonHealthNumber /
           this.pokemon.pokemonHealthNumberTotal) *
@@ -249,15 +269,17 @@ export class OnlineArenaComponent implements OnInit {
         '%';
     })();
 
-    this.opponentHasSelectedMove = false;
   }
 
   gameLoop(turn: number, move: MoveData) {
+    this.waitingForRival = false;
+    console.log('turn', this.currentTurn)
     this.effectivinessIndex = this.pokemonService.getSelectedMoveEffectiviness(move);
-    console.log(this.effectivinessIndex)
+    console.log('damageindex',this.effectivinessIndex);
     const attacker = turn === 0 ? this.pokemon : this.pokemonOpponent;
     const receiver = turn === 0 ? this.pokemonOpponent : this.pokemon;
     (async () => {
+      console.log(attacker, 'attacker');
       await wait(300);
       turn === 0
         ? (this.currentPokemonName = attacker.name)
@@ -281,7 +303,7 @@ export class OnlineArenaComponent implements OnInit {
       turn === 0
         ? (this.pokemonClassName = '')
         : (this.pokemonOpponentClassName = '');
-      if (this.moveEffectivinessService.hasMovedMissed(move)) {
+      if (move?.hasMoveMissed) {
         this.boxMessage = 'moveMissed';
         await wait(1000);
         this.goToNextTurn(turn);
@@ -304,8 +326,11 @@ export class OnlineArenaComponent implements OnInit {
         ? this.attack(move) 
         : this.opponentAttacks(move);
       
-      if(this.effectivinessIndex !== 1) {
+      if(this.effectivinessIndex !== 1 && !move.isCritical) {
         this.boxMessage = this.moveEffectivinessService.messageByEffectiviness(this.effectivinessIndex);
+        await wait(1200);
+      } else if(move.isCritical) {
+        this.boxMessage = 'criticalHit';
         await wait(1200);
       }
 
@@ -316,12 +341,12 @@ export class OnlineArenaComponent implements OnInit {
           this.pokemonOpponentClassName = 'damage';
           await wait (1000);
           this.pokemonOpponentClassName = 'defeat';
-          this.user !== null ? this.user.wins += 1 : null;
+          this.user? this.user.wins += 1 : null;
         } else {
           this.pokemonClassName = 'damage';
           await wait (1000);
           this.pokemonClassName = 'defeat';
-          this.user !== null ? this.user.defeats += 1 : null;
+          this.user? this.user.defeats += 1 : null;
         }
         this.userService.patchUserData(this.user!).subscribe();
         this.currentPokemonName = receiver.name;
@@ -343,6 +368,7 @@ export class OnlineArenaComponent implements OnInit {
     this.turnCount = this.turnCount + 1;
     if (this.turnCount === 2) {
       this.hasSelectedMove = false;
+      this.opponentHasSelectedMove = false;
       this.turnCount = 0;
       this.currentPokemonName = this.pokemon.name;
       this.boxMessage = 'chooseActionMessage';

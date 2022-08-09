@@ -18,7 +18,8 @@
         "battle": "Battle"
     },
     "ARENA": {
-      "opponent": "Foe "
+      "opponent": "Foe ",
+      "waitingForRival": "Waiting for rival to choose."
     },
     "CHALLENGE": {
       "yourId": "Your online ID is: ",

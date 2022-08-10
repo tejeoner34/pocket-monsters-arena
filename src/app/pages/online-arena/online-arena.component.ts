@@ -16,9 +16,7 @@ import { wait } from 'src/app/shared/helpers';
   styleUrls: ['./online-arena.component.scss'],
 })
 export class OnlineArenaComponent implements OnInit {
-
   user!: User | null;
-
 
   pokemon!: PokemonEdit;
   pokemonClassName = '';
@@ -62,33 +60,39 @@ export class OnlineArenaComponent implements OnInit {
       this.opponentTextPlaceholder = data.opponent;
     });
 
-    this.userService.user$.subscribe(res => this.user = res);
+    this.userService.user$.subscribe((res) => (this.user = res));
 
     this.webSocket.userId$.subscribe((res) => (this._userId = res));
 
-    this.webSocket.listen('get-opponents-move').subscribe(res => {
-      this.opponentChosenMove = res.find((element:any) => element.attackerId === this.webSocket.opponentId).moveData;
-      console.log(this.opponentChosenMove);
+    this.webSocket.listen('get-opponents-move').subscribe((res) => {
+      this.opponentChosenMove = res.find(
+        (element: any) => element.attackerId === this.webSocket.opponentId
+      ).moveData;
       this.opponentHasSelectedMove = true;
       this.pokemonService.updateTurn(this.currentTurn);
-    })
+    });
 
     //turn Observable
     this.pokemonService.turnObservable$.subscribe((turn) => {
       this.currentTurn = turn;
 
-      if (this.currentTurn === 1 && this.hasSelectedMove && this.opponentHasSelectedMove) {
+      if (
+        this.currentTurn === 1 &&
+        this.hasSelectedMove &&
+        this.opponentHasSelectedMove
+      ) {
         const mostPowerFulAttack = this.pokemonService.getMostPowerfulAttack();
         const mostPowerfulMoveIndex =
           this.pokemonOpponent.pokemonMoves.findIndex(
             (move) => move.name.toLowerCase() === mostPowerFulAttack
           );
-        this.gameLoop(
-          this.currentTurn,
-          this.opponentChosenMove
-        );
+        this.gameLoop(this.currentTurn, this.opponentChosenMove);
       }
-      if (this.currentTurn === 0 && this.hasSelectedMove && this.opponentHasSelectedMove) {
+      if (
+        this.currentTurn === 0 &&
+        this.hasSelectedMove &&
+        this.opponentHasSelectedMove
+      ) {
         this.gameLoop(this.currentTurn, this.chosenMove);
       }
     });
@@ -97,26 +101,36 @@ export class OnlineArenaComponent implements OnInit {
 
     this.webSocket.listen('get-pokemon-data').subscribe(({ pokemon }) => {
       this.pokemonOpponent = pokemon;
-      console.log(this.pokemonOpponent);
-      console.log(this.pokemon)
-      if(this.pokemon) {
+      if (this.pokemon) {
         this.pokemonService.calculateEachMoveDamage(
           this.pokemon.pokemonMoves,
           this.pokemonOpponent.types
         );
-        // this.pokemonService.calculateEachMoveDamage(
-        //   this.pokemonOpponent.pokemonMoves,
-        //   this.pokemon.types,
-        //   true
-        // );
+      }
+      if (this.pokemonOpponent) {
+        this.pokemonService.calculateEachMoveDamage(
+          this.pokemonOpponent.pokemonMoves,
+          this.pokemon.types,
+          true
+        );
         this.pokemonService.updateTurn(
           this.pokemon.pokemonSpeed > this.pokemonOpponent.pokemonSpeed ? 0 : 1
         );
       }
     });
 
+    // send pokemon data
+    this.webSocket.roomIsFull$.subscribe((res: boolean) => {
+      //if room is fool we send pokemon data to other client
+      if (res) {
+        this.webSocket.emit('send-pokemon-data', {
+          pokemon: this.pokemon,
+          opponentUserId: this.webSocket.opponentId,
+        });
+      }
+    });
+
     this.pokemonService.getRandomPokemon().subscribe((pokemon) => {
-      //Pokemon data
       this.pokemonService
         .getLocalizedPokemonName(pokemon.id)
         .subscribe((name) => {
@@ -140,14 +154,14 @@ export class OnlineArenaComponent implements OnInit {
     });
   }
 
-  sendMessage(message: any) {
-    // this.messages.push({message, id: this.webSocket.userId});
-    this.webSocket.emit('send-message', {
-      message: message.text,
-      id: this._userId,
-      arenaId: this.webSocket.roomId,
-    });
-  }
+  // sendMessage(message: any) {
+  //   // this.messages.push({message, id: this.webSocket.userId});
+  //   this.webSocket.emit('send-message', {
+  //     message: message.text,
+  //     id: this._userId,
+  //     arenaId: this.webSocket.roomId,
+  //   });
+  // }
 
   getPokemonMoves(pokemon: Pokemon, isOpponent = false) {
     if (this.pokemon.pokemonMoves.length > 3) return;
@@ -182,25 +196,10 @@ export class OnlineArenaComponent implements OnInit {
           return;
         }
 
-
-        this.webSocket.roomIsFull$.subscribe((res) => {
-          if (res) {
-            this.webSocket.emit('send-pokemon-data', {
-              pokemon: this.pokemon,
-              opponentUserId: this.webSocket.opponentId,
-            });
-            if(this.pokemonOpponent) {
-              this.pokemonService.calculateEachMoveDamage(
-                this.pokemonOpponent.pokemonMoves,
-                this.pokemon.types,
-                true
-              );
-              //poner aqui el otro calculate servivce
-              this.pokemonService.updateTurn(
-                this.pokemon.pokemonSpeed > this.pokemonOpponent.pokemonSpeed ? 0 : 1
-              );
-            }
-          }
+        // At this point we have pokemon data so we join the room.
+        this.webSocket.emit('join-room', {
+          userId: this._userId,
+          roomId: this.webSocket.roomId,
         });
       });
   }
@@ -219,20 +218,18 @@ export class OnlineArenaComponent implements OnInit {
     this.chosenMove = {
       ...move,
       hasMoveMissed: this.moveEffectivinessService.hasMovedMissed(move),
-      isCritical: this.moveEffectivinessService.isCriticalMove()
-    }
+      isCritical: this.moveEffectivinessService.isCriticalMove(),
+    };
     this.webSocket.emit('select-move', {
       moveData: this.chosenMove,
       attackerId: this._userId,
       receiverId: this.webSocket.opponentId,
-      roomId: this.webSocket.roomId
-    })
+      roomId: this.webSocket.roomId,
+    });
   }
 
   attack(move: MoveData) {
     (async () => {
-      console.log(this.pokemonOpponent.pokemonHealthNumber, 'attack')
-
       this.pokemonOpponent.pokemonHealthNumber =
         this.pokemonService.calculateHealthAfterAttack(
           this.effectivinessIndex,
@@ -240,9 +237,9 @@ export class OnlineArenaComponent implements OnInit {
           move.power,
           move.isCritical
         );
-      if(this.user) {
+      if (this.user) {
         this.user.points = this.pointsService.getUserPoints();
-        this.userService.updateUserData(this.user)
+        this.userService.updateUserData(this.user);
       }
       this.pokemonOpponent.pokemonHealth =
         (this.pokemonOpponent.pokemonHealthNumber /
@@ -261,25 +258,22 @@ export class OnlineArenaComponent implements OnInit {
           move.power,
           move.isCritical
         );
-      console.log(this.pokemon.pokemonHealthNumber, 'opponentAttack')
       this.pokemon.pokemonHealth =
         (this.pokemon.pokemonHealthNumber /
           this.pokemon.pokemonHealthNumberTotal) *
           100 +
         '%';
     })();
-
   }
 
   gameLoop(turn: number, move: MoveData) {
     this.waitingForRival = false;
-    console.log('turn', this.currentTurn)
-    this.effectivinessIndex = this.pokemonService.getSelectedMoveEffectiviness(move);
-    console.log('damageindex',this.effectivinessIndex);
+    this.effectivinessIndex =
+      this.pokemonService.getSelectedMoveEffectiviness(move);
+    console.log('damageindex', this.effectivinessIndex);
     const attacker = turn === 0 ? this.pokemon : this.pokemonOpponent;
     const receiver = turn === 0 ? this.pokemonOpponent : this.pokemon;
     (async () => {
-      console.log(attacker, 'attacker');
       await wait(300);
       turn === 0
         ? (this.currentPokemonName = attacker.name)
@@ -309,7 +303,7 @@ export class OnlineArenaComponent implements OnInit {
         this.goToNextTurn(turn);
         return;
       }
-      if(move.power === null) {
+      if (move.power === null) {
         this.boxMessage = 'withoutEffect';
         await wait(1000);
         this.goToNextTurn(turn);
@@ -322,14 +316,14 @@ export class OnlineArenaComponent implements OnInit {
       await wait(600);
       this.pokemonOpponentClassName = '';
       this.pokemonClassName = '';
-      turn === 0 
-        ? this.attack(move) 
-        : this.opponentAttacks(move);
-      
-      if(this.effectivinessIndex !== 1 && !move.isCritical) {
-        this.boxMessage = this.moveEffectivinessService.messageByEffectiviness(this.effectivinessIndex);
+      turn === 0 ? this.attack(move) : this.opponentAttacks(move);
+
+      if (this.effectivinessIndex !== 1 && !move.isCritical) {
+        this.boxMessage = this.moveEffectivinessService.messageByEffectiviness(
+          this.effectivinessIndex
+        );
         await wait(1200);
-      } else if(move.isCritical) {
+      } else if (move.isCritical) {
         this.boxMessage = 'criticalHit';
         await wait(1200);
       }
@@ -337,19 +331,19 @@ export class OnlineArenaComponent implements OnInit {
       await wait(1000);
 
       if (this.isGameOver(receiver.pokemonHealthNumber)) {
-        if(turn === 0) {
+        if (turn === 0) {
           this.pokemonOpponentClassName = 'damage';
-          await wait (1000);
+          await wait(1000);
           this.pokemonOpponentClassName = 'defeat';
-          if(this.user) {
+          if (this.user) {
             this.user.wins += 1;
             this.user.points += this.pointsPerWin;
           }
         } else {
           this.pokemonClassName = 'damage';
-          await wait (1000);
+          await wait(1000);
           this.pokemonClassName = 'defeat';
-          this.user? this.user.defeats += 1 : null;
+          this.user ? (this.user.defeats += 1) : null;
         }
         this.userService.patchUserData(this.user!).subscribe();
         this.currentPokemonName = receiver.name;

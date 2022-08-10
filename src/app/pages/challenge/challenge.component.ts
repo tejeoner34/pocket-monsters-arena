@@ -28,8 +28,10 @@ export class ChallengeComponent implements OnInit {
 
     this.webSocket.userId$.subscribe(res => this._userId = res);
 
-    this.webSocket.listen('all-users-in-room').subscribe(res => 
-      this.webSocket.roomIsFull$.next(res.roomComplete)
+    this.webSocket.listen('all-users-in-room').subscribe(res => {
+      console.log(res)
+      this.webSocket.roomIsFull$.next(res.roomComplete);
+    }
     )
 
 
@@ -58,10 +60,10 @@ export class ChallengeComponent implements OnInit {
   }
 
   goToArena() {
-    this.webSocket.emit('join-room', {
-      userId: this._userId,
-      roomId: this.webSocket.roomId
-    });
+    // this.webSocket.emit('join-room', {
+    //   userId: this._userId,
+    //   roomId: this.webSocket.roomId
+    // });
     this.router.navigate([`/online-arena/${this.webSocket.roomId}`]);
   }
 

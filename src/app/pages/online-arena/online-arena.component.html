@@ -1,7 +1,4 @@
-<!-- <form #testForm="ngForm" (ngSubmit)="sendMessage(testForm.value)">
-    <input ngModel name="text" type="text" #input>
-    <button type="submit">Enviar</button>
-</form> -->
+<app-game-over-modal [winner]="winner" *ngIf="gameOver"></app-game-over-modal>
 <div class="arena">
   <div class="arena-wrapper">
     <ng-container *ngIf="pokemon">

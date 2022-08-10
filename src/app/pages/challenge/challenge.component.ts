@@ -13,6 +13,7 @@ export class ChallengeComponent implements OnInit {
   // userId!: Observable<string | null>;
   _userId!: string | null;
   hasChallenged = false;
+  isWaitingResponse = false;
   rivalHasAccepted = false;
   infoMessageBase = 'CHALLENGE.';
   infoMessageSufix = 'waiting';
@@ -39,6 +40,7 @@ export class ChallengeComponent implements OnInit {
     this.webSocket.listen('challenge-response').subscribe(res => {
       this.infoMessageSufix = res.message;
       this.rivalHasAccepted = res.accept;
+      this.isWaitingResponse = res.accept ? true : false;
       if(res.accept) {
         this.webSocket.setRoomId(res.roomId);
         this.webSocket.setOpponentId(res.userId);
@@ -52,6 +54,7 @@ export class ChallengeComponent implements OnInit {
       challengedId: challengedUserId
     });
     this.hasChallenged = true;
+    this.isWaitingResponse = true;
   }
 
   goToArena() {

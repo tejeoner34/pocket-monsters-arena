@@ -298,7 +298,6 @@ export class ArenaComponent implements OnInit, AfterViewChecked {
   }
 
   gameLoop(turn: number, move: MoveData) {
-    console.log(move);
     this.effectivinessIndex =
       this.pokemonService.getSelectedMoveEffectiviness(move);
     const attacker = turn === 0 ? this.pokemon : this.pokemonOpponent;

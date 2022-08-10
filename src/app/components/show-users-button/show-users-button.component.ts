@@ -14,7 +14,6 @@ export class ShowUsersButtonComponent implements OnInit {
   }
 
   onClick() {
-    console.log('click')
     this.userService.showUsers();
   }
 

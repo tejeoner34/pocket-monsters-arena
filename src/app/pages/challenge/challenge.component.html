@@ -4,7 +4,7 @@
         <p class="challenge__form__info">{{'CHALLENGE.challengeInfo' | translate}}</p>
         <form class="challenge__form">
             <input #rivalIdInput type="text" [placeholder]="'CHALLENGE.typeRivalId' | translate">
-            <button [disabled]="hasChallenged" type="button" (click)="challengeUser(rivalIdInput.value)">
+            <button [disabled]="isWaitingResponse" type="button" (click)="challengeUser(rivalIdInput.value)">
                 {{ 'CHALLENGE.challenge' | translate }}
             </button>
             <p *ngIf="hasChallenged">{{ 'CHALLENGE.' + infoMessageSufix | translate }}</p>

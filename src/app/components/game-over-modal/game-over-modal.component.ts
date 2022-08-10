@@ -1,4 +1,5 @@
 import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
+import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { User } from 'src/app/interfaces/user.interface';
 import { RestartService } from 'src/app/services/restart.service';
@@ -17,7 +18,8 @@ export class GameOverModalComponent implements OnInit {
 
 
   constructor(private userService: UserService,
-              private restartService: RestartService) { }
+              private restartService: RestartService,
+              private router: Router) { }
 
   ngOnInit(): void {
     this.user$ = this.userService.user$;
@@ -27,6 +29,10 @@ export class GameOverModalComponent implements OnInit {
     // window.location.reload();
     // this.clickEmitter.emit();
     this.restartService.updateRestart();
+  }
+
+  returnToHome() {
+    this.router.navigate(['/home'])
   }
 
 }

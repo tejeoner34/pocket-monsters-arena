@@ -41,6 +41,8 @@ export class ChallengedModalComponent implements OnInit {
       accept: false,
       challengerId: this.challenger
     });
+
+    this.webSocket.setChallengerData(null);
   }
 
 

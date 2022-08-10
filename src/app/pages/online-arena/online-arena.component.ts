@@ -98,11 +98,17 @@ export class OnlineArenaComponent implements OnInit {
     this.webSocket.listen('get-pokemon-data').subscribe(({ pokemon }) => {
       this.pokemonOpponent = pokemon;
       console.log(this.pokemonOpponent);
+      console.log(this.pokemon)
       if(this.pokemon) {
         this.pokemonService.calculateEachMoveDamage(
           this.pokemon.pokemonMoves,
           this.pokemonOpponent.types
         );
+        // this.pokemonService.calculateEachMoveDamage(
+        //   this.pokemonOpponent.pokemonMoves,
+        //   this.pokemon.types,
+        //   true
+        // );
         this.pokemonService.updateTurn(
           this.pokemon.pokemonSpeed > this.pokemonOpponent.pokemonSpeed ? 0 : 1
         );
@@ -176,14 +182,7 @@ export class OnlineArenaComponent implements OnInit {
           return;
         }
 
-        //tengo que añadir una nueva funcion en el servicio que chequee la efectividad de los movimientos.
-        // if (this.pokemon.pokemonMoves.length > 3) {
-        //   this.pokemonService.calculateEachMoveDamage(
-        //     this.pokemon.pokemonMoves,
-        //     this.pokemonOpponent.types
-        //   );
-        //   return;
-        // }
+
         this.webSocket.roomIsFull$.subscribe((res) => {
           if (res) {
             this.webSocket.emit('send-pokemon-data', {
@@ -192,9 +191,11 @@ export class OnlineArenaComponent implements OnInit {
             });
             if(this.pokemonOpponent) {
               this.pokemonService.calculateEachMoveDamage(
-                this.pokemon.pokemonMoves,
-                this.pokemonOpponent.types
+                this.pokemonOpponent.pokemonMoves,
+                this.pokemon.types,
+                true
               );
+              //poner aqui el otro calculate servivce
               this.pokemonService.updateTurn(
                 this.pokemon.pokemonSpeed > this.pokemonOpponent.pokemonSpeed ? 0 : 1
               );

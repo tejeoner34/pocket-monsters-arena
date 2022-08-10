@@ -13,7 +13,6 @@ export class RestartService {
   constructor(private router: Router) { }
 
   updateRestart() {
-    console.log('ejecutado')
     this.restartSubject$.next(true);
   }
 

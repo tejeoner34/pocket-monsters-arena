@@ -44,7 +44,7 @@
               pokemon?.pokemonMoves?.length === 4;
             else spinner"
         >
-          <ng-template *ngIf="!waitingForRival; else waitingText">
+          <ng-container *ngIf="!waitingForRival; else waitingText">
             <div
               class="moves-container__move"
               *ngFor="let move of pokemon?.pokemonMoves; let i = index"
@@ -52,9 +52,9 @@
             >
               <p>{{ move.name | titlecase }}</p>
             </div>
-          </ng-template>
+          </ng-container>
           <ng-template #waitingText>
-            <div>
+            <div class="moves-container__waiting-text-wrapper">
               {{ "ARENA.waitingForRival" | translate }}
             </div>
           </ng-template>

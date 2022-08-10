@@ -46,7 +46,6 @@ export class UserService {
     const body = JSON.stringify(user)
     return this.http.patch<User>(this.url, body, {'headers': headers}).pipe(
       tap(res => {
-        console.log(res);
         this.updateUserData(res)})
     );
   }

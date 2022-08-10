@@ -135,6 +135,7 @@ export class PokemonService {
   }
 
   getSelectedMoveEffectiviness(move: MoveData) {
+    console.log(this._movesDamage)
     let index = 1;
     for(let i in this._movesDamage) {
       const foundIndex = this._movesDamage[i as keyof MovesDamage].find(movement => movement.name.toLowerCase() === move.name.toLowerCase())?.index;

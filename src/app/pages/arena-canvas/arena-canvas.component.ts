@@ -7,7 +7,10 @@ import {
 } from 'src/app/interfaces/interfaces';
 import { MoveData } from 'src/app/interfaces/movements.interface';
 import { PokemonService } from 'src/app/services/pokemon.service';
-import { LifeContainer, PokemonClass } from '../../shared/game-classes/game-classes';
+import {
+  LifeContainer,
+  PokemonClass,
+} from '../../shared/game-classes/game-classes';
 import { gsap } from 'gsap';
 import { TranslateService } from '@ngx-translate/core';
 import { wait } from 'src/app/shared/helpers';
@@ -15,6 +18,7 @@ import { MoveEffectivinessService } from 'src/app/services/move-effectiviness.se
 import { RestartService } from 'src/app/services/restart.service';
 import { UserService } from 'src/app/services/user.service';
 import { User } from 'src/app/interfaces/user.interface';
+import { PointsService } from 'src/app/services/points.service';
 
 @Component({
   selector: 'app-arena-canvas',
@@ -55,24 +59,29 @@ export class ArenaCanvasComponent implements OnInit {
   petitionsCountOpponent: number = 0;
   winner: string = '';
   gameOver = false;
+  pointsPerWin = 1000;
 
   effectivinessIndex = 1;
 
-  constructor(private pokemonService: PokemonService, 
+  constructor(
+    private pokemonService: PokemonService,
     private translateService: TranslateService,
     private moveEffectivinessService: MoveEffectivinessService,
     private restartService: RestartService,
-    private userService: UserService) {}
+    private userService: UserService,
+    private pointsService: PointsService
+  ) {}
 
   ngOnInit(): void {
-    this.restartService.restart$.subscribe(res => this.restartService.resetPage('arena-canvas'));
+    this.restartService.restart$.subscribe((res) =>
+      this.restartService.resetPage('arena-canvas')
+    );
 
     this.translateService.get('ARENA').subscribe((data) => {
       this.opponentTextPlaceholder = data.opponent;
     });
 
-    this.userService.user$.subscribe(res => this.user = res);
-
+    this.userService.user$.subscribe((res) => (this.user = res));
 
     this.pokemonService.turnObservable$.subscribe((turn) => {
       this.currentTurn = turn;
@@ -83,6 +92,10 @@ export class ArenaCanvasComponent implements OnInit {
           this.pokemonOpponent.pokemonMoves.findIndex(
             (move) => move.name.toLowerCase() === mostPowerFulAttack
           );
+        this.pokemonOpponent.pokemonMoves[mostPowerfulMoveIndex] = {
+          ...this.pokemonOpponent.pokemonMoves[mostPowerfulMoveIndex],
+          isCritical: this.moveEffectivinessService.isCriticalMove(),
+        };
         this.gameLoop(
           this.currentTurn,
           this.pokemonOpponent.pokemonMoves[mostPowerfulMoveIndex]
@@ -92,7 +105,7 @@ export class ArenaCanvasComponent implements OnInit {
         this.gameLoop(this.currentTurn, this.chosenMove);
       }
     });
-    
+
     this.ctx = this.canvas.nativeElement.getContext('2d')!;
 
     forkJoin([
@@ -111,12 +124,12 @@ export class ArenaCanvasComponent implements OnInit {
       this.pokemonImg.src = pokemons[0].sprites.back_default;
       this.pokemonImg.onerror = () => {
         this.pokemonImg.src = 'assets/img/ghost-pokemon.png';
-      }
+      };
       this.pokemonInstance = new PokemonClass(
         { x: 50, y: 225 },
         this.pokemonImg,
         'pepe',
-        false,
+        false
       );
 
       this.pokemon = {
@@ -134,13 +147,14 @@ export class ArenaCanvasComponent implements OnInit {
 
       this.pokemonLifecontainer = new LifeContainer(
         this.pokemon.name,
-        this.pokemon.pokemonHealthNumberTotal / this.pokemon.pokemonHealthNumberTotal,
+        this.pokemon.pokemonHealthNumberTotal /
+          this.pokemon.pokemonHealthNumberTotal,
         this.pokemon.pokemonHealthNumberTotal,
         this.pokemon.pokemonHealthNumber,
         this.ctx,
         {
           x: 400,
-          y: 250
+          y: 250,
         }
       );
       this.getPokemonMoves(this.pokemon);
@@ -148,22 +162,22 @@ export class ArenaCanvasComponent implements OnInit {
       // Opponent data
       this.pokemonService
         .getLocalizedPokemonName(pokemons[1].id)
-        .subscribe((name) => { 
+        .subscribe((name) => {
           this.pokemonOpponent.name = name;
           this.pokemonOpponentLifecontainer.updateName(name);
         });
 
       this.pokemonOpponentImg.src = pokemons[1].sprites.front_default;
       this.pokemonOpponentImg.onerror = () => {
-        this.pokemonOpponentImg.src = 'assets/img/ghost-pokemon.png'
-      }
+        this.pokemonOpponentImg.src = 'assets/img/ghost-pokemon.png';
+      };
       this.pokemonOpponentIntance = new PokemonClass(
         { x: 550, y: 50 },
         this.pokemonOpponentImg,
         'pepe',
-        true,
+        true
       );
-      
+
       this.pokemonOpponent = {
         ...pokemons[1],
         pokemonMoves: [],
@@ -179,13 +193,14 @@ export class ArenaCanvasComponent implements OnInit {
 
       this.pokemonOpponentLifecontainer = new LifeContainer(
         this.pokemonOpponent.name,
-        this.pokemonOpponent.pokemonHealthNumberTotal / this.pokemonOpponent.pokemonHealthNumberTotal,
+        this.pokemonOpponent.pokemonHealthNumberTotal /
+          this.pokemonOpponent.pokemonHealthNumberTotal,
         this.pokemonOpponent.pokemonHealthNumberTotal,
         this.pokemonOpponent.pokemonHealthNumber,
         this.ctx,
         {
           x: 20,
-          y: 30
+          y: 30,
         },
         true
       );
@@ -200,7 +215,6 @@ export class ArenaCanvasComponent implements OnInit {
         this.openPokeball = true;
       }, 800);
     });
-
   }
 
   animate() {
@@ -289,6 +303,10 @@ export class ArenaCanvasComponent implements OnInit {
   chooseMove(move: MoveData, i: number) {
     if (this.hasSelectedMove) return;
     this.chosenMove = move;
+    this.chosenMove = {
+      ...move,
+      isCritical: this.moveEffectivinessService.isCriticalMove(),
+    };
     this.hasSelectedMove = true;
     // this.movesContainerArray[this.currentMovePosition].classList.remove(
     //   'arrow'
@@ -304,11 +322,19 @@ export class ArenaCanvasComponent implements OnInit {
         this.pokemonService.calculateHealthAfterAttack(
           this.effectivinessIndex,
           this.pokemonOpponent.pokemonHealthNumber!,
-          move.power
+          move.power,
+          move.isCritical
         );
-      
-        this.pokemonOpponentLifecontainer.updateLife(this.pokemonOpponent.pokemonHealthNumber /
-          this.pokemonOpponent.pokemonHealthNumberTotal);
+
+      if (this.user) {
+        this.user.points = this.pointsService.getUserPoints();
+        this.userService.updateUserData(this.user);
+      }
+
+      this.pokemonOpponentLifecontainer.updateLife(
+        this.pokemonOpponent.pokemonHealthNumber /
+          this.pokemonOpponent.pokemonHealthNumberTotal
+      );
     })();
   }
 
@@ -318,18 +344,21 @@ export class ArenaCanvasComponent implements OnInit {
         this.pokemonService.calculateHealthAfterAttack(
           this.effectivinessIndex,
           this.pokemon.pokemonHealthNumber,
-          move.power
+          move.power,
+          move.isCritical
         );
 
-        this.pokemonLifecontainer.updateLife(this.pokemon.pokemonHealthNumber /
-          this.pokemon.pokemonHealthNumberTotal);
+      this.pokemonLifecontainer.updateLife(
+        this.pokemon.pokemonHealthNumber / this.pokemon.pokemonHealthNumberTotal
+      );
     })();
 
     this.opponentHasSelectedMove = false;
   }
 
   gameLoop(turn: number, move: MoveData) {
-    this.effectivinessIndex = this.pokemonService.getSelectedMoveEffectiviness(move);
+    this.effectivinessIndex =
+      this.pokemonService.getSelectedMoveEffectiviness(move);
     console.log(this.effectivinessIndex);
     const attacker = turn === 0 ? this.pokemon : this.pokemonOpponent;
     const receiver = turn === 0 ? this.pokemonOpponent : this.pokemon;
@@ -353,8 +382,8 @@ export class ArenaCanvasComponent implements OnInit {
       }
 
       turn === 0
-        ? (this.pokemonInstance.attack(this.pokemonOpponentIntance))
-        : (this.pokemonOpponentIntance.attack(this.pokemonInstance));
+        ? this.pokemonInstance.attack(this.pokemonOpponentIntance)
+        : this.pokemonOpponentIntance.attack(this.pokemonInstance);
       await wait(1200);
 
       if (this.moveEffectivinessService.hasMovedMissed(move)) {
@@ -364,30 +393,37 @@ export class ArenaCanvasComponent implements OnInit {
         return;
       }
 
-      if(move.power === null) {
+      if (move.power === null) {
         this.boxMessage = 'withoutEffect';
         await wait(1200);
         this.goToNextTurn(turn);
         return;
       }
-      
+
       turn === 0 ? this.attack(move) : this.opponentAttacks(move);
-      
-      if(this.effectivinessIndex !== 1) {
-        this.boxMessage = this.moveEffectivinessService.messageByEffectiviness(this.effectivinessIndex);
-        console.log(this.boxMessage);
-        await wait(1000);
+
+      if (this.effectivinessIndex !== 1 && !move.isCritical) {
+        this.boxMessage = this.moveEffectivinessService.messageByEffectiviness(
+          this.effectivinessIndex
+        );
+        await wait(1200);
+      } else if (move.isCritical) {
+        this.boxMessage = 'criticalHit';
+        await wait(1200);
       }
 
       await wait(1000);
 
       if (this.isGameOver(receiver.pokemonHealthNumber)) {
-        if(turn === 0){
+        if (turn === 0) {
           this.pokemonOpponentIntance.defeat();
-          this.user !== null ? this.user.wins += 1 : null;
+          if(this.user) {
+            this.user.wins += 1;
+            this.user.points += this.pointsPerWin;
+          }
         } else {
           this.pokemonInstance.defeat();
-          this.user !== null ? this.user.defeats += 1 : null;
+          this.user !== null ? (this.user.defeats += 1) : null;
         }
         this.userService.patchUserData(this.user!).subscribe();
         // turn === 0
@@ -424,5 +460,4 @@ export class ArenaCanvasComponent implements OnInit {
   isGameOver(life: number) {
     return life <= 0 ? true : false;
   }
-
 }

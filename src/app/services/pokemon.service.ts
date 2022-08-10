@@ -6,6 +6,7 @@ import { MoveData } from '../interfaces/movements.interface';
 import { TypeData } from '../interfaces/type.interface';
 import { TranslateService } from '@ngx-translate/core';
 import { MoveEffectivinessService } from './move-effectiviness.service';
+import { PointsService } from './points.service';
 
 interface MovesDamage {
   opponent: MoveDamage[];
@@ -34,7 +35,8 @@ export class PokemonService {
   constructor(
     private http: HttpClient, 
     private translateService: TranslateService,
-    private moveService: MoveEffectivinessService
+    private moveService: MoveEffectivinessService,
+    private pointsService: PointsService
     ) { }
 
   updateTurn(turn: number) {
@@ -83,7 +85,8 @@ export class PokemonService {
   calculateHealthAfterAttack(index: number, pokemonHealth: number, attackPower: number, isCritical = false) {
     if(isCritical) index = index * 2;
     
-    const damage = index * attackPower;
+    const damage = this.calculateDamage(index, attackPower);
+    this.pointsService.updateUserPoints(damage > pokemonHealth ? pokemonHealth : damage);
     const finalHealth = Math.floor(pokemonHealth - damage);
     if(finalHealth < 0) {
       return 0;

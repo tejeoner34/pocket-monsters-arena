@@ -5,7 +5,9 @@
     <canvas #canvas width="800" height="500"></canvas>
     <div class="arena-canvas__options-container">
       <div class="arena-canvas__options__info-container">
-        <p class="info-container__action">
+        <p class="info-container__action"
+           [ngClass]="boxMessage === 'criticalHit' ? 'info-container__action--yellow' : ''"
+         >
           {{
             boxMessage
               | translate

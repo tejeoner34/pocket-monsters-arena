@@ -57,6 +57,10 @@
   
       .info-container__action {
         line-height: 30px;
+
+        &--yellow {
+          color: yellow;
+        }
       }
     }
   

@@ -50,6 +50,7 @@ export class ArenaComponent implements OnInit, AfterViewChecked {
   petitionsCountOpponent: number = 0;
   winner: string = '';
   gameOver = false;
+  pointsPerWin = 1000;
 
   effectivinessIndex = 1;
 
@@ -63,13 +64,15 @@ export class ArenaComponent implements OnInit, AfterViewChecked {
   ) {}
 
   ngOnInit(): void {
-    this.restartService.restart$.subscribe(res => this.restartService.resetPage('arena'));
+    this.restartService.restart$.subscribe((res) =>
+      this.restartService.resetPage('arena')
+    );
 
     this.translateService.get('ARENA').subscribe((data) => {
       this.opponentTextPlaceholder = data.opponent;
     });
 
-    this.userService.user$.subscribe(res => this.user = res);
+    this.userService.user$.subscribe((res) => (this.user = res));
 
     this.pokemonService.turnObservable$.subscribe((turn) => {
       this.currentTurn = turn;
@@ -80,6 +83,10 @@ export class ArenaComponent implements OnInit, AfterViewChecked {
           this.pokemonOpponent.pokemonMoves.findIndex(
             (move) => move.name.toLowerCase() === mostPowerFulAttack
           );
+        this.pokemonOpponent.pokemonMoves[mostPowerfulMoveIndex] = {
+          ...this.pokemonOpponent.pokemonMoves[mostPowerfulMoveIndex],
+          isCritical: this.moveEffectivinessService.isCriticalMove(),
+        };
         this.gameLoop(
           this.currentTurn,
           this.pokemonOpponent.pokemonMoves[mostPowerfulMoveIndex]
@@ -162,12 +169,12 @@ export class ArenaComponent implements OnInit, AfterViewChecked {
         this.pokemonService.calculateHealthAfterAttack(
           this.effectivinessIndex,
           this.pokemonOpponent.pokemonHealthNumber!,
-          move.power
+          move.power,
+          move.isCritical
         );
-      this.pointsService.updateUserPoints(this.pokemonOpponent.pokemonHealthNumberTotal - this.pokemonOpponent.pokemonHealthNumber);
-      if(this.user) {
+      if (this.user) {
         this.user.points = this.pointsService.getUserPoints();
-        this.userService.updateUserData(this.user)
+        this.userService.updateUserData(this.user);
       }
       this.pokemonOpponent.pokemonHealth =
         (this.pokemonOpponent.pokemonHealthNumber /
@@ -183,7 +190,8 @@ export class ArenaComponent implements OnInit, AfterViewChecked {
         this.pokemonService.calculateHealthAfterAttack(
           this.effectivinessIndex,
           this.pokemon.pokemonHealthNumber,
-          move.power
+          move.power,
+          move.isCritical
         );
       this.pokemon.pokemonHealth =
         (this.pokemon.pokemonHealthNumber /
@@ -272,6 +280,10 @@ export class ArenaComponent implements OnInit, AfterViewChecked {
   chooseMove(move: MoveData, i: number) {
     if (this.hasSelectedMove) return;
     this.chosenMove = move;
+    this.chosenMove = {
+      ...move,
+      isCritical: this.moveEffectivinessService.isCriticalMove(),
+    };
     this.hasSelectedMove = true;
     this.movesContainerArray[this.currentMovePosition].classList.remove(
       'arrow'
@@ -286,8 +298,9 @@ export class ArenaComponent implements OnInit, AfterViewChecked {
   }
 
   gameLoop(turn: number, move: MoveData) {
-    this.effectivinessIndex = this.pokemonService.getSelectedMoveEffectiviness(move);
-    console.log(this.effectivinessIndex)
+    console.log(move);
+    this.effectivinessIndex =
+      this.pokemonService.getSelectedMoveEffectiviness(move);
     const attacker = turn === 0 ? this.pokemon : this.pokemonOpponent;
     const receiver = turn === 0 ? this.pokemonOpponent : this.pokemon;
     (async () => {
@@ -320,7 +333,7 @@ export class ArenaComponent implements OnInit, AfterViewChecked {
         this.goToNextTurn(turn);
         return;
       }
-      if(move.power === null) {
+      if (move.power === null) {
         this.boxMessage = 'withoutEffect';
         await wait(1000);
         this.goToNextTurn(turn);
@@ -333,28 +346,34 @@ export class ArenaComponent implements OnInit, AfterViewChecked {
       await wait(600);
       this.pokemonOpponentClassName = '';
       this.pokemonClassName = '';
-      turn === 0 
-        ? this.attack(move) 
-        : this.opponentAttacks(move);
-      
-      if(this.effectivinessIndex !== 1) {
-        this.boxMessage = this.moveEffectivinessService.messageByEffectiviness(this.effectivinessIndex);
+      turn === 0 ? this.attack(move) : this.opponentAttacks(move);
+
+      if (this.effectivinessIndex !== 1 && !move.isCritical) {
+        this.boxMessage = this.moveEffectivinessService.messageByEffectiviness(
+          this.effectivinessIndex
+        );
+        await wait(1200);
+      } else if (move.isCritical) {
+        this.boxMessage = 'criticalHit';
         await wait(1200);
       }
 
       await wait(1000);
 
       if (this.isGameOver(receiver.pokemonHealthNumber)) {
-        if(turn === 0) {
+        if (turn === 0) {
           this.pokemonOpponentClassName = 'damage';
-          await wait (1000);
+          await wait(1000);
           this.pokemonOpponentClassName = 'defeat';
-          this.user !== null ? this.user.wins += 1 : null;
+          if (this.user) {
+            this.user.wins += 1;
+            this.user.points += this.pointsPerWin;
+          }
         } else {
           this.pokemonClassName = 'damage';
-          await wait (1000);
+          await wait(1000);
           this.pokemonClassName = 'defeat';
-          this.user !== null ? this.user.defeats += 1 : null;
+          this.user !== null ? (this.user.defeats += 1) : null;
         }
         this.userService.patchUserData(this.user!).subscribe();
         this.currentPokemonName = receiver.name;
@@ -461,5 +480,4 @@ export class ArenaComponent implements OnInit, AfterViewChecked {
       this.chooseMove(move, this.currentMovePosition);
     }
   }
-
 }

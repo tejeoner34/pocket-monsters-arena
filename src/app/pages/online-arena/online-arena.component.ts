@@ -40,6 +40,7 @@ export class OnlineArenaComponent implements OnInit {
   gameOver = false;
   winner: string = '';
   opponentTextPlaceholder = '';
+  pointsPerWin = 3000;
 
   currentTurn!: number;
   turnCount = 0;
@@ -214,13 +215,13 @@ export class OnlineArenaComponent implements OnInit {
     // this.currentMovePosition = i;
     // this.movesContainerArray[this.currentMovePosition].classList.add('arrow');
     this.pokemonService.updateTurn(this.currentTurn);
-    move = {
+    this.chosenMove = {
       ...move,
       hasMoveMissed: this.moveEffectivinessService.hasMovedMissed(move),
       isCritical: this.moveEffectivinessService.isCriticalMove()
     }
     this.webSocket.emit('select-move', {
-      moveData: move,
+      moveData: this.chosenMove,
       attackerId: this._userId,
       receiverId: this.webSocket.opponentId,
       roomId: this.webSocket.roomId
@@ -238,12 +239,10 @@ export class OnlineArenaComponent implements OnInit {
           move.power,
           move.isCritical
         );
-      console.log(this.pokemonOpponent.pokemonHealthNumber, 'attack')
-      // this.pointsService.updateUserPoints(this.pokemonOpponent.pokemonHealthNumberTotal - this.pokemonOpponent.pokemonHealthNumber);
-      // if(this.user) {
-      //   this.user.points = this.pointsService.getUserPoints();
-      //   this.userService.updateUserData(this.user)
-      // }
+      if(this.user) {
+        this.user.points = this.pointsService.getUserPoints();
+        this.userService.updateUserData(this.user)
+      }
       this.pokemonOpponent.pokemonHealth =
         (this.pokemonOpponent.pokemonHealthNumber /
           this.pokemonOpponent.pokemonHealthNumberTotal!) *
@@ -341,7 +340,10 @@ export class OnlineArenaComponent implements OnInit {
           this.pokemonOpponentClassName = 'damage';
           await wait (1000);
           this.pokemonOpponentClassName = 'defeat';
-          this.user? this.user.wins += 1 : null;
+          if(this.user) {
+            this.user.wins += 1;
+            this.user.points += this.pointsPerWin;
+          }
         } else {
           this.pokemonClassName = 'damage';
           await wait (1000);

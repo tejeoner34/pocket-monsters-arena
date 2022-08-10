@@ -1,10 +1,7 @@
-
 <app-pokeball [openPokeball]="openPokeball"></app-pokeball>
 <app-game-over-modal [winner]="winner" *ngIf="gameOver"></app-game-over-modal>
 <div class="arena">
-
   <div class="arena-wrapper">
- 
     <ng-container *ngIf="pokemon && pokemonOpponent">
       <app-pokemon
         class="arena__opponent-container"
@@ -13,7 +10,6 @@
         [isOpponent]="true"
       ></app-pokemon>
 
-    
       <app-pokemon
         class="arena__pokemon-container"
         [className]="pokemonClassName"
@@ -21,23 +17,46 @@
       >
       </app-pokemon>
     </ng-container>
- 
+
     <div class="arena__options-container">
       <div class="arena__options__info-container">
         <p
           class="info-container__action"
-        >{{boxMessage | translate: {pokemon: currentPokemonName | titlecase, move: usedMove} | typeMessage | async }}</p>
+          [ngClass]="
+            boxMessage === 'criticalHit' ? 'info-container__action--yellow' : ''"
+        >
+          {{
+            boxMessage
+              | translate
+                : { pokemon: currentPokemonName | titlecase, move: usedMove }
+              | typeMessage
+              | async
+          }}
+        </p>
       </div>
       <div class="arena__pokemon__moves-container">
-        <ng-container *ngIf="pokemon?.pokemonMoves !== undefined && pokemon?.pokemonMoves?.length === 4; else spinner">
-          <div class="moves-container__move" *ngFor="let move of pokemon?.pokemonMoves; let i = index;" (click)="chooseMove(move, i)">
+        <ng-container
+          *ngIf="
+            pokemon?.pokemonMoves !== undefined &&
+              pokemon?.pokemonMoves?.length === 4;
+            else spinner
+          "
+        >
+          <div
+            class="moves-container__move"
+            *ngFor="let move of pokemon?.pokemonMoves; let i = index"
+            (click)="chooseMove(move, i)"
+          >
             <p>{{ move.name | titlecase }}</p>
           </div>
         </ng-container>
         <ng-template #spinner>
           <app-pokeball-spinner></app-pokeball-spinner>
         </ng-template>
-        <div class="arena__moves-container-popover" *ngIf="hasSelectedMove"></div>
+        <div
+          class="arena__moves-container-popover"
+          *ngIf="hasSelectedMove"
+        ></div>
       </div>
     </div>
   </div>

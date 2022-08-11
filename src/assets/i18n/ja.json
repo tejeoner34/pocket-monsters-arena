@@ -19,7 +19,10 @@
     },
     "ARENA": {
       "opponent": "相手の ",
-      "waitingForRival": "相手の攻撃を待ってる。"
+      "waitingForRival": "相手の攻撃待ち中。"
+    },
+    "ONLINE": {
+      "waiting": "ライバル待ち中、、、"
     },
     "CHALLENGE": {
       "yourId": "オンラインイド ",

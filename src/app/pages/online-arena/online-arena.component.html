@@ -1,7 +1,16 @@
 <app-game-over-modal [winner]="winner" *ngIf="gameOver"></app-game-over-modal>
+
 <div class="arena">
   <div class="arena-wrapper">
+    <div class="online-arena__waiting-background" *ngIf="!pokemonOpponent">
+      <h2>{{'ONLINE.waiting' | translate}}</h2>
+    </div>
     <ng-container *ngIf="pokemon">
+      <div *ngIf="!pokemonOpponent" [style]="{
+        'height': '200px',
+        'width': '100%'
+      }">
+      </div>
       <app-pokemon
         *ngIf="pokemonOpponent"
         class="arena__opponent-container"
@@ -65,8 +74,5 @@
         ></div>
       </div>
     </div>
-  </div>
-  <div class="arena__top-users-container">
-    <app-show-users-button></app-show-users-button>
   </div>
 </div>

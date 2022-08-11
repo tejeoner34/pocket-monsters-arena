@@ -1,4 +1,33 @@
 
+.online-arena__waiting-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 6rem;
+  background-color: black;
+  opacity: .5;
+  color: white;
+  z-index: 1000;
+
+  h2 {
+    animation: flicker 2s infinite;
+  }
+}
+
+@keyframes flicker {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
 .arena {
     max-width: 1000px;
     margin: auto;
@@ -11,7 +40,8 @@
   }
   
   .arena-wrapper {
-    height: 551px;
+    position: relative;
+    height: 540px;
     border-radius: 4px;
     padding-top: 1rem;
     background: rgb(36,36,0);

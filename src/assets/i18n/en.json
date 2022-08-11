@@ -21,6 +21,9 @@
       "opponent": "Foe ",
       "waitingForRival": "Waiting for rival to choose."
     },
+    "ONLINE": {
+      "waiting": "Waiting for rival..."
+    },
     "CHALLENGE": {
       "yourId": "Your online ID is: ",
       "typeRivalId": "Type your rival´s id",
@@ -59,6 +62,6 @@
     "notVeryEffective": "The move is not very effective...",
     "superEffective": "The move is super Effective!",
     "criticalHit": "Critical hit!",
-    "showUsers": "Show top Users"
+    "showUsers": "Top Users"
     
 }

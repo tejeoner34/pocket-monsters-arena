@@ -3,4 +3,12 @@
     border-radius: 5px;
     border: none;
     cursor: pointer;
+    font-size: 10px;
+    position: absolute;
+    top: 80%;
+    right:44px;
+
+    @media (max-width: 800px) {
+        display: none;
+    }
 }

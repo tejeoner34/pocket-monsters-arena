@@ -3,6 +3,11 @@
 <div class="arena">
   <div class="arena-wrapper">
     <ng-container *ngIf="pokemon && pokemonOpponent">
+      <div *ngIf="!pokemonOpponent" [style]="{
+        'height': '200px',
+        'width': '100%'
+      }">
+      </div>
       <app-pokemon
         class="arena__opponent-container"
         [className]="pokemonOpponentClassName"
@@ -59,8 +64,5 @@
         ></div>
       </div>
     </div>
-  </div>
-  <div class="arena__top-users-container">
-    <app-show-users-button></app-show-users-button>
   </div>
 </div>

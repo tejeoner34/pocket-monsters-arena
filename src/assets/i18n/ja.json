@@ -22,7 +22,8 @@
       "waitingForRival": "相手の攻撃待ち中。"
     },
     "ONLINE": {
-      "waiting": "ライバル待ち中、、、"
+      "waiting": "ライバル待ち中、、、",
+      "disconnect": "ライバルとの接続が出来なくなりました。"
     },
     "CHALLENGE": {
       "yourId": "オンラインイド ",

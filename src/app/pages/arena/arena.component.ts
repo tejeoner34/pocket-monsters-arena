@@ -78,18 +78,14 @@ export class ArenaComponent implements OnInit, AfterViewChecked {
       this.currentTurn = turn;
 
       if (this.currentTurn === 1 && this.hasSelectedMove) {
-        const mostPowerFulAttack = this.pokemonService.getMostPowerfulAttack();
-        const mostPowerfulMoveIndex =
-          this.pokemonOpponent.pokemonMoves.findIndex(
-            (move) => move.name.toLowerCase() === mostPowerFulAttack
-          );
-        this.pokemonOpponent.pokemonMoves[mostPowerfulMoveIndex] = {
-          ...this.pokemonOpponent.pokemonMoves[mostPowerfulMoveIndex],
+        const attackIndex = this.pokemonService.getMostPowerfulAttack(this.pokemonOpponent.pokemonMoves);
+        this.pokemonOpponent.pokemonMoves[attackIndex] = {
+          ...this.pokemonOpponent.pokemonMoves[attackIndex],
           isCritical: this.moveEffectivinessService.isCriticalMove(),
         };
         this.gameLoop(
           this.currentTurn,
-          this.pokemonOpponent.pokemonMoves[mostPowerfulMoveIndex]
+          this.pokemonOpponent.pokemonMoves[attackIndex]
         );
       }
       if (this.currentTurn === 0 && this.hasSelectedMove) {

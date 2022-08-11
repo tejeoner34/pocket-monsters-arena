@@ -31,6 +31,7 @@ export class PokemonService {
     opponent: [],
     pokemon: []
   }
+  turnsCounter = 0;
 
   constructor(
     private http: HttpClient, 
@@ -122,16 +123,23 @@ export class PokemonService {
 
   }
 
-  getMostPowerfulAttack() {
-    let powerfulAttack = '';
-    let power = 0;
-    this._movesDamage.opponent.forEach(move => {
-      if(move.damage >= power) {
-        power = move.damage;
-        powerfulAttack = move.name;
-      }
-    })
-    return powerfulAttack.toLowerCase();
+  getMostPowerfulAttack(attacks: MoveData[]) {
+    if(this.turnsCounter >= 1) {
+      this.turnsCounter = 0;
+      return this.generateRandomNumber(0, 4);
+    } else {
+      this.turnsCounter += 1;
+      let attackIndex = 0;
+      let power = 0;
+      attacks.forEach((attack, index) => {
+        if(attack.power >= power) {
+          power = attack.power;
+          attackIndex = index;
+        }
+      });
+      return attackIndex;
+    }
+    
   }
 
   getSelectedMoveEffectiviness(move: MoveData) {

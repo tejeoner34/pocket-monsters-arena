@@ -36,6 +36,7 @@ export class OnlineArenaComponent implements OnInit {
 
   effectivinessIndex = 1;
   gameOver = false;
+  rivalDisconnect = false;
   winner: string = '';
   opponentTextPlaceholder = '';
   pointsPerWin = 3000;
@@ -71,6 +72,11 @@ export class OnlineArenaComponent implements OnInit {
       this.opponentHasSelectedMove = true;
       this.pokemonService.updateTurn(this.currentTurn);
     });
+    
+    this.webSocket.listen('disconnect').subscribe(res => {
+      console.log(res);
+      this.rivalDisconnect = true;
+    })
 
     //turn Observable
     this.pokemonService.turnObservable$.subscribe((turn) => {
@@ -81,11 +87,6 @@ export class OnlineArenaComponent implements OnInit {
         this.hasSelectedMove &&
         this.opponentHasSelectedMove
       ) {
-        const mostPowerFulAttack = this.pokemonService.getMostPowerfulAttack();
-        const mostPowerfulMoveIndex =
-          this.pokemonOpponent.pokemonMoves.findIndex(
-            (move) => move.name.toLowerCase() === mostPowerFulAttack
-          );
         this.gameLoop(this.currentTurn, this.opponentChosenMove);
       }
       if (

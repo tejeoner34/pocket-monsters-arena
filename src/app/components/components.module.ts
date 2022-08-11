@@ -13,6 +13,7 @@ import { TopUsersComponent } from './top-users/top-users.component';
 import { PipeModule } from '../shared/pipes/pipe.module';
 import { ShowUsersButtonComponent } from './show-users-button/show-users-button.component';
 import { ChallengedModalComponent } from './challenged-modal/challenged-modal.component';
+import { RivalDisconnectComponent } from './rival-disconnect/rival-disconnect.component';
 
 
 
@@ -26,6 +27,7 @@ import { ChallengedModalComponent } from './challenged-modal/challenged-modal.co
     TopUsersComponent,
     ShowUsersButtonComponent,
     ChallengedModalComponent,
+    RivalDisconnectComponent,
 
   ],
   exports: [
@@ -36,7 +38,8 @@ import { ChallengedModalComponent } from './challenged-modal/challenged-modal.co
     LoginFormComponent,
     TopUsersComponent,
     ShowUsersButtonComponent,
-    ChallengedModalComponent
+    ChallengedModalComponent,
+    RivalDisconnectComponent
     
   ],
   imports: [

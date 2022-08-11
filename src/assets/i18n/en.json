@@ -22,7 +22,8 @@
       "waitingForRival": "Waiting for rival to choose."
     },
     "ONLINE": {
-      "waiting": "Waiting for rival..."
+      "waiting": "Waiting for rival...",
+      "disconnect": "Lost connection with rival."
     },
     "CHALLENGE": {
       "yourId": "Your online ID is: ",

@@ -1,5 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
+import { Observable, Subscriber, Subscription } from 'rxjs';
 import { Pokemon, PokemonEdit } from 'src/app/interfaces/interfaces';
 import { MoveData } from 'src/app/interfaces/movements.interface';
 import { User } from 'src/app/interfaces/user.interface';
@@ -15,7 +16,16 @@ import { wait } from 'src/app/shared/helpers';
   templateUrl: './online-arena.component.html',
   styleUrls: ['./online-arena.component.scss'],
 })
-export class OnlineArenaComponent implements OnInit {
+export class OnlineArenaComponent implements OnInit, OnDestroy {
+  @HostListener('window:popstate', ['$event'])
+  onPopState(event: any) {
+    this.webSocket.emit('leave-room', {
+      userId: this._userId,
+      roomId: this.webSocket.roomId
+    });
+    this.webSocket.setRoomIsFull(false);
+    this.webSocket.setChallengerData(null);
+  }
   user!: User | null;
 
   pokemon!: PokemonEdit;
@@ -25,6 +35,12 @@ export class OnlineArenaComponent implements OnInit {
   currentPokemonName = '';
   httpMovesPetitionsCount: number = 0;
   opponentChosenMove!: MoveData;
+
+  rivalDisconnect$!: Subscription;
+  pokemonOpponent$!: Subscription;
+  pokemon$!: Subscription;
+  opponentMoves$!: Subscription;
+  roomIsFull$!: Subscription;
 
   boxMessage = 'chooseActionMessage';
   usedMove = '';
@@ -48,7 +64,7 @@ export class OnlineArenaComponent implements OnInit {
   _userId!: string | null;
 
   constructor(
-    private webSocket: WebSocketService,
+    public webSocket: WebSocketService,
     private pokemonService: PokemonService,
     private moveEffectivinessService: MoveEffectivinessService,
     private userService: UserService,
@@ -57,6 +73,7 @@ export class OnlineArenaComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    console.log(this.pokemon?.name)
     this.translateService.get('ARENA').subscribe((data) => {
       this.opponentTextPlaceholder = data.opponent;
     });
@@ -65,18 +82,20 @@ export class OnlineArenaComponent implements OnInit {
 
     this.webSocket.userId$.subscribe((res) => (this._userId = res));
 
-    this.webSocket.listen('get-opponents-move').subscribe((res) => {
+    this.opponentMoves$ = this.webSocket.listen('get-opponents-move').subscribe((res) => {
       this.opponentChosenMove = res.find(
         (element: any) => element.attackerId === this.webSocket.opponentId
       ).moveData;
       this.opponentHasSelectedMove = true;
       this.pokemonService.updateTurn(this.currentTurn);
     });
-    
-    this.webSocket.listen('disconnect').subscribe(res => {
-      console.log(res);
-      this.rivalDisconnect = true;
-    })
+
+    this.rivalDisconnect$ =this.webSocket.listen('rival-disconnect').subscribe(res => {
+      if(res.disconnect) {
+        this.webSocket.setRivalDisconnect(true);
+        this.webSocket.setChallengerData(null);
+      }
+    });
 
     //turn Observable
     this.pokemonService.turnObservable$.subscribe((turn) => {
@@ -100,7 +119,8 @@ export class OnlineArenaComponent implements OnInit {
 
     //Get opponents pokemon data
 
-    this.webSocket.listen('get-pokemon-data').subscribe(({ pokemon }) => {
+    this.pokemonOpponent$ = this.webSocket.listen('get-pokemon-data').subscribe(({ pokemon }) => {
+      console.log(this.pokemonOpponent)
       this.pokemonOpponent = pokemon;
       if (this.pokemon) {
         this.pokemonService.calculateEachMoveDamage(
@@ -121,9 +141,11 @@ export class OnlineArenaComponent implements OnInit {
     });
 
     // send pokemon data
-    this.webSocket.roomIsFull$.subscribe((res: boolean) => {
+    this.roomIsFull$ = this.webSocket.roomIsFull$.subscribe((res: boolean) => {
       //if room is fool we send pokemon data to other client
+      console.log(res)
       if (res) {
+        console.log(this.pokemon)
         this.webSocket.emit('send-pokemon-data', {
           pokemon: this.pokemon,
           opponentUserId: this.webSocket.opponentId,
@@ -131,7 +153,7 @@ export class OnlineArenaComponent implements OnInit {
       }
     });
 
-    this.pokemonService.getRandomPokemon().subscribe((pokemon) => {
+    this.pokemon$ = this.pokemonService.getRandomPokemon().subscribe((pokemon) => {
       this.pokemonService
         .getLocalizedPokemonName(pokemon.id)
         .subscribe((name) => {
@@ -153,6 +175,14 @@ export class OnlineArenaComponent implements OnInit {
 
       this.getPokemonMoves(this.pokemon);
     });
+  }
+
+  ngOnDestroy(): void {
+    this.rivalDisconnect$.unsubscribe();
+    this.pokemonOpponent$.unsubscribe();
+    this.pokemon$.unsubscribe();
+    this.opponentMoves$.unsubscribe();
+    this.roomIsFull$.unsubscribe();
   }
 
   // sendMessage(message: any) {

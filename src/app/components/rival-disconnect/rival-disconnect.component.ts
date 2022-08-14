@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { WebSocketService } from 'src/app/services/web-socket.service';
 
 @Component({
   selector: 'app-rival-disconnect',
@@ -8,13 +9,16 @@ import { Router } from '@angular/router';
 })
 export class RivalDisconnectComponent implements OnInit {
 
-  constructor(private router: Router) { }
+  constructor(private router: Router,
+              private webSocket: WebSocketService) { }
 
   ngOnInit(): void {
   }
 
   goToHome() {
     this.router.navigate(['/home']);
+    this.webSocket.setRivalDisconnect(false);
+    this.webSocket.setRoomIsFull(false);
   }
 
 }

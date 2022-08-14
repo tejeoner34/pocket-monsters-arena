@@ -30,7 +30,8 @@ export class ChallengeComponent implements OnInit {
 
     this.webSocket.listen('all-users-in-room').subscribe(res => {
       console.log(res)
-      this.webSocket.roomIsFull$.next(res.roomComplete);
+      // this.webSocket.roomIsFull$.next(res.roomComplete);
+      this.webSocket.setRoomIsFull(res.roomComplete);
     }
     )
 

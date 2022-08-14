@@ -11,7 +11,7 @@
         'width': '100%'
       }">
       </div>
-      <app-rival-disconnect *ngIf="rivalDisconnect"></app-rival-disconnect>
+      <app-rival-disconnect *ngIf="webSocket.rivalDisconnect$ | async"></app-rival-disconnect>
       <app-pokemon
         *ngIf="pokemonOpponent"
         class="arena__opponent-container"

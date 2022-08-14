@@ -11,6 +11,7 @@ export class WebSocketService {
   userId$ = new BehaviorSubject<string | null>(null);
   challenger$ = new BehaviorSubject<any | null>(null);
   roomIsFull$ = new BehaviorSubject(false);
+  rivalDisconnect$ = new BehaviorSubject(false);
   roomId! : string;
   opponentId!: string;
 
@@ -48,5 +49,13 @@ export class WebSocketService {
 
   setRoomId(roomId: string) {
     this.roomId = roomId;
+  }
+
+  setRivalDisconnect(value: boolean) {
+    this.rivalDisconnect$.next(value);
+  }
+
+  setRoomIsFull(value: boolean) {
+    this.roomIsFull$.next(value);
   }
 }

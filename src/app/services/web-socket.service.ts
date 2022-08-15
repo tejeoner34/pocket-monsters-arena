@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { io } from 'socket.io-client';
 import { v4 as uuidV4 } from 'uuid';
 
@@ -11,9 +11,12 @@ export class WebSocketService {
   userId$ = new BehaviorSubject<string | null>(null);
   challenger$ = new BehaviorSubject<any | null>(null);
   roomIsFull$ = new BehaviorSubject(false);
-  rivalDisconnect$ = new BehaviorSubject(false);
+  rivalDisconnectSubject$ = new BehaviorSubject(false);
+  rivalDisconnect$ = this.rivalDisconnectSubject$.asObservable();
   roomId! : string;
   opponentId!: string;
+  timer: any = null;
+  timer$ = new Subject<number>();
 
   constructor() {
     this.socket = io('ws://localhost:5000');
@@ -52,10 +55,28 @@ export class WebSocketService {
   }
 
   setRivalDisconnect(value: boolean) {
-    this.rivalDisconnect$.next(value);
+    this.rivalDisconnectSubject$.next(value);
   }
 
   setRoomIsFull(value: boolean) {
     this.roomIsFull$.next(value);
+  }
+
+  startTimer(duration: number) {
+    let durationLeft = duration
+    this.timer = setInterval(() => {
+      this.timer$.next(durationLeft);
+      if(durationLeft === 0) {
+        clearInterval(this.timer);
+        this.timer = null;
+      } else {
+        durationLeft -= 1
+      }
+    }, 1000);
+  }
+
+  stopTimer() {
+    clearInterval(this.timer);
+    this.timer = null;
   }
 }

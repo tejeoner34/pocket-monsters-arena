@@ -23,7 +23,8 @@
     },
     "ONLINE": {
       "waiting": "Waiting for rival...",
-      "disconnect": "Lost connection with rival."
+      "disconnect": "Lost connection with rival.",
+      "timer": "Time to choose:"
     },
     "CHALLENGE": {
       "yourId": "Your online ID is: ",

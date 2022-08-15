@@ -1,7 +1,7 @@
-import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
+import { AfterViewChecked, Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { Observable, Subscriber, Subscription } from 'rxjs';
-import { Pokemon, PokemonEdit } from 'src/app/interfaces/interfaces';
+import { KEY_CODE, Pokemon, PokemonEdit } from 'src/app/interfaces/interfaces';
 import { MoveData } from 'src/app/interfaces/movements.interface';
 import { User } from 'src/app/interfaces/user.interface';
 import { MoveEffectivinessService } from 'src/app/services/move-effectiviness.service';
@@ -16,15 +16,20 @@ import { wait } from 'src/app/shared/helpers';
   templateUrl: './online-arena.component.html',
   styleUrls: ['./online-arena.component.scss'],
 })
-export class OnlineArenaComponent implements OnInit, OnDestroy {
+export class OnlineArenaComponent implements OnInit, OnDestroy, AfterViewChecked {
   @HostListener('window:popstate', ['$event'])
   onPopState(event: any) {
     this.webSocket.emit('leave-room', {
       userId: this._userId,
       roomId: this.webSocket.roomId
     });
-    this.webSocket.setRoomIsFull(false);
+    // this.webSocket.setRoomIsFull(false);
     this.webSocket.setChallengerData(null);
+  }
+
+  @HostListener('document:keydown', ['$event'])
+  keyEvent(event: KeyboardEvent) {
+    this.onMoveArrow(event);
   }
   user!: User | null;
 
@@ -41,6 +46,9 @@ export class OnlineArenaComponent implements OnInit, OnDestroy {
   pokemon$!: Subscription;
   opponentMoves$!: Subscription;
   roomIsFull$!: Subscription;
+  timerStarts$!: Subscription;
+  timer$!: Subscription;
+  gameOver$!: Subscription;
 
   boxMessage = 'chooseActionMessage';
   usedMove = '';
@@ -49,10 +57,10 @@ export class OnlineArenaComponent implements OnInit, OnDestroy {
   chosenMove!: MoveData;
   movesContainerArray: HTMLElement[] = [];
   currentMovePosition = 0;
+  timeToChoose = 0;
 
   effectivinessIndex = 1;
   gameOver = false;
-  rivalDisconnect = false;
   winner: string = '';
   opponentTextPlaceholder = '';
   pointsPerWin = 3000;
@@ -73,7 +81,6 @@ export class OnlineArenaComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    console.log(this.pokemon?.name)
     this.translateService.get('ARENA').subscribe((data) => {
       this.opponentTextPlaceholder = data.opponent;
     });
@@ -82,15 +89,41 @@ export class OnlineArenaComponent implements OnInit, OnDestroy {
 
     this.webSocket.userId$.subscribe((res) => (this._userId = res));
 
+    this.timerStarts$ = this.webSocket.listen('get-timer').subscribe(res =>{
+      console.log(res);
+      if(res.seconds) {
+        this.webSocket.startTimer(res.seconds);
+      }
+    });
+
+    this.timer$ = this.webSocket.timer$.subscribe(time => {
+      this.timeToChoose = time;
+      if(this.timeToChoose === 0) {
+        this.webSocket.emit('game-over', {userId: this._userId, roomId: this.webSocket.roomId});
+        this.winner = this.pokemonOpponent.name;
+        this.gameOver = true;
+        this.user ? (this.user.defeats += 1) : null;
+      }
+    });
+
+    this.gameOver$ = this.webSocket.listen('get-game-over').subscribe(res => {
+      if(res.userId) {
+        this.winner = this.pokemon.name;
+        this.gameOver = true;
+        if(this.user) {
+          this.user.wins += 1;
+          this.user.points += this.pointsPerWin;
+        }
+      }
+    })
+
     this.opponentMoves$ = this.webSocket.listen('get-opponents-move').subscribe((res) => {
-      this.opponentChosenMove = res.find(
-        (element: any) => element.attackerId === this.webSocket.opponentId
-      ).moveData;
+      this.opponentChosenMove = res;
       this.opponentHasSelectedMove = true;
       this.pokemonService.updateTurn(this.currentTurn);
     });
 
-    this.rivalDisconnect$ =this.webSocket.listen('rival-disconnect').subscribe(res => {
+    this.rivalDisconnect$ = this.webSocket.listen('rival-disconnect').subscribe(res => {
       if(res.disconnect) {
         this.webSocket.setRivalDisconnect(true);
         this.webSocket.setChallengerData(null);
@@ -140,18 +173,16 @@ export class OnlineArenaComponent implements OnInit, OnDestroy {
       }
     });
 
-    // send pokemon data
-    this.roomIsFull$ = this.webSocket.roomIsFull$.subscribe((res: boolean) => {
-      //if room is fool we send pokemon data to other client
-      console.log(res)
-      if (res) {
-        console.log(this.pokemon)
+    //Send our pokemon data
+    this.roomIsFull$ = this.webSocket.listen('all-users-in-room').subscribe(res => {
+      if (res.roomComplete) {
         this.webSocket.emit('send-pokemon-data', {
           pokemon: this.pokemon,
           opponentUserId: this.webSocket.opponentId,
         });
       }
-    });
+    }
+    );
 
     this.pokemon$ = this.pokemonService.getRandomPokemon().subscribe((pokemon) => {
       this.pokemonService
@@ -177,12 +208,31 @@ export class OnlineArenaComponent implements OnInit, OnDestroy {
     });
   }
 
+  ngAfterViewChecked(): void {
+    this.movesContainerArray = Array.from(
+      document.querySelectorAll(
+        '.arena__pokemon__moves-container .moves-container__move'
+      )
+    );
+    if (this.movesContainerArray.length > 0) {
+      this.movesContainerArray[this.currentMovePosition].classList.add('arrow');
+    }
+  }
+
   ngOnDestroy(): void {
     this.rivalDisconnect$.unsubscribe();
     this.pokemonOpponent$.unsubscribe();
     this.pokemon$.unsubscribe();
     this.opponentMoves$.unsubscribe();
     this.roomIsFull$.unsubscribe();
+    this.timerStarts$.unsubscribe();
+    this.timer$.unsubscribe();
+    this.gameOver$.unsubscribe();
+    this.webSocket.emit('leave-room', {
+      userId: this._userId,
+      roomId: this.webSocket.roomId
+    });
+    this.webSocket.setChallengerData(null);
   }
 
   // sendMessage(message: any) {
@@ -240,11 +290,11 @@ export class OnlineArenaComponent implements OnInit, OnDestroy {
     this.waitingForRival = true;
     this.chosenMove = move;
     this.hasSelectedMove = true;
-    // this.movesContainerArray[this.currentMovePosition].classList.remove(
-    //   'arrow'
-    // );
-    // this.currentMovePosition = i;
-    // this.movesContainerArray[this.currentMovePosition].classList.add('arrow');
+    this.movesContainerArray[this.currentMovePosition].classList.remove(
+      'arrow'
+    );
+    this.currentMovePosition = i;
+    this.movesContainerArray[this.currentMovePosition].classList.add('arrow');
     this.pokemonService.updateTurn(this.currentTurn);
     this.chosenMove = {
       ...move,
@@ -257,6 +307,13 @@ export class OnlineArenaComponent implements OnInit, OnDestroy {
       receiverId: this.webSocket.opponentId,
       roomId: this.webSocket.roomId,
     });
+
+    if(!this.opponentHasSelectedMove) {
+      this.webSocket.emit('set-timer', {
+        userId: this.webSocket.opponentId,
+        roomId: this.webSocket.roomId
+      });
+    }
   }
 
   attack(move: MoveData) {
@@ -408,5 +465,82 @@ export class OnlineArenaComponent implements OnInit, OnDestroy {
 
   isGameOver(life: number) {
     return life <= 0 ? true : false;
+  }
+
+  onMoveArrow(event: KeyboardEvent) {
+    const keycode = event.key;
+
+    if (keycode === KEY_CODE.UP_ARROW) {
+      this.moveUp();
+    }
+
+    if (keycode === KEY_CODE.RIGHT_ARROW) {
+      this.moveRight();
+    }
+
+    if (keycode === KEY_CODE.DOWN_ARROW) {
+      this.moveDown();
+    }
+
+    if (keycode === KEY_CODE.LEFT_ARROW) {
+      this.moveLeft();
+    }
+
+    if (keycode === KEY_CODE.SPACE) {
+      this.onPressEnter();
+    }
+  }
+  moveLeft() {
+    if (this.currentMovePosition === 0 || this.currentMovePosition === 2)
+      return;
+    this.movesContainerArray[this.currentMovePosition].classList.remove(
+      'arrow'
+    );
+    this.currentMovePosition = this.currentMovePosition - 1;
+    this.movesContainerArray[this.currentMovePosition].classList.add('arrow');
+  }
+
+  moveRight() {
+    if (this.currentMovePosition === 1 || this.currentMovePosition === 3)
+      return;
+    this.movesContainerArray[this.currentMovePosition].classList.remove(
+      'arrow'
+    );
+    this.currentMovePosition = this.currentMovePosition + 1;
+    this.movesContainerArray[this.currentMovePosition].classList.add('arrow');
+  }
+
+  moveUp() {
+    if (this.currentMovePosition === 0 || this.currentMovePosition === 1)
+      return;
+    this.movesContainerArray[this.currentMovePosition].classList.remove(
+      'arrow'
+    );
+    this.currentMovePosition = this.currentMovePosition - 2;
+    this.movesContainerArray[this.currentMovePosition].classList.add('arrow');
+  }
+
+  moveDown() {
+    if (this.currentMovePosition === 2 || this.currentMovePosition === 3)
+      return;
+    this.movesContainerArray[this.currentMovePosition].classList.remove(
+      'arrow'
+    );
+    this.currentMovePosition = this.currentMovePosition + 2;
+    this.movesContainerArray[this.currentMovePosition].classList.add('arrow');
+  }
+
+  onPressEnter() {
+    console.log('ejecutado')
+    const move = this.pokemon.pokemonMoves.find(
+      (move) =>
+        move.name.toLowerCase() ===
+        this.movesContainerArray[
+          this.currentMovePosition
+        ].textContent?.toLowerCase()
+    );
+    if (move !== undefined) {
+      this.chooseMove(move, this.currentMovePosition);
+    }
   }
 }

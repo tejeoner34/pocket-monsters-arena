@@ -2,9 +2,9 @@
     <div class="challenge__form-container">
         <h2>{{ 'CHALLENGE.yourId' | translate }}{{_userId}}</h2>
         <p class="challenge__form__info">{{'CHALLENGE.challengeInfo' | translate}}</p>
-        <form class="challenge__form">
-            <input #rivalIdInput type="text" [placeholder]="'CHALLENGE.typeRivalId' | translate">
-            <button [disabled]="isWaitingResponse" type="button" (click)="challengeUser(rivalIdInput.value)">
+        <form class="challenge__form" [formGroup]="form">
+            <input type="text" [placeholder]="'CHALLENGE.typeRivalId' | translate" formControlName="userId">
+            <button [disabled]="isWaitingResponse" type="submit" (click)="challengeUser()">
                 {{ 'CHALLENGE.challenge' | translate }}
             </button>
             <p *ngIf="hasChallenged">{{ 'CHALLENGE.' + infoMessageSufix | translate }}</p>

@@ -12,7 +12,7 @@ export class LoginFormComponent implements OnInit {
 
   form: FormGroup = this.fb.group({
     userName: ['', Validators.required]
-  })
+  });
 
   constructor(public fb: FormBuilder, private userService: UserService, private pointsService: PointsService) { }
 

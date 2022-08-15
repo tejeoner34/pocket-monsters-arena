@@ -9,7 +9,7 @@ import { ArenaCanvasComponent } from './arena-canvas/arena-canvas.component';
 import { PipeModule } from '../shared/pipes/pipe.module';
 import { ChallengeComponent } from './challenge/challenge.component';
 import { OnlineArenaComponent } from './online-arena/online-arena.component';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 
 
@@ -30,7 +30,8 @@ import { FormsModule } from '@angular/forms';
     MaterialModule,
     TranslateModule,
     PipeModule,
-    FormsModule
+    FormsModule,
+    ReactiveFormsModule
   ]
 })
 export class PagesModule { }

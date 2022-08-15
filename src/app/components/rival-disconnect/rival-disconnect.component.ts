@@ -18,7 +18,7 @@ export class RivalDisconnectComponent implements OnInit {
   goToHome() {
     this.router.navigate(['/home']);
     this.webSocket.setRivalDisconnect(false);
-    this.webSocket.setRoomIsFull(false);
+    // this.webSocket.setRoomIsFull(false);
   }
 
 }

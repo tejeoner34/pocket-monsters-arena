@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { WebSocketService } from 'src/app/services/web-socket.service';
@@ -19,8 +20,13 @@ export class ChallengeComponent implements OnInit {
   infoMessageSufix = 'waiting';
   completeInfoMessage = this.infoMessageBase + this.infoMessageSufix;
 
+  form: FormGroup = this.fb.group({
+    userId: ['', Validators.required]
+  });
+
   constructor(public webSocket: WebSocketService,
-              private router: Router) { }
+              private router: Router,
+              public fb: FormBuilder) { }
 
   ngOnInit(): void {
 
@@ -28,13 +34,12 @@ export class ChallengeComponent implements OnInit {
 
     this.webSocket.userId$.subscribe(res => this._userId = res);
 
-    this.webSocket.listen('all-users-in-room').subscribe(res => {
-      console.log(res)
-      // this.webSocket.roomIsFull$.next(res.roomComplete);
-      this.webSocket.setRoomIsFull(res.roomComplete);
-    }
-    )
-
+    // this.webSocket.listen('all-users-in-room').subscribe(res => {
+    //   console.log(res)
+    //   // this.webSocket.roomIsFull$.next(res.roomComplete);
+    //   this.webSocket.setRoomIsFull(res.roomComplete);
+    // }
+    // )
 
     this.webSocket.listen('receive-challenge').subscribe(res => {
       this.webSocket.setChallengerData(res);
@@ -51,7 +56,9 @@ export class ChallengeComponent implements OnInit {
     });
   }
 
-  challengeUser(challengedUserId: string) {
+  challengeUser() {
+    const challengedUserId = this.form.value.userId;
+
     this.webSocket.emit('challenge-user', {
       challenger: this._userId,
       challengedId: challengedUserId

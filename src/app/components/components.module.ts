@@ -14,6 +14,7 @@ import { PipeModule } from '../shared/pipes/pipe.module';
 import { ShowUsersButtonComponent } from './show-users-button/show-users-button.component';
 import { ChallengedModalComponent } from './challenged-modal/challenged-modal.component';
 import { RivalDisconnectComponent } from './rival-disconnect/rival-disconnect.component';
+import { TimerComponent } from './timer/timer.component';
 
 
 
@@ -28,6 +29,7 @@ import { RivalDisconnectComponent } from './rival-disconnect/rival-disconnect.co
     ShowUsersButtonComponent,
     ChallengedModalComponent,
     RivalDisconnectComponent,
+    TimerComponent,
 
   ],
   exports: [
@@ -39,7 +41,8 @@ import { RivalDisconnectComponent } from './rival-disconnect/rival-disconnect.co
     TopUsersComponent,
     ShowUsersButtonComponent,
     ChallengedModalComponent,
-    RivalDisconnectComponent
+    RivalDisconnectComponent,
+    TimerComponent
     
   ],
   imports: [

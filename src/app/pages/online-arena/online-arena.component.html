@@ -20,6 +20,11 @@
         [isOpponent]="true"
       ></app-pokemon>
 
+      <app-timer  class="arena__timer"
+                  *ngIf="!waitingForRival && opponentHasSelectedMove" 
+                  [time]="timeToChoose">
+      </app-timer>
+
       <app-pokemon
         class="arena__pokemon-container"
         [className]="pokemonClassName"

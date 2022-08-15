@@ -418,7 +418,7 @@ export class ArenaComponent implements OnInit, AfterViewChecked {
       this.moveLeft();
     }
 
-    if (keycode === KEY_CODE.ENTER) {
+    if (keycode === KEY_CODE.SPACE) {
       this.onPressEnter();
     }
   }
@@ -464,9 +464,10 @@ export class ArenaComponent implements OnInit, AfterViewChecked {
   }
 
   onPressEnter() {
-    const move = this.pokemonMoves.find(
+    console.log('ejecutado')
+    const move = this.pokemon.pokemonMoves.find(
       (move) =>
-        move.name ===
+        move.name.toLowerCase() ===
         this.movesContainerArray[
           this.currentMovePosition
         ].textContent?.toLowerCase()

@@ -288,5 +288,6 @@ export enum KEY_CODE {
   LEFT_ARROW = "ArrowLeft",
   UP_ARROW = "ArrowUp",
   DOWN_ARROW = "ArrowDown",
-  ENTER = "Enter"
+  ENTER = "Enter",
+  SPACE = " "
 }

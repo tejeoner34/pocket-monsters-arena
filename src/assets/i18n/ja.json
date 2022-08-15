@@ -23,7 +23,9 @@
     },
     "ONLINE": {
       "waiting": "ライバル待ち中、、、",
-      "disconnect": "ライバルとの接続が出来なくなりました。"
+      "disconnect": "ライバルとの接続が出来なくなりました。",
+      "timer": "選ぶ時間:"
+
     },
     "CHALLENGE": {
       "yourId": "オンラインイド ",

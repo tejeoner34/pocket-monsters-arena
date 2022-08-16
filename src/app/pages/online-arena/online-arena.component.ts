@@ -7,6 +7,7 @@ import { User } from 'src/app/interfaces/user.interface';
 import { MoveEffectivinessService } from 'src/app/services/move-effectiviness.service';
 import { PointsService } from 'src/app/services/points.service';
 import { PokemonService } from 'src/app/services/pokemon.service';
+import { RestartService } from 'src/app/services/restart.service';
 import { UserService } from 'src/app/services/user.service';
 import { WebSocketService } from 'src/app/services/web-socket.service';
 import { wait } from 'src/app/shared/helpers';
@@ -49,6 +50,7 @@ export class OnlineArenaComponent implements OnInit, OnDestroy, AfterViewChecked
   timerStarts$!: Subscription;
   timer$!: Subscription;
   gameOver$!: Subscription;
+  restart$!: Subscription;
 
   boxMessage = 'chooseActionMessage';
   usedMove = '';
@@ -77,13 +79,18 @@ export class OnlineArenaComponent implements OnInit, OnDestroy, AfterViewChecked
     private moveEffectivinessService: MoveEffectivinessService,
     private userService: UserService,
     private pointsService: PointsService,
-    private translateService: TranslateService
+    private translateService: TranslateService,
+    private restartService: RestartService
   ) {}
 
   ngOnInit(): void {
     this.translateService.get('ARENA').subscribe((data) => {
       this.opponentTextPlaceholder = data.opponent;
     });
+
+    this.restart$ = this.restartService.restart$.subscribe((res) =>
+      this.restartService.resetPage(`online-arena/${this.webSocket.roomId}`)
+    );
 
     this.userService.user$.subscribe((res) => (this.user = res));
 
@@ -228,6 +235,7 @@ export class OnlineArenaComponent implements OnInit, OnDestroy, AfterViewChecked
     this.timerStarts$.unsubscribe();
     this.timer$.unsubscribe();
     this.gameOver$.unsubscribe();
+    this.restart$.unsubscribe();
     this.webSocket.emit('leave-room', {
       userId: this._userId,
       roomId: this.webSocket.roomId
@@ -287,6 +295,7 @@ export class OnlineArenaComponent implements OnInit, OnDestroy, AfterViewChecked
 
   chooseMove(move: MoveData, i: number) {
     if (this.hasSelectedMove) return;
+    this.webSocket.stopTimer();
     this.waitingForRival = true;
     this.chosenMove = move;
     this.hasSelectedMove = true;
@@ -358,7 +367,6 @@ export class OnlineArenaComponent implements OnInit, OnDestroy, AfterViewChecked
     this.waitingForRival = false;
     this.effectivinessIndex =
       this.pokemonService.getSelectedMoveEffectiviness(move);
-    console.log('damageindex', this.effectivinessIndex);
     const attacker = turn === 0 ? this.pokemon : this.pokemonOpponent;
     const receiver = turn === 0 ? this.pokemonOpponent : this.pokemon;
     (async () => {

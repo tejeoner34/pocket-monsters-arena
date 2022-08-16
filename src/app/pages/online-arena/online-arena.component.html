@@ -21,7 +21,7 @@
       ></app-pokemon>
 
       <app-timer  class="arena__timer"
-                  *ngIf="!waitingForRival && opponentHasSelectedMove" 
+                  *ngIf="!hasSelectedMove && opponentHasSelectedMove" 
                   [time]="timeToChoose">
       </app-timer>
 

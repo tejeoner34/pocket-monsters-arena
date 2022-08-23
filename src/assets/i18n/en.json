@@ -19,7 +19,7 @@
     },
     "ARENA": {
       "opponent": "Foe ",
-      "waitingForRival": "Waiting for rival to choose."
+      "waitingForRival": "Waiting for rival..."
     },
     "ONLINE": {
       "waiting": "Waiting for rival...",

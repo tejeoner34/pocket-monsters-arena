@@ -20,6 +20,7 @@ import { wait } from 'src/app/shared/helpers';
 export class OnlineArenaComponent implements OnInit, OnDestroy, AfterViewChecked {
   @HostListener('window:popstate', ['$event'])
   onPopState(event: any) {
+    console.log('leave room')
     this.webSocket.emit('leave-room', {
       userId: this._userId,
       roomId: this.webSocket.roomId
@@ -51,6 +52,7 @@ export class OnlineArenaComponent implements OnInit, OnDestroy, AfterViewChecked
   timer$!: Subscription;
   gameOver$!: Subscription;
   restart$!: Subscription;
+  isTurnOver$!: Observable<boolean>;
 
   boxMessage = 'chooseActionMessage';
   usedMove = '';
@@ -66,6 +68,7 @@ export class OnlineArenaComponent implements OnInit, OnDestroy, AfterViewChecked
   winner: string = '';
   opponentTextPlaceholder = '';
   pointsPerWin = 3000;
+  wantRemach: boolean = false;
 
   currentTurn!: number;
   turnCount = 0;
@@ -88,8 +91,12 @@ export class OnlineArenaComponent implements OnInit, OnDestroy, AfterViewChecked
       this.opponentTextPlaceholder = data.opponent;
     });
 
-    this.restart$ = this.restartService.restart$.subscribe((res) =>
-      this.restartService.resetPage(`online-arena/${this.webSocket.roomId}`)
+    this.isTurnOver$ = this.webSocket.listen('get-turn-over');
+
+    this.restart$ = this.restartService.restart$.subscribe((res) => {
+      this.wantRemach = true;
+      this.restartService.resetPage(`online-arena/${this.webSocket.roomId}`);
+    }
     );
 
     this.userService.user$.subscribe((res) => (this.user = res));
@@ -160,8 +167,8 @@ export class OnlineArenaComponent implements OnInit, OnDestroy, AfterViewChecked
     //Get opponents pokemon data
 
     this.pokemonOpponent$ = this.webSocket.listen('get-pokemon-data').subscribe(({ pokemon }) => {
-      console.log(this.pokemonOpponent)
       this.pokemonOpponent = pokemon;
+
       if (this.pokemon) {
         this.pokemonService.calculateEachMoveDamage(
           this.pokemon.pokemonMoves,
@@ -236,11 +243,13 @@ export class OnlineArenaComponent implements OnInit, OnDestroy, AfterViewChecked
     this.timer$.unsubscribe();
     this.gameOver$.unsubscribe();
     this.restart$.unsubscribe();
-    this.webSocket.emit('leave-room', {
-      userId: this._userId,
-      roomId: this.webSocket.roomId
-    });
-    this.webSocket.setChallengerData(null);
+    if(!this.wantRemach) {
+      this.webSocket.emit('leave-room', {
+        userId: this._userId,
+        roomId: this.webSocket.roomId
+      });
+      this.webSocket.setChallengerData(null);
+    }
   }
 
   // sendMessage(message: any) {
@@ -297,7 +306,11 @@ export class OnlineArenaComponent implements OnInit, OnDestroy, AfterViewChecked
     if (this.hasSelectedMove) return;
     this.webSocket.stopTimer();
     this.waitingForRival = true;
-    this.chosenMove = move;
+    this.chosenMove = {
+      ...move,
+      hasMoveMissed: this.moveEffectivinessService.hasMovedMissed(move),
+      isCritical: this.moveEffectivinessService.isCriticalMove(),
+    };
     this.hasSelectedMove = true;
     this.movesContainerArray[this.currentMovePosition].classList.remove(
       'arrow'
@@ -305,11 +318,7 @@ export class OnlineArenaComponent implements OnInit, OnDestroy, AfterViewChecked
     this.currentMovePosition = i;
     this.movesContainerArray[this.currentMovePosition].classList.add('arrow');
     this.pokemonService.updateTurn(this.currentTurn);
-    this.chosenMove = {
-      ...move,
-      hasMoveMissed: this.moveEffectivinessService.hasMovedMissed(move),
-      isCritical: this.moveEffectivinessService.isCriticalMove(),
-    };
+    
     this.webSocket.emit('select-move', {
       moveData: this.chosenMove,
       attackerId: this._userId,
@@ -413,7 +422,7 @@ export class OnlineArenaComponent implements OnInit, OnDestroy, AfterViewChecked
       this.pokemonOpponentClassName = '';
       this.pokemonClassName = '';
       turn === 0 ? this.attack(move) : this.opponentAttacks(move);
-
+      console.log(move.isCritical);
       if (this.effectivinessIndex !== 1 && !move.isCritical) {
         this.boxMessage = this.moveEffectivinessService.messageByEffectiviness(
           this.effectivinessIndex
@@ -463,6 +472,10 @@ export class OnlineArenaComponent implements OnInit, OnDestroy, AfterViewChecked
       this.hasSelectedMove = false;
       this.opponentHasSelectedMove = false;
       this.turnCount = 0;
+      this.webSocket.emit('turn-over',{
+        userId: this._userId,
+        roomId: this.webSocket.roomId
+      });
       this.currentPokemonName = this.pokemon.name;
       this.boxMessage = 'chooseActionMessage';
     }

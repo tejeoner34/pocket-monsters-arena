@@ -56,7 +56,7 @@
               pokemon?.pokemonMoves?.length === 4;
             else spinner"
         >
-          <ng-container *ngIf="!waitingForRival; else waitingText">
+          <ng-container *ngIf="(!waitingForRival && (isTurnOver$ | async) ?? true); else waitingText">
             <div
               class="moves-container__move"
               *ngFor="let move of pokemon?.pokemonMoves; let i = index"

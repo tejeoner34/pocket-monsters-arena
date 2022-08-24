@@ -19,7 +19,8 @@
     },
     "ARENA": {
       "opponent": "Foe ",
-      "waitingForRival": "Waiting for rival..."
+      "waitingForRival": "Waiting for rival...",
+      "chooseMove": "Choose Move"
     },
     "ONLINE": {
       "waiting": "Waiting for rival...",
@@ -38,7 +39,9 @@
       "waiting": "Waiting for rival´s response.",
       "rivalDidNotAccept": "Rival did not accept your challenge.",
       "rivalAccept": "Rival accepted the challenge",
-      "goToBattle": "Go to battle"
+      "goToBattle": "Go to battle",
+      "copyId": "Copy ID",
+      "copied": "Copied"
 
     },
     "GAME_OVER": {

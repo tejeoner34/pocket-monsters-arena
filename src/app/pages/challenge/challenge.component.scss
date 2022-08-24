@@ -28,7 +28,7 @@
 
     .challenge__form__info {
       font-size: 11px;
-      opacity: .6;
+      opacity: 0.6;
     }
 
     form {
@@ -47,6 +47,33 @@
         padding: 0.7rem;
         cursor: pointer;
       }
+    }
+
+    @media (max-width: 600px) {
+      justify-content: space-evenly;
+      height: inherit;
+      h2 {
+        font-size: 16px;
+      }
+      .challenge__form__info {
+        font-size: 16px;
+      }
+    }
+  }
+
+  @media (max-width: 600px) {
+    padding-top: 0;
+  }
+
+  .challenge-container__id-button {
+    padding: 0.5rem;
+
+    &--copied::after {
+      content: "\2713";
+      display: inline-block;
+      color: green;
+      padding: 0 6px 0 0;
+      font-weight: bold;
     }
   }
 }

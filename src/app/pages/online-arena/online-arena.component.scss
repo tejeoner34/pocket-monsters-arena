@@ -7,6 +7,7 @@
   display: flex;
   align-items: flex-start;
   justify-content: center;
+  text-align: center;
   padding-top: 6rem;
   background-color: black;
   opacity: 0.5;
@@ -46,6 +47,7 @@
 
 .arena-wrapper {
   position: relative;
+  overflow: hidden;
   height: 540px;
   border-radius: 4px;
   padding-top: 1rem;
@@ -155,4 +157,120 @@
   text-align: center;
   display: flex;
   align-items: center;
+}
+
+/////
+
+
+
+.arena__show-move-button {
+  display: none;
+}
+
+.arena__top-users-container {
+  display: flex;
+  justify-content: center;
+}
+
+.moves-container {
+  background-color: #404040;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  position: absolute;
+  left: 0;
+  bottom: 0px;
+  z-index: 1000;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(50px);
+  transition: opacity 150ms ease-in-out, transform 150ms ease-in-out;
+
+  &--open {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+    transition: opacity 150ms ease-in-out, transform 150ms ease-in-out;
+  }
+
+  &--close {
+    transform: translateY(500px);
+    transition: all .5s linear;
+  }
+}
+
+.moves__move {
+  width: 90%;
+  text-align: center;
+  background: aquamarine;
+  padding: 1rem;
+  cursor: pointer;
+}
+
+@media (max-width: 600px) {
+  .arena {
+    padding: 0;
+    height: 100%;
+  }
+
+  .arena-wrapper {
+    padding-top: 0;
+    height: 100%;
+    border: 5px solid #f7f0f0;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+  }
+
+  .arena__options-container {
+    position: revert;
+    height: 130px;
+    min-height: 130px;
+    margin-top: 10px;
+
+    .arena__options__info-container {
+      width: 100%;
+    }
+
+    .arena__pokemon__moves-container {
+      display: none;
+    }
+  }
+
+  .arena__show-move-button {
+    display: block;
+    width: 100%;
+    padding: 0.5rem;
+    border-radius: 5px;
+    margin-top: 10px;
+  }
+
+  .arena__opponent-container {
+    flex-direction: column;
+    align-items: center;
+    height: inherit;
+  }
+
+  .arena__pokemon-container {
+    flex-direction: column;
+    align-items: center;
+    height: inherit;
+  }
+
+  .arena__timer {
+    position: absolute;
+    width: 100%;
+    top: 38%;
+    left: 50%;
+    transform: translate(-50%, 0px);
+    text-align: center;
+
+    @media (max-height: 750px) {
+      top: 32%;
+    }
+  }
+
 }

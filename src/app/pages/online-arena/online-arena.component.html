@@ -21,7 +21,7 @@
       ></app-pokemon>
 
       <app-timer  class="arena__timer"
-                  *ngIf="!hasSelectedMove && opponentHasSelectedMove" 
+                   
                   [time]="timeToChoose">
       </app-timer>
 
@@ -78,6 +78,25 @@
           class="arena__moves-container-popover"
           *ngIf="hasSelectedMove"
         ></div>
+      </div>
+    </div>
+    <div #movesContainer>
+      <button (click)="movesContainerOpen = !movesContainerOpen" 
+              class="arena__show-move-button"
+              [disabled]="hasSelectedMove">
+        {{'ARENA.chooseMove' | translate}}
+      </button>
+      <div 
+      class="moves-container"
+      [ngClass]="movesContainerOpen ? 'moves-container--open' : ''"
+      >
+        <div
+          class="moves__move"
+          *ngFor="let move of pokemon?.pokemonMoves; let i = index"
+          (click)="chooseMove(move, i); movesContainerOpen = false"
+        >
+          <p>{{ move.name }}</p>
+        </div>
       </div>
     </div>
   </div>

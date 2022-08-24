@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { WebSocketService } from 'src/app/services/web-socket.service';
+import {Clipboard} from '@angular/cdk/clipboard';
 
 @Component({
   selector: 'app-challenge',
@@ -19,6 +20,7 @@ export class ChallengeComponent implements OnInit {
   infoMessageBase = 'CHALLENGE.';
   infoMessageSufix = 'waiting';
   completeInfoMessage = this.infoMessageBase + this.infoMessageSufix;
+  idCopied: boolean = false;
 
   form: FormGroup = this.fb.group({
     userId: ['', Validators.required]
@@ -26,7 +28,8 @@ export class ChallengeComponent implements OnInit {
 
   constructor(public webSocket: WebSocketService,
               private router: Router,
-              public fb: FormBuilder) { }
+              public fb: FormBuilder,
+              private clipboard: Clipboard) { }
 
   ngOnInit(): void {
 
@@ -73,6 +76,11 @@ export class ChallengeComponent implements OnInit {
     //   roomId: this.webSocket.roomId
     // });
     this.router.navigate([`/online-arena/${this.webSocket.roomId}`]);
+  }
+
+  copyID() {
+    this.clipboard.copy(this._userId!);
+    this.idCopied = true;
   }
 
 

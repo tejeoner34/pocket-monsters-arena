@@ -15,6 +15,7 @@ import { ShowUsersButtonComponent } from './show-users-button/show-users-button.
 import { ChallengedModalComponent } from './challenged-modal/challenged-modal.component';
 import { RivalDisconnectComponent } from './rival-disconnect/rival-disconnect.component';
 import { TimerComponent } from './timer/timer.component';
+import { MovesContainerComponent } from './moves-container/moves-container.component';
 
 
 
@@ -30,6 +31,7 @@ import { TimerComponent } from './timer/timer.component';
     ChallengedModalComponent,
     RivalDisconnectComponent,
     TimerComponent,
+    MovesContainerComponent,
 
   ],
   exports: [
@@ -42,7 +44,8 @@ import { TimerComponent } from './timer/timer.component';
     ShowUsersButtonComponent,
     ChallengedModalComponent,
     RivalDisconnectComponent,
-    TimerComponent
+    TimerComponent,
+    MovesContainerComponent
     
   ],
   imports: [

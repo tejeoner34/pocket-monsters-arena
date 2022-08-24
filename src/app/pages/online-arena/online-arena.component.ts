@@ -1,4 +1,4 @@
-import { AfterViewChecked, Component, HostListener, OnDestroy, OnInit } from '@angular/core';
+import { AfterViewChecked, Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { Observable, Subscriber, Subscription } from 'rxjs';
 import { KEY_CODE, Pokemon, PokemonEdit } from 'src/app/interfaces/interfaces';
@@ -18,6 +18,8 @@ import { wait } from 'src/app/shared/helpers';
   styleUrls: ['./online-arena.component.scss'],
 })
 export class OnlineArenaComponent implements OnInit, OnDestroy, AfterViewChecked {
+  @ViewChild('movesContainer') movesContainer!: ElementRef;
+
   @HostListener('window:popstate', ['$event'])
   onPopState(event: any) {
     console.log('leave room')
@@ -32,6 +34,12 @@ export class OnlineArenaComponent implements OnInit, OnDestroy, AfterViewChecked
   @HostListener('document:keydown', ['$event'])
   keyEvent(event: KeyboardEvent) {
     this.onMoveArrow(event);
+  }
+
+  @HostListener('document:click', ['$event.target'])
+  onClick(target: any) {
+    const clickedInside = this.movesContainer.nativeElement.contains(target);
+    if(!clickedInside) this.movesContainerOpen = false;
   }
   user!: User | null;
 
@@ -61,7 +69,8 @@ export class OnlineArenaComponent implements OnInit, OnDestroy, AfterViewChecked
   chosenMove!: MoveData;
   movesContainerArray: HTMLElement[] = [];
   currentMovePosition = 0;
-  timeToChoose = 0;
+  timeToChoose = 20;
+  movesContainerOpen: boolean = false;
 
   effectivinessIndex = 1;
   gameOver = false;

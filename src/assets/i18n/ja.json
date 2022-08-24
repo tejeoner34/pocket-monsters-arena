@@ -19,7 +19,8 @@
     },
     "ARENA": {
       "opponent": "相手の ",
-      "waitingForRival": "相手の待ち中。"
+      "waitingForRival": "相手の待ち中。",
+      "chooseMove": "攻撃を選ぶ"
     },
     "ONLINE": {
       "waiting": "ライバル待ち中、、、",
@@ -39,7 +40,9 @@
       "waiting": "ライバルの答えを待つ.",
       "rivalDidNotAccept": "ライバルは挑戦を受けなかった。",
       "rivalAccept": "ライバルは挑戦を受けました！",
-      "goToBattle": "戦場へ行こう"
+      "goToBattle": "戦場へ行こう",
+      "copyId": "iDをコピー",
+      "copied": "コピー済み"
     },
     "GAME_OVER": {
       "gameOver": "ゲームオーバー",

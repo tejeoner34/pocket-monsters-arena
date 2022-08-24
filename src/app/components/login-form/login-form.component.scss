@@ -3,10 +3,12 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  text-align: center;
   gap: 1.5rem;
   position: absolute;
   padding: 1rem;
-  width: 400px;
+  width: 95%;
+  max-width: 400px;
   min-height: 230px;
   left: 50%;
   top: 50%;

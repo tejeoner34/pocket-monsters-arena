@@ -1,8 +1,10 @@
 import {
   AfterViewChecked,
   Component,
+  ElementRef,
   HostListener,
   OnInit,
+  ViewChild,
 } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { forkJoin, Observable } from 'rxjs';
@@ -22,9 +24,17 @@ import { MoveEffectivinessService } from '../../services/move-effectiviness.serv
   styleUrls: ['./arena.component.scss'],
 })
 export class ArenaComponent implements OnInit, AfterViewChecked {
+
+  @ViewChild('movesContainer') movesContainer!: ElementRef;
   @HostListener('document:keydown', ['$event'])
   keyEvent(event: KeyboardEvent) {
     this.onMoveArrow(event);
+  }
+
+  @HostListener('document:click', ['$event.target'])
+  onClick(target: any) {
+    const clickedInside = this.movesContainer.nativeElement.contains(target);
+    if(!clickedInside) this.movesContainerOpen = false;
   }
 
   user!: User | null;
@@ -39,6 +49,7 @@ export class ArenaComponent implements OnInit, AfterViewChecked {
   hasSelectedMove = false;
   opponentHasSelectedMove = false;
   chosenMove!: MoveData;
+  movesContainerOpen: boolean = false;
   pokemonClassName = '';
   pokemonOpponentClassName = '';
   currentTurn!: number;

@@ -1,6 +1,19 @@
 <div class="challenge-container">
     <div class="challenge__form-container">
         <h2>{{ 'CHALLENGE.yourId' | translate }}{{_userId}}</h2>
+        <div *ngIf="_userId">
+            <button *ngIf="!idCopied else copied"
+                    class="challenge-container__id-button"
+                    (click)="copyID()">
+                {{ 'CHALLENGE.copyId' | translate }}
+            </button>
+            <ng-template #copied>
+                <button (click)="copyID()"
+                        class="challenge-container__id-button challenge-container__id-button--copied">
+                {{ 'CHALLENGE.copied' | translate }}
+            </button>
+            </ng-template>
+        </div>
         <p class="challenge__form__info">{{'CHALLENGE.challengeInfo' | translate}}</p>
         <form class="challenge__form" [formGroup]="form">
             <input type="text" [placeholder]="'CHALLENGE.typeRivalId' | translate" formControlName="userId">

@@ -33,3 +33,9 @@
   width: 100%;
   opacity: 0.5;
 }
+
+@media (max-width:600px) {
+  .challenged-modal__container {
+    width: 90%;
+  }
+}

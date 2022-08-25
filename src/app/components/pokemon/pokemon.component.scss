@@ -47,7 +47,8 @@
   background-color: #f5f6da;
   display: flex;
   flex-direction: column;
-  justify-content: space-around;
+  justify-content: space-evenly;
+  -webkit-justify-content: space-evenly;
   align-items: center;
   border: 7px solid #646161;
   z-index: 100;
@@ -74,6 +75,7 @@
       display: flex;
       justify-content: flex-start;
       align-items: center;
+      -webkit-align-items: center;
       background-color: black;
       height: 100%;
       border-radius: 10px;
@@ -211,10 +213,11 @@
 
   .health-overcontainer {
     width: 90%;
+    font-size: 12px;
   }
 
   .pokemon__health-container {
-    min-height: 80px;
+    min-height: 70px;
   }
   
   .pokemon__img-container {
@@ -229,11 +232,30 @@
     display: none;
   }
 
+  .health-container__life-bar {
+    height: revert;
+  }
+
+  .life-bar__text {
+    padding: 2px;
+    padding-left: 12px;
+  }
+
 }
 
 @media (max-height: 750px) {
   .pokemon__img-container {
     width: 30%;
+
+    img {
+      height: 100%;
+    }
+  }
+}
+
+@media (max-height: 700px) {
+  .pokemon__img-container {
+    width: 27%;
 
     img {
       height: 100%;

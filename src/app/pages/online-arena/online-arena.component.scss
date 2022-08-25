@@ -42,6 +42,19 @@
     position: absolute;
     right: 100px;
     font-size: 12px;
+
+    @media (max-width: 600px) {
+      .arena__timer {
+        position: absolute;
+        text-align: center;
+        right: 0;
+        width: 134px;
+
+        @media (max-height: 750px) {
+          top: 40%;
+        }
+      }
+    }
   }
 }
 
@@ -161,10 +174,9 @@
 
 /////
 
-
-
 .arena__show-move-button {
   display: none;
+  color: black;
 }
 
 .arena__top-users-container {
@@ -198,7 +210,7 @@
 
   &--close {
     transform: translateY(500px);
-    transition: all .5s linear;
+    transition: all 0.5s linear;
   }
 }
 
@@ -260,17 +272,11 @@
     height: inherit;
   }
 
-  .arena__timer {
-    position: absolute;
-    width: 100%;
-    top: 38%;
-    left: 50%;
-    transform: translate(-50%, 0px);
-    text-align: center;
+}
 
-    @media (max-height: 750px) {
-      top: 32%;
-    }
+@media (max-height: 750px) {
+  .arena__options-container {
+    min-height: 92px;
+    font-size: 13px;
   }
-
 }

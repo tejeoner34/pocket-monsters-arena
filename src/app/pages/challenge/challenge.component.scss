@@ -67,6 +67,7 @@
 
   .challenge-container__id-button {
     padding: 0.5rem;
+    cursor: pointer;
 
     &--copied::after {
       content: "\2713";

@@ -22,7 +22,6 @@ export class OnlineArenaComponent implements OnInit, OnDestroy, AfterViewChecked
 
   @HostListener('window:popstate', ['$event'])
   onPopState(event: any) {
-    console.log('leave room')
     this.webSocket.emit('leave-room', {
       userId: this._userId,
       roomId: this.webSocket.roomId
@@ -96,6 +95,7 @@ export class OnlineArenaComponent implements OnInit, OnDestroy, AfterViewChecked
   ) {}
 
   ngOnInit(): void {
+
     this.translateService.get('ARENA').subscribe((data) => {
       this.opponentTextPlaceholder = data.opponent;
     });
@@ -113,7 +113,6 @@ export class OnlineArenaComponent implements OnInit, OnDestroy, AfterViewChecked
     this.webSocket.userId$.subscribe((res) => (this._userId = res));
 
     this.timerStarts$ = this.webSocket.listen('get-timer').subscribe(res =>{
-      console.log(res);
       if(res.seconds) {
         this.webSocket.startTimer(res.seconds);
       }
@@ -431,7 +430,6 @@ export class OnlineArenaComponent implements OnInit, OnDestroy, AfterViewChecked
       this.pokemonOpponentClassName = '';
       this.pokemonClassName = '';
       turn === 0 ? this.attack(move) : this.opponentAttacks(move);
-      console.log(move.isCritical);
       if (this.effectivinessIndex !== 1 && !move.isCritical) {
         this.boxMessage = this.moveEffectivinessService.messageByEffectiviness(
           this.effectivinessIndex
@@ -460,6 +458,7 @@ export class OnlineArenaComponent implements OnInit, OnDestroy, AfterViewChecked
           this.user ? (this.user.defeats += 1) : null;
         }
         this.userService.patchUserData(this.user!).subscribe();
+        this.webSocket.emit('reset-users-in-room', this.webSocket.roomId);
         this.currentPokemonName = receiver.name;
         this.boxMessage = 'defeat';
         this.winner = attacker.name;
@@ -561,7 +560,6 @@ export class OnlineArenaComponent implements OnInit, OnDestroy, AfterViewChecked
   }
 
   onPressEnter() {
-    console.log('ejecutado')
     const move = this.pokemon.pokemonMoves.find(
       (move) =>
         move.name.toLowerCase() ===

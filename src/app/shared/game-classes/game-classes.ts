@@ -192,7 +192,6 @@ export class LifeContainer {
 //   }
 
 //   draw(ctx: any) {
-//     console.log('dsafdsfsdf')
 //     ctx.beginPath();
 //     ctx.fillStyle = '#f5f6da';
 //     ctx.fillRect(0, 350, 350, 100);

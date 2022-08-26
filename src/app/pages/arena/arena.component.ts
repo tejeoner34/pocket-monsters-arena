@@ -475,7 +475,6 @@ export class ArenaComponent implements OnInit, AfterViewChecked {
   }
 
   onPressEnter() {
-    console.log('ejecutado')
     const move = this.pokemon.pokemonMoves.find(
       (move) =>
         move.name.toLowerCase() ===

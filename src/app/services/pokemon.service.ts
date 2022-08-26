@@ -87,7 +87,7 @@ export class PokemonService {
     if(isCritical) index = index * 2;
     
     const damage = this.calculateDamage(index, attackPower);
-    this.pointsService.updateUserPoints(damage > pokemonHealth ? pokemonHealth : damage);
+    this.pointsService.updateUserPoints(damage > pokemonHealth ? Math.floor(pokemonHealth) : Math.floor(damage));
     const finalHealth = Math.floor(pokemonHealth - damage);
     if(finalHealth < 0) {
       return 0;

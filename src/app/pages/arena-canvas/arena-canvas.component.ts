@@ -355,7 +355,6 @@ export class ArenaCanvasComponent implements OnInit {
   gameLoop(turn: number, move: MoveData) {
     this.effectivinessIndex =
       this.pokemonService.getSelectedMoveEffectiviness(move);
-    console.log(this.effectivinessIndex);
     const attacker = turn === 0 ? this.pokemon : this.pokemonOpponent;
     const receiver = turn === 0 ? this.pokemonOpponent : this.pokemon;
     (async () => {

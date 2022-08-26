@@ -19,7 +19,7 @@ export class WebSocketService {
   timer$ = new Subject<number>();
 
   constructor() {
-    this.socket = io('https://my-monsters-app.herokuapp.com/');
+    this.socket = io('http://localhost:5000/');
   }
 
   listen(eventName: string): Observable<any> {

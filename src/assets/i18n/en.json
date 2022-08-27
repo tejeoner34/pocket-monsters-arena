@@ -41,7 +41,8 @@
       "rivalAccept": "Rival accepted the challenge",
       "goToBattle": "Go to battle",
       "copyId": "Copy ID",
-      "copied": "Copied"
+      "copied": "Copied",
+      "errorMessage": "Enter a valid ID"
 
     },
     "GAME_OVER": {

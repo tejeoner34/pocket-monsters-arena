@@ -21,6 +21,7 @@ export class ChallengeComponent implements OnInit {
   infoMessageSufix = 'waiting';
   completeInfoMessage = this.infoMessageBase + this.infoMessageSufix;
   idCopied: boolean = false;
+  showInputError: boolean = false;
 
   form: FormGroup = this.fb.group({
     userId: ['', Validators.required]
@@ -62,6 +63,10 @@ export class ChallengeComponent implements OnInit {
   challengeUser() {
     const challengedUserId = this.form.value.userId;
 
+    challengedUserId === this._userId 
+      ? this.showInputError = true
+      : this.showInputError = false;
+    
     this.webSocket.emit('challenge-user', {
       challenger: this._userId,
       challengedId: challengedUserId
@@ -82,6 +87,5 @@ export class ChallengeComponent implements OnInit {
     this.clipboard.copy(this._userId!);
     this.idCopied = true;
   }
-
 
 }

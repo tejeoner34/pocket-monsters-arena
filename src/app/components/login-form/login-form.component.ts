@@ -32,4 +32,12 @@ export class LoginFormComponent implements OnInit {
     })
   }
 
+  allowCharacters(event: any) {
+    const regex = /^[A-Za-z0-9_-]*$/;
+    const keyValue = event.key;
+    const isValid = regex.test(event.key)
+    if(keyValue === ' ' || !isValid) return false;
+    return true;
+  }
+
 }

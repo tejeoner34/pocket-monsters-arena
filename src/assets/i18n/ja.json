@@ -42,7 +42,8 @@
       "rivalAccept": "ライバルは挑戦を受けました！",
       "goToBattle": "戦場へ行こう",
       "copyId": "iDをコピー",
-      "copied": "コピー済み"
+      "copied": "コピー済み",
+      "errorMessage": "有効なiDを入力してください"
     },
     "GAME_OVER": {
       "gameOver": "ゲームオーバー",

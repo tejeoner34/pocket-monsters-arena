@@ -16,7 +16,10 @@
         </div>
         <p class="challenge__form__info">{{'CHALLENGE.challengeInfo' | translate}}</p>
         <form class="challenge__form" [formGroup]="form">
-            <input type="text" [placeholder]="'CHALLENGE.typeRivalId' | translate" formControlName="userId">
+            <input type="text" 
+                   [placeholder]="'CHALLENGE.typeRivalId' | translate" 
+                   formControlName="userId">
+            <p *ngIf="showInputError" class="challenge__error-message">{{'CHALLENGE.errorMessage' | translate}}</p>
             <button [disabled]="isWaitingResponse" type="submit" (click)="challengeUser()">
                 {{ 'CHALLENGE.challenge' | translate }}
             </button>

@@ -1,6 +1,9 @@
 <form [formGroup]="form" class="login-form">
     <h3>{{'HOME.chooseUsername' | translate}}</h3>
-    <input type="text" [placeholder]="'HOME.userName' | translate" formControlName="userName">
+    <input type="text" 
+           [placeholder]="'HOME.userName' | translate" 
+           formControlName="userName"
+           (keydown)="allowCharacters($event)">
     <button (click)="submit()">{{'HOME.send' | translate}}</button>
 </form>
 <div class="form__background">

@@ -32,6 +32,8 @@ button {
     -moz-box-shadow: 0px 2px 9px 0px rgb(0 0 0 / 75%);
     box-shadow: 0px 2px 9px 0px rgb(0 0 0 / 75%);
 
+    
+
     .challenge__form__info {
       font-size: 11px;
       opacity: 0.6;
@@ -43,6 +45,10 @@ button {
       align-items: center;
       gap: 2rem;
       max-width: 400px;
+
+      .challenge__error-message {
+        color: white;
+      }
 
       input {
         padding: 0.7rem;

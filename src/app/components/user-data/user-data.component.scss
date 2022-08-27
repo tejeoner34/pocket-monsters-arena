@@ -1,5 +1,6 @@
 .user-data-container {
   position: absolute;
+  min-width: 450px;
   bottom: 5px;
   left: 50%;
   transform: translate(-50%, 0);
@@ -10,14 +11,19 @@
   font-size: 14px;
   color: white;
   text-shadow: 2px 2px #000000;
+  line-height: 1;
 
   .user-data__stats {
     display: flex;
-    gap: 2rem;
+    // gap: 2rem;
 
     p {
         min-width: 90px;
     }
+  }
+
+  .user-data__stats > * + * {
+    margin-left: 2rem;
   }
 
   @media (max-width: 600px) {

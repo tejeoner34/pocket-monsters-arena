@@ -114,6 +114,7 @@ export class OnlineArenaComponent implements OnInit, OnDestroy, AfterViewChecked
 
     this.timerStarts$ = this.webSocket.listen('get-timer').subscribe(res =>{
       if(res.seconds) {
+        this.timeToChoose = res.seconds;
         this.webSocket.startTimer(res.seconds);
       }
     });
@@ -124,6 +125,7 @@ export class OnlineArenaComponent implements OnInit, OnDestroy, AfterViewChecked
         this.webSocket.emit('game-over', {userId: this._userId, roomId: this.webSocket.roomId});
         this.winner = this.pokemonOpponent.name;
         this.gameOver = true;
+        this.webSocket.emit('reset-users-in-room', this.webSocket.roomId);
         this.user ? (this.user.defeats += 1) : null;
       }
     });

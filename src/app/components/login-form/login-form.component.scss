@@ -10,7 +10,7 @@ button {
   justify-content: center;
   align-items: center;
   text-align: center;
-  gap: 1.5rem;
+  // gap: 1.5rem;
   position: absolute;
   padding: 1rem;
   width: 95%;
@@ -32,6 +32,10 @@ button {
     cursor: pointer;
   }
 
+}
+
+.login-form > * + * {
+  margin-top: 1.5rem;
 }
 
 .form__background {

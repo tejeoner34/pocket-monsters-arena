@@ -44,17 +44,14 @@
     font-size: 12px;
     color: black;
 
-    @media (max-width: 600px) {
-      .arena__timer {
+    @media (max-width: 690px) {
         position: absolute;
         text-align: center;
         right: 0;
         width: 134px;
-
         @media (max-height: 750px) {
           top: 40%;
         }
-      }
     }
   }
 }
@@ -219,6 +216,7 @@
   width: 90%;
   text-align: center;
   background: aquamarine;
+  color: black;
   padding: 1rem;
   cursor: pointer;
 }
@@ -259,6 +257,7 @@
     padding: 0.5rem;
     border-radius: 5px;
     margin-top: 10px;
+    cursor: pointer;
   }
 
   .arena__opponent-container {

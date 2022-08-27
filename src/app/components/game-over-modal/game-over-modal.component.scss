@@ -8,7 +8,7 @@
   justify-content: center;
   align-items: center;
   text-align: center;
-  gap: 1rem;
+  // gap: 1rem;
   background-color: #284d5a;
   border: 2px solid rgb(228, 225, 225);
   border-radius: 5px;
@@ -29,6 +29,10 @@
     -webkit-box-shadow: 0px 0px 15px 2px rgba(0, 0, 0, 0.66);
     box-shadow: 0px 0px 15px 2px rgba(0, 0, 0, 0.66);
   }
+}
+
+.game-over-modal > * + * {
+  margin-top: 1rem;
 }
 
 .game-over-background {

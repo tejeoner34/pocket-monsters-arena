@@ -59,6 +59,7 @@ export class OnlineArenaComponent implements OnInit, OnDestroy, AfterViewChecked
   timer$!: Subscription;
   gameOver$!: Subscription;
   restart$!: Subscription;
+  pokemonsSpeed$!: Subscription;
   isTurnOver$!: Observable<boolean>;
 
   boxMessage = 'chooseActionMessage';
@@ -139,7 +140,13 @@ export class OnlineArenaComponent implements OnInit, OnDestroy, AfterViewChecked
           this.user.points += this.pointsPerWin;
         }
       }
-    })
+    });
+
+    this.pokemonsSpeed$ = this.webSocket.listen('get-turn').subscribe(res => {
+      this.pokemonService.updateTurn(
+        res[this._userId!]
+      );
+    });
 
     this.opponentMoves$ = this.webSocket.listen('get-opponents-move').subscribe((res) => {
       this.opponentChosenMove = res;
@@ -191,9 +198,23 @@ export class OnlineArenaComponent implements OnInit, OnDestroy, AfterViewChecked
           this.pokemon.types,
           true
         );
-        this.pokemonService.updateTurn(
-          this.pokemon.pokemonSpeed > this.pokemonOpponent.pokemonSpeed ? 0 : 1
-        );
+        if(this.pokemon.pokemonSpeed === this.pokemonOpponent.pokemonSpeed) {
+          if(this.pokemon.weight !== this.pokemonOpponent.weight) {
+            this.pokemonService.updateTurn(
+              this.pokemon.weight > this.pokemonOpponent.weight ? 0 : 1
+            );
+          } else {
+            // in this case the pokemons are the same so I call an event that emits the turn number
+            this.webSocket.emit('pokemon-speed-equal', {
+              userId : this._userId,
+              roomId : this.webSocket.roomId
+            });
+          }
+        } else {
+          this.pokemonService.updateTurn(
+            this.pokemon.pokemonSpeed > this.pokemonOpponent.pokemonSpeed ? 0 : 1
+          );
+        }
       }
     });
 
@@ -253,6 +274,7 @@ export class OnlineArenaComponent implements OnInit, OnDestroy, AfterViewChecked
     this.timer$.unsubscribe();
     this.gameOver$.unsubscribe();
     this.restart$.unsubscribe();
+    this.pokemonsSpeed$.unsubscribe();
     if(!this.wantRemach) {
       this.webSocket.emit('leave-room', {
         userId: this._userId,

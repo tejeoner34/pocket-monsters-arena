@@ -14,6 +14,7 @@ type EffectMessages = {
   "1": string;
   "2": string;
   "0.5": string;
+  "0.25": string;
   "0": string
 }
 
@@ -21,7 +22,8 @@ const messsages: EffectMessages = {
   "1": "",
   "2": "superEffective",
   "0.5": "notVeryEffective",
-  "0": "noEffect"
+  "0.25": "notVeryEffective",
+  "0": "noEffect",
 }
 
 
@@ -69,7 +71,6 @@ export class MoveEffectivinessService {
     for(let i = 0; i < relationsToApply.length; i++){
       effectivenessIndex = effectivenessIndex * this.damageRelations[relationsToApply[i] as keyof damageRelations];
     }
-
     return effectivenessIndex;
   }
 

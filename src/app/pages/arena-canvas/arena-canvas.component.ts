@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { forkJoin } from 'rxjs';
 import {
   Pokemon,
@@ -25,7 +25,7 @@ import { PointsService } from 'src/app/services/points.service';
   templateUrl: './arena-canvas.component.html',
   styleUrls: ['./arena-canvas.component.scss'],
 })
-export class ArenaCanvasComponent implements OnInit {
+export class ArenaCanvasComponent implements OnInit, OnDestroy {
   @ViewChild('canvas', { static: true })
   canvas!: ElementRef<HTMLCanvasElement>;
   ctx!: CanvasRenderingContext2D;
@@ -213,6 +213,10 @@ export class ArenaCanvasComponent implements OnInit {
     });
   }
 
+  ngOnDestroy(): void {
+    this.pokemonService.resetMovesDamage();
+  }
+
   animate() {
     window.requestAnimationFrame(() => this.animate());
     this.ctx.clearRect(0, 0, 800, 500);
@@ -319,13 +323,14 @@ export class ArenaCanvasComponent implements OnInit {
           this.effectivinessIndex,
           this.pokemonOpponent.pokemonHealthNumber!,
           move.power,
-          move.isCritical
+          move.isCritical,
+          true
         );
 
-      if (this.user) {
-        this.user.points = this.pointsService.getUserPoints();
-        this.userService.updateUserData(this.user);
-      }
+      // if (this.user) {
+      //   this.user.points = this.pointsService.getDamage();
+      //   this.userService.updateUserData(this.user);
+      // }
 
       this.pokemonOpponentLifecontainer.updateLife(
         this.pokemonOpponent.pokemonHealthNumber /

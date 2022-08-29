@@ -83,11 +83,13 @@ export class PokemonService {
     return Math.floor(0.01*(2*hpStat + 30 + Math.floor(0.25 * 500)) * 100) + 5;
   }
 
-  calculateHealthAfterAttack(index: number, pokemonHealth: number, attackPower: number, isCritical = false) {
+  calculateHealthAfterAttack(index: number, pokemonHealth: number, attackPower: number, isCritical = false, isMyUser = false) {
     if(isCritical) index = index * 2;
     
     const damage = this.calculateDamage(index, attackPower);
-    this.pointsService.updateUserPoints(damage > pokemonHealth ? Math.floor(pokemonHealth) : Math.floor(damage));
+    if(isMyUser) {
+      this.pointsService.updateDamagePoints(damage > pokemonHealth ? Math.floor(pokemonHealth) : Math.floor(damage));
+    }
     const finalHealth = Math.floor(pokemonHealth - damage);
     if(finalHealth < 0) {
       return 0;
@@ -144,6 +146,7 @@ export class PokemonService {
 
   getSelectedMoveEffectiviness(move: MoveData) {
     let index = 1;
+    console.log(this._movesDamage)
     for(let i in this._movesDamage) {
       const foundIndex = this._movesDamage[i as keyof MovesDamage].find(movement => movement.name.toLowerCase() === move.name.toLowerCase())?.index;
       foundIndex === undefined 
@@ -159,5 +162,12 @@ export class PokemonService {
 
   generateRandomNumber(min: number, max: number) {
     return Math.floor(Math.random() * (max - min + 1) + min);
+  }
+
+  resetMovesDamage() {
+    this._movesDamage = {
+      opponent: [],
+      pokemon: []
+    }
   }
 }

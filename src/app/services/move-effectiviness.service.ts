@@ -13,6 +13,7 @@ type damageRelations = {
 type EffectMessages = {
   "1": string;
   "2": string;
+  "4": string;
   "0.5": string;
   "0.25": string;
   "0": string
@@ -21,6 +22,7 @@ type EffectMessages = {
 const messsages: EffectMessages = {
   "1": "",
   "2": "superEffective",
+  "4": "superEffective",
   "0.5": "notVeryEffective",
   "0.25": "notVeryEffective",
   "0": "noEffect",
@@ -42,7 +44,6 @@ export class MoveEffectivinessService {
   constructor() { }
 
   checkEffectiviness(moveType: TypeData, pokemonTypes: Type[]) {
-
     let effectivenessIndex = 1;
 
     const damageRelationsArray = Object.entries(moveType.damage_relations).filter(([key, value]) => 

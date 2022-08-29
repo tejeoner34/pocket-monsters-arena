@@ -27,7 +27,7 @@ export class LoginFormComponent implements OnInit {
       this.userService.getTopUsersAndPosition(username).subscribe(res => {
         this.userService.updateTopUsers(res.topUsers);
         this.userService.updateUserData(res.user);
-        this.pointsService.updateUserPoints(res.user.points);
+        // this.pointsService.updateUserPoints(res.user.points);
       })
     })
   }

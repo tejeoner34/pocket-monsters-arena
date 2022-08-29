@@ -1,19 +1,31 @@
 import { Injectable } from '@angular/core';
+import { UserService } from './user.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class PointsService {
 
-  userPoints: number = 0;
+  damage: number = 0;
+  _user: any;
 
-  constructor() { }
+  constructor(
+    private userService: UserService
+  ) {
+    userService.user$.subscribe(res => {
+      this._user = res;
+    });
+   }
 
-  updateUserPoints(pointsToAdd: number) {
-    this.userPoints = this.userPoints + pointsToAdd;
+  updateDamagePoints(pointsToAdd: number) {
+    this.damage = pointsToAdd;
+    if(this._user) {
+      this._user.points = this._user.points + this.damage;
+      this.userService.updateUserData(this._user);
+    }
   }
 
-  getUserPoints() {
-    return this.userPoints;
+  getDamage() {
+    return this.damage;
   }
 }

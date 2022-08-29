@@ -3,6 +3,7 @@ import {
   Component,
   ElementRef,
   HostListener,
+  OnDestroy,
   OnInit,
   ViewChild,
 } from '@angular/core';
@@ -23,7 +24,7 @@ import { MoveEffectivinessService } from '../../services/move-effectiviness.serv
   templateUrl: './arena.component.html',
   styleUrls: ['./arena.component.scss'],
 })
-export class ArenaComponent implements OnInit, AfterViewChecked {
+export class ArenaComponent implements OnInit, AfterViewChecked, OnDestroy {
 
   @ViewChild('movesContainer') movesContainer!: ElementRef;
   @HostListener('document:keydown', ['$event'])
@@ -170,6 +171,10 @@ export class ArenaComponent implements OnInit, AfterViewChecked {
     }
   }
 
+  ngOnDestroy(): void {
+    this.pokemonService.resetMovesDamage();
+  }
+
   attack(move: MoveData) {
     (async () => {
       this.pokemonOpponent.pokemonHealthNumber =
@@ -177,12 +182,15 @@ export class ArenaComponent implements OnInit, AfterViewChecked {
           this.effectivinessIndex,
           this.pokemonOpponent.pokemonHealthNumber!,
           move.power,
-          move.isCritical
+          move.isCritical,
+          true
         );
-      if (this.user) {
-        this.user.points = this.pointsService.getUserPoints();
-        this.userService.updateUserData(this.user);
-      }
+      // if (this.user) {
+      //   console.log(this.user, '183')
+      //   this.user.points = this.pointsService.getDamage() + this.user.points;
+      //   this.userService.updateUserData(this.user);
+      //   console.log(this.user, '186')
+      // }
       this.pokemonOpponent.pokemonHealth =
         (this.pokemonOpponent.pokemonHealthNumber /
           this.pokemonOpponent.pokemonHealthNumberTotal!) *

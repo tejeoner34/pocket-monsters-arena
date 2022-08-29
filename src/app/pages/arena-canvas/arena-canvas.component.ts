@@ -326,12 +326,6 @@ export class ArenaCanvasComponent implements OnInit, OnDestroy {
           move.isCritical,
           true
         );
-
-      // if (this.user) {
-      //   this.user.points = this.pointsService.getDamage();
-      //   this.userService.updateUserData(this.user);
-      // }
-
       this.pokemonOpponentLifecontainer.updateLife(
         this.pokemonOpponent.pokemonHealthNumber /
           this.pokemonOpponent.pokemonHealthNumberTotal

@@ -377,12 +377,6 @@ export class OnlineArenaComponent implements OnInit, OnDestroy, AfterViewChecked
           move.isCritical,
           true
         );
-      // if (this.user) {
-      //   console.log(this.user, '379')
-      //   this.user.points = this.pointsService.getDamage();
-      //   this.userService.updateUserData(this.user);
-      //   console.log(this.user, '382')
-      // }
       this.pokemonOpponent.pokemonHealth =
         (this.pokemonOpponent.pokemonHealthNumber /
           this.pokemonOpponent.pokemonHealthNumberTotal!) *
@@ -409,7 +403,6 @@ export class OnlineArenaComponent implements OnInit, OnDestroy, AfterViewChecked
   }
 
   gameLoop(turn: number, move: MoveData) {
-    console.log(move)
     this.waitingForRival = false;
     this.effectivinessIndex =
       this.pokemonService.getSelectedMoveEffectiviness(move);
@@ -486,7 +479,6 @@ export class OnlineArenaComponent implements OnInit, OnDestroy, AfterViewChecked
           this.pokemonClassName = 'defeat';
           this.user ? (this.user.defeats += 1) : null;
         }
-        console.log(this.user);
         this.userService.patchUserData(this.user!).subscribe();
         this.webSocket.emit('reset-users-in-room', this.webSocket.roomId);
         this.currentPokemonName = receiver.name;

@@ -37,14 +37,7 @@ export class ChallengeComponent implements OnInit {
     this.webSocket.listen('get user id').subscribe(res => this.webSocket.setUserId(res));
 
     this.webSocket.userId$.subscribe(res => this._userId = res);
-
-    // this.webSocket.listen('all-users-in-room').subscribe(res => {
-    //   console.log(res)
-    //   // this.webSocket.roomIsFull$.next(res.roomComplete);
-    //   this.webSocket.setRoomIsFull(res.roomComplete);
-    // }
-    // )
-
+    
     this.webSocket.listen('receive-challenge').subscribe(res => {
       this.webSocket.setChallengerData(res);
     });

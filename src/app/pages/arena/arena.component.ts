@@ -185,12 +185,6 @@ export class ArenaComponent implements OnInit, AfterViewChecked, OnDestroy {
           move.isCritical,
           true
         );
-      // if (this.user) {
-      //   console.log(this.user, '183')
-      //   this.user.points = this.pointsService.getDamage() + this.user.points;
-      //   this.userService.updateUserData(this.user);
-      //   console.log(this.user, '186')
-      // }
       this.pokemonOpponent.pokemonHealth =
         (this.pokemonOpponent.pokemonHealthNumber /
           this.pokemonOpponent.pokemonHealthNumberTotal!) *

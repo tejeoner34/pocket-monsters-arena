@@ -128,6 +128,7 @@ export class OnlineArenaComponent implements OnInit, OnDestroy, AfterViewChecked
         this.gameOver = true;
         this.webSocket.emit('reset-users-in-room', this.webSocket.roomId);
         this.user ? (this.user.defeats += 1) : null;
+        this.userService.patchUserData(this.user!).subscribe();
       }
     });
 
@@ -138,6 +139,7 @@ export class OnlineArenaComponent implements OnInit, OnDestroy, AfterViewChecked
         if(this.user) {
           this.user.wins += 1;
           this.user.points += this.pointsPerWin;
+          this.userService.patchUserData(this.user!).subscribe();
         }
       }
     });

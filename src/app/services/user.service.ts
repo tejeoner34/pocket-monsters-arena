@@ -1,7 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, finalize, Observable, Subject, tap } from 'rxjs';
+import { BehaviorSubject, catchError, finalize, Observable, tap, throwError } from 'rxjs';
 import { TopUsers, User } from '../interfaces/user.interface';
+import { ErrorService } from './error.service';
 import { LoadingService } from './loading.service';
 
 @Injectable({
@@ -16,8 +17,13 @@ export class UserService {
   topUsers$ = this.topUsersSubject$.asObservable();
   showTopUsersSubject$ = new BehaviorSubject(false);
   showTopUsers$ = this.showTopUsersSubject$.asObservable();
+  private isLoginCompleteSubject$ = new BehaviorSubject(false);
+  isLoginComplete$ = this.isLoginCompleteSubject$.asObservable();
 
-  constructor(private http: HttpClient , private loadingService: LoadingService) { }
+  constructor(
+    private http: HttpClient , 
+    private loadingService: LoadingService,
+    private errorService: ErrorService) { }
 
   getUserInfo(userName: string): Observable<User> {
     this.loadingService.activateLoading();
@@ -26,6 +32,12 @@ export class UserService {
     return this.http.post<User>(this.url, body, {'headers': headers}).pipe(
       finalize(() => {
         this.loadingService.stopLoading();
+        this.updateIsLoginComplete(true);
+      }),
+      catchError(err => {
+        this.updateIsLoginComplete(true);
+        this.errorService.setRequestError(true);
+        return throwError(() => err);
       })
     );
   }
@@ -64,6 +76,10 @@ export class UserService {
 
   hideUsers() {
     this.showTopUsersSubject$.next(false);
+  }
+
+  updateIsLoginComplete(value: boolean) {
+    this.isLoginCompleteSubject$.next(value);
   }
 
 }

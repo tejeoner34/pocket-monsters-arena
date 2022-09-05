@@ -1,6 +1,7 @@
 <div class="main" ngClass="{{themeService.$themeObserver | async}}">
   <app-pokeball-spinner *ngIf="loadingService.loading$ | async"></app-pokeball-spinner>
-  <app-login-form *ngIf="!(userService.user$ | async )"></app-login-form>
+  <app-login-form *ngIf="!(userService.isLoginComplete$ | async )"></app-login-form>
+  <app-error-modal *ngIf="(errorService.requestError$ | async )"></app-error-modal>
 <div class="header-container">
     <app-header></app-header>
     <app-user-data></app-user-data>

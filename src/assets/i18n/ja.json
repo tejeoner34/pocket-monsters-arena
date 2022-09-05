@@ -1,4 +1,10 @@
 {
+    "COMMON": {
+      "error": "エラー",
+      "errorOccur": "何か問題は発生しました。",
+      "couldNotConnect": "何か問題は発生しました。",
+      "close": "閉じる"
+    },
     "HOME": {
         "test": "テスト",
         "japanese": "日本語",

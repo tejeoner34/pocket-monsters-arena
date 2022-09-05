@@ -16,6 +16,7 @@ import { ChallengedModalComponent } from './challenged-modal/challenged-modal.co
 import { RivalDisconnectComponent } from './rival-disconnect/rival-disconnect.component';
 import { TimerComponent } from './timer/timer.component';
 import { MovesContainerComponent } from './moves-container/moves-container.component';
+import { ErrorModalComponent } from './error-modal/error-modal.component';
 
 
 
@@ -32,6 +33,7 @@ import { MovesContainerComponent } from './moves-container/moves-container.compo
     RivalDisconnectComponent,
     TimerComponent,
     MovesContainerComponent,
+    ErrorModalComponent,
 
   ],
   exports: [
@@ -45,7 +47,8 @@ import { MovesContainerComponent } from './moves-container/moves-container.compo
     ChallengedModalComponent,
     RivalDisconnectComponent,
     TimerComponent,
-    MovesContainerComponent
+    MovesContainerComponent,
+    ErrorModalComponent
     
   ],
   imports: [

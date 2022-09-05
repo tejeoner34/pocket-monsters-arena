@@ -1,4 +1,10 @@
 {
+    "COMMON": {
+      "error": "Error",
+      "errorOccur": "An error occurred.",
+      "couldNotConnect": "An error occurred when sending the request. Please continue without user.",
+      "close": "Close"
+    },
     "HOME": {
         "test": "This is a test",
         "japanese": "Japanese",

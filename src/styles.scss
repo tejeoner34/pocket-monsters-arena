@@ -192,6 +192,10 @@ body {
   .login-form {
     background-color: #f44336;
   }
+
+  .error__container {
+    background-color: #f44336;
+  }
 }
 
 .darkMode {
@@ -264,6 +268,13 @@ body {
   }
 
   .login-form {
+    background-color: #424d5a;
+    h3 {
+      color: #e9eef3;
+    }
+  }
+
+  .error__container {
     background-color: #424d5a;
     h3 {
       color: #e9eef3;

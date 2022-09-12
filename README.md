@@ -1,27 +1,14 @@
 # PocketMonstersArena
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 13.2.5.
+Front end code for the **Pocket Monsters Arena** project. 
+This project mainly consists in a **Pokemon battle game**. There is both a player vs computer mode and
+an online mode.
 
-## Development server
+## Technology used
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+Angular has been the JS framework used for this project.
+The technology used to send real time data between clients has been socket.io.
 
-## Code scaffolding
+The API used to obtain the data of the pokemons and to create all the logic related to the effectiviness of attacks, types, speed...etc has been [https://pokeapi.co/](https://pokeapi.co/).
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
-
-## Build
-
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
-
-## Running unit tests
-
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
-
-## Running end-to-end tests
-
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
-
-## Further help
-
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+The project also has a back end application. The link to the repository: [https://github.com/tejeoner34/pocket-mosnters-back](https://github.com/tejeoner34/pocket-mosnters-back) 

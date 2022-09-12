@@ -3,6 +3,7 @@ export interface User {
     points: number;
     wins: number;
     userName: string;
+    _id: string;
     position?: number;
 }
 

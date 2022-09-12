@@ -8,7 +8,7 @@ import {
   ViewChild,
 } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { forkJoin, Observable } from 'rxjs';
+import { forkJoin, Observable, ReplaySubject, takeUntil } from 'rxjs';
 import { KEY_CODE, Pokemon, PokemonEdit } from 'src/app/interfaces/interfaces';
 import { MoveData } from 'src/app/interfaces/movements.interface';
 import { User } from 'src/app/interfaces/user.interface';
@@ -38,11 +38,11 @@ export class ArenaComponent implements OnInit, AfterViewChecked, OnDestroy {
     if(!clickedInside) this.movesContainerOpen = false;
   }
 
+  private destroyed$: ReplaySubject<boolean> = new ReplaySubject(1);
+
   user!: User | null;
   openPokeball: boolean = false;
   pokemon!: PokemonEdit;
-  pokemonMoves: MoveData[] = [];
-  pokemonOpponentMoves: MoveData[] = [];
   pokemonOpponent!: PokemonEdit;
   boxMessage = 'chooseActionMessage';
   usedMove = '';
@@ -71,22 +71,25 @@ export class ArenaComponent implements OnInit, AfterViewChecked, OnDestroy {
     private moveEffectivinessService: MoveEffectivinessService,
     public translateService: TranslateService,
     private userService: UserService,
-    private pointsService: PointsService,
     private restartService: RestartService
   ) {}
 
   ngOnInit(): void {
-    this.restartService.restart$.subscribe((res) =>
-      this.restartService.resetPage('arena')
-    );
+    this.restartService.restart$
+      .pipe(takeUntil(this.destroyed$))
+      .subscribe((res) => this.restartService.resetPage('arena'));
 
     this.translateService.get('ARENA').subscribe((data) => {
       this.opponentTextPlaceholder = data.opponent;
     });
 
-    this.userService.user$.subscribe((res) => (this.user = res));
+    this.userService.user$
+      .pipe(takeUntil(this.destroyed$))
+      .subscribe((res) => (this.user = res));
 
-    this.pokemonService.turnObservable$.subscribe((turn) => {
+    this.pokemonService.turnObservable$
+      .pipe(takeUntil(this.destroyed$))
+      .subscribe((turn) => {
       this.currentTurn = turn;
 
       if (this.currentTurn === 1 && this.hasSelectedMove) {
@@ -108,10 +111,12 @@ export class ArenaComponent implements OnInit, AfterViewChecked, OnDestroy {
     forkJoin([
       this.pokemonService.getRandomPokemon(),
       this.pokemonService.getRandomPokemon(),
-    ]).subscribe((pokemons) => {
+    ])
+      .pipe(takeUntil(this.destroyed$))
+      .subscribe((pokemons) => {
       //Pokemon data
-      this.pokemonService
-        .getLocalizedPokemonName(pokemons[0].id)
+      this.pokemonService.getLocalizedPokemonName(pokemons[0].id)
+        .pipe(takeUntil(this.destroyed$))
         .subscribe((name) => {
           this.pokemon.name = name;
           this.currentPokemonName = name;
@@ -132,8 +137,8 @@ export class ArenaComponent implements OnInit, AfterViewChecked, OnDestroy {
       this.getPokemonMoves(this.pokemon);
 
       // Opponent data
-      this.pokemonService
-        .getLocalizedPokemonName(pokemons[1].id)
+      this.pokemonService.getLocalizedPokemonName(pokemons[1].id)
+        .pipe(takeUntil(this.destroyed$))
         .subscribe((name) => (this.pokemonOpponent.name = name));
 
       this.pokemonOpponent = {
@@ -173,43 +178,8 @@ export class ArenaComponent implements OnInit, AfterViewChecked, OnDestroy {
 
   ngOnDestroy(): void {
     this.pokemonService.resetMovesDamage();
-  }
-
-  attack(move: MoveData) {
-    (async () => {
-      this.pokemonOpponent.pokemonHealthNumber =
-        this.pokemonService.calculateHealthAfterAttack(
-          this.effectivinessIndex,
-          this.pokemonOpponent.pokemonHealthNumber!,
-          move.power,
-          move.isCritical,
-          true
-        );
-      this.pokemonOpponent.pokemonHealth =
-        (this.pokemonOpponent.pokemonHealthNumber /
-          this.pokemonOpponent.pokemonHealthNumberTotal!) *
-          100 +
-        '%';
-    })();
-  }
-
-  opponentAttacks(move: MoveData) {
-    (async () => {
-      this.pokemon.pokemonHealthNumber =
-        this.pokemonService.calculateHealthAfterAttack(
-          this.effectivinessIndex,
-          this.pokemon.pokemonHealthNumber,
-          move.power,
-          move.isCritical
-        );
-      this.pokemon.pokemonHealth =
-        (this.pokemon.pokemonHealthNumber /
-          this.pokemon.pokemonHealthNumberTotal) *
-          100 +
-        '%';
-    })();
-
-    this.opponentHasSelectedMove = false;
+    this.destroyed$.next(true);
+    this.destroyed$.complete();
   }
 
   getPokemonMoves(pokemon: Pokemon, isOpponent = false) {
@@ -219,8 +189,8 @@ export class ArenaComponent implements OnInit, AfterViewChecked, OnDestroy {
       0,
       pokemon.moves.length - 1
     );
-    this.pokemonService
-      .getMovementInfo(pokemon.moves[randomNumber].move.url)
+    this.pokemonService.getMovementInfo(pokemon.moves[randomNumber].move.url)
+      .pipe(takeUntil(this.destroyed$))
       .subscribe((move) => {
         if (isOpponent) {
           this.petitionsCountOpponent = this.petitionsCountOpponent + 1;
@@ -354,8 +324,9 @@ export class ArenaComponent implements OnInit, AfterViewChecked, OnDestroy {
       await wait(600);
       this.pokemonOpponentClassName = '';
       this.pokemonClassName = '';
-      turn === 0 ? this.attack(move) : this.opponentAttacks(move);
-
+      turn === 0 
+        ? this.pokemonOpponent = this.pokemonService.attack(move, this.pokemonOpponent, this.effectivinessIndex, true) 
+        : this.pokemon = this.pokemonService.attack(move, this.pokemon, this.effectivinessIndex);
       if (this.effectivinessIndex !== 1 && !move.isCritical) {
         this.boxMessage = this.moveEffectivinessService.messageByEffectiviness(
           this.effectivinessIndex

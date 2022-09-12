@@ -1,11 +1,10 @@
 import { AfterViewChecked, Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { Observable, Subscriber, Subscription } from 'rxjs';
+import { Observable, ReplaySubject, takeUntil } from 'rxjs';
 import { KEY_CODE, Pokemon, PokemonEdit } from 'src/app/interfaces/interfaces';
 import { MoveData } from 'src/app/interfaces/movements.interface';
 import { User } from 'src/app/interfaces/user.interface';
 import { MoveEffectivinessService } from 'src/app/services/move-effectiviness.service';
-import { PointsService } from 'src/app/services/points.service';
 import { PokemonService } from 'src/app/services/pokemon.service';
 import { RestartService } from 'src/app/services/restart.service';
 import { UserService } from 'src/app/services/user.service';
@@ -18,6 +17,9 @@ import { wait } from 'src/app/shared/helpers';
   styleUrls: ['./online-arena.component.scss'],
 })
 export class OnlineArenaComponent implements OnInit, OnDestroy, AfterViewChecked {
+
+  private destroyed$: ReplaySubject<boolean> = new ReplaySubject(1);
+
   @ViewChild('movesContainer') movesContainer!: ElementRef;
 
   @HostListener('window:popstate', ['$event'])
@@ -50,16 +52,6 @@ export class OnlineArenaComponent implements OnInit, OnDestroy, AfterViewChecked
   httpMovesPetitionsCount: number = 0;
   opponentChosenMove!: MoveData;
 
-  rivalDisconnect$!: Subscription;
-  pokemonOpponent$!: Subscription;
-  pokemon$!: Subscription;
-  opponentMoves$!: Subscription;
-  roomIsFull$!: Subscription;
-  timerStarts$!: Subscription;
-  timer$!: Subscription;
-  gameOver$!: Subscription;
-  restart$!: Subscription;
-  pokemonsSpeed$!: Subscription;
   isTurnOver$!: Observable<boolean>;
 
   boxMessage = 'chooseActionMessage';
@@ -90,7 +82,6 @@ export class OnlineArenaComponent implements OnInit, OnDestroy, AfterViewChecked
     private pokemonService: PokemonService,
     private moveEffectivinessService: MoveEffectivinessService,
     private userService: UserService,
-    private pointsService: PointsService,
     private translateService: TranslateService,
     private restartService: RestartService
   ) {}
@@ -103,156 +94,182 @@ export class OnlineArenaComponent implements OnInit, OnDestroy, AfterViewChecked
 
     this.isTurnOver$ = this.webSocket.listen('get-turn-over');
 
-    this.restart$ = this.restartService.restart$.subscribe((res) => {
+    this.restartService.restart$
+      .pipe(takeUntil(this.destroyed$))
+      .subscribe((res) => {
       this.wantRemach = true;
       this.restartService.resetPage(`online-arena/${this.webSocket.roomId}`);
     }
     );
 
-    this.userService.user$.subscribe((res) => (this.user = res));
+    this.userService.user$
+      .pipe(takeUntil(this.destroyed$))
+      .subscribe((res) => (this.user = res));
 
-    this.webSocket.userId$.subscribe((res) => (this._userId = res));
+    this.webSocket.userId$
+      .pipe(takeUntil(this.destroyed$))
+      .subscribe((res) => (this._userId = res));
 
-    this.timerStarts$ = this.webSocket.listen('get-timer').subscribe(res =>{
-      if(res.seconds) {
-        this.timeToChoose = res.seconds;
-        this.webSocket.startTimer(res.seconds);
-      }
+    this.webSocket.listen('get-timer')
+      .pipe(takeUntil(this.destroyed$))
+      .subscribe(res =>{
+        if(res.seconds) {
+          this.timeToChoose = res.seconds;
+          this.webSocket.startTimer(res.seconds);
+        }
     });
 
-    this.timer$ = this.webSocket.timer$.subscribe(time => {
-      this.timeToChoose = time;
-      if(this.timeToChoose === 0) {
-        this.webSocket.emit('game-over', {userId: this._userId, roomId: this.webSocket.roomId});
-        this.winner = this.pokemonOpponent.name;
-        this.gameOver = true;
-        this.webSocket.emit('reset-users-in-room', this.webSocket.roomId);
-        this.user ? (this.user.defeats += 1) : null;
-        this.userService.patchUserData(this.user!).subscribe();
-      }
-    });
-
-    this.gameOver$ = this.webSocket.listen('get-game-over').subscribe(res => {
-      if(res.userId) {
-        this.winner = this.pokemon.name;
-        this.gameOver = true;
-        if(this.user) {
-          this.user.wins += 1;
-          this.user.points += this.pointsPerWin;
+    this.webSocket.timer$
+      .pipe(takeUntil(this.destroyed$))
+      .subscribe(time => {
+        this.timeToChoose = time;
+        if(this.timeToChoose === 0) {
+          this.webSocket.emit('game-over', {userId: this._userId, roomId: this.webSocket.roomId});
+          this.winner = this.pokemonOpponent.name;
+          this.gameOver = true;
+          this.webSocket.emit('reset-users-in-room', this.webSocket.roomId);
+          this.user ? (this.user.defeats += 1) : null;
           this.userService.patchUserData(this.user!).subscribe();
         }
-      }
     });
 
-    this.pokemonsSpeed$ = this.webSocket.listen('get-turn').subscribe(res => {
-      this.pokemonService.updateTurn(
-        res[this._userId!]
-      );
+    this.webSocket.listen('get-game-over')
+      .pipe(takeUntil(this.destroyed$))
+      .subscribe(res => {
+        if(res.userId) {
+          this.winner = this.pokemon.name;
+          this.gameOver = true;
+          if(this.user) {
+            this.user.wins += 1;
+            this.user.points += this.pointsPerWin;
+            this.userService.patchUserData(this.user!).subscribe();
+          }
+        }
     });
 
-    this.opponentMoves$ = this.webSocket.listen('get-opponents-move').subscribe((res) => {
-      this.opponentChosenMove = res;
-      this.opponentHasSelectedMove = true;
-      this.pokemonService.updateTurn(this.currentTurn);
+    this.webSocket.listen('get-turn')
+      .pipe(takeUntil(this.destroyed$))
+      .subscribe(res => {
+        this.pokemonService.updateTurn(
+          res[this._userId!]
+        );
     });
 
-    this.rivalDisconnect$ = this.webSocket.listen('rival-disconnect').subscribe(res => {
-      if(res.disconnect) {
-        this.webSocket.setRivalDisconnect(true);
-        this.webSocket.setChallengerData(null);
-      }
+    this.webSocket.listen('get-opponents-move')
+      .pipe(takeUntil(this.destroyed$))
+      .subscribe((res) => {
+        this.opponentChosenMove = res;
+        this.opponentHasSelectedMove = true;
+        this.pokemonService.updateTurn(this.currentTurn);
+    });
+
+    this.webSocket.listen('rival-disconnect')
+      .pipe(takeUntil(this.destroyed$))
+      .subscribe(res => {
+        if(res.disconnect) {
+          this.webSocket.setRivalDisconnect(true);
+          this.webSocket.setChallengerData(null);
+        }
     });
 
     //turn Observable
-    this.pokemonService.turnObservable$.subscribe((turn) => {
-      this.currentTurn = turn;
+    this.pokemonService.turnObservable$
+      .pipe(takeUntil(this.destroyed$))
+      .subscribe((turn) => {
+        this.currentTurn = turn;
 
-      if (
-        this.currentTurn === 1 &&
-        this.hasSelectedMove &&
-        this.opponentHasSelectedMove
-      ) {
-        this.gameLoop(this.currentTurn, this.opponentChosenMove);
-      }
-      if (
-        this.currentTurn === 0 &&
-        this.hasSelectedMove &&
-        this.opponentHasSelectedMove
-      ) {
-        this.gameLoop(this.currentTurn, this.chosenMove);
-      }
+        if (
+          this.currentTurn === 1 &&
+          this.hasSelectedMove &&
+          this.opponentHasSelectedMove
+        ) {
+          this.gameLoop(this.currentTurn, this.opponentChosenMove);
+        }
+        if (
+          this.currentTurn === 0 &&
+          this.hasSelectedMove &&
+          this.opponentHasSelectedMove
+        ) {
+          this.gameLoop(this.currentTurn, this.chosenMove);
+        }
     });
 
     //Get opponents pokemon data
 
-    this.pokemonOpponent$ = this.webSocket.listen('get-pokemon-data').subscribe(({ pokemon }) => {
-      this.pokemonOpponent = pokemon;
+    this.webSocket.listen('get-pokemon-data')
+      .pipe(takeUntil(this.destroyed$))
+      .subscribe(({ pokemon }) => {
+        this.pokemonOpponent = pokemon;
 
-      if (this.pokemon) {
-        this.pokemonService.calculateEachMoveDamage(
-          this.pokemon.pokemonMoves,
-          this.pokemonOpponent.types
-        );
-      }
-      if (this.pokemonOpponent) {
-        this.pokemonService.calculateEachMoveDamage(
-          this.pokemonOpponent.pokemonMoves,
-          this.pokemon.types,
-          true
-        );
-        if(this.pokemon.pokemonSpeed === this.pokemonOpponent.pokemonSpeed) {
-          if(this.pokemon.weight !== this.pokemonOpponent.weight) {
-            this.pokemonService.updateTurn(
-              this.pokemon.weight > this.pokemonOpponent.weight ? 0 : 1
-            );
-          } else {
-            // in this case the pokemons are the same so I call an event that emits the turn number
-            this.webSocket.emit('pokemon-speed-equal', {
-              userId : this._userId,
-              roomId : this.webSocket.roomId
-            });
-          }
-        } else {
-          this.pokemonService.updateTurn(
-            this.pokemon.pokemonSpeed > this.pokemonOpponent.pokemonSpeed ? 0 : 1
+        if (this.pokemon) {
+          this.pokemonService.calculateEachMoveDamage(
+            this.pokemon.pokemonMoves,
+            this.pokemonOpponent.types
           );
         }
-      }
+        if (this.pokemonOpponent) {
+          this.pokemonService.calculateEachMoveDamage(
+            this.pokemonOpponent.pokemonMoves,
+            this.pokemon.types,
+            true
+          );
+          if(this.pokemon.pokemonSpeed === this.pokemonOpponent.pokemonSpeed) {
+            if(this.pokemon.weight !== this.pokemonOpponent.weight) {
+              this.pokemonService.updateTurn(
+                this.pokemon.weight > this.pokemonOpponent.weight ? 0 : 1
+              );
+            } else {
+              // in this case the pokemons are the same so I call an event that emits the turn number
+              this.webSocket.emit('pokemon-speed-equal', {
+                userId : this._userId,
+                roomId : this.webSocket.roomId
+              });
+            }
+          } else {
+            this.pokemonService.updateTurn(
+              this.pokemon.pokemonSpeed > this.pokemonOpponent.pokemonSpeed ? 0 : 1
+            );
+          }
+        }
     });
 
     //Send our pokemon data
-    this.roomIsFull$ = this.webSocket.listen('all-users-in-room').subscribe(res => {
-      if (res.roomComplete) {
-        this.webSocket.emit('send-pokemon-data', {
-          pokemon: this.pokemon,
-          opponentUserId: this.webSocket.opponentId,
-        });
+    this.webSocket.listen('all-users-in-room')
+      .pipe(takeUntil(this.destroyed$))
+      .subscribe(res => {
+        if (res.roomComplete) {
+          this.webSocket.emit('send-pokemon-data', {
+            pokemon: this.pokemon,
+            opponentUserId: this.webSocket.opponentId,
+          });
+        }
       }
-    }
     );
 
-    this.pokemon$ = this.pokemonService.getRandomPokemon().subscribe((pokemon) => {
-      this.pokemonService
-        .getLocalizedPokemonName(pokemon.id)
-        .subscribe((name) => {
-          this.pokemon.name = name;
-          this.currentPokemonName = name;
-        });
-      this.pokemon = {
-        ...pokemon,
-        pokemonMoves: [],
-        pokemonHealth: '100%',
-        pokemonSpeed: pokemon.stats[5].base_stat,
-        pokemonHealthNumber: this.pokemonService.calculatePokemonsHealth(
-          pokemon.stats[0].base_stat
-        ),
-        pokemonHealthNumberTotal: this.pokemonService.calculatePokemonsHealth(
-          pokemon.stats[0].base_stat
-        ),
-      };
+    this.pokemonService.getRandomPokemon()
+      .pipe(takeUntil(this.destroyed$))
+      .subscribe((pokemon) => {
+        this.pokemonService
+          .getLocalizedPokemonName(pokemon.id)
+          .subscribe((name) => {
+            this.pokemon.name = name;
+            this.currentPokemonName = name;
+          });
+        this.pokemon = {
+          ...pokemon,
+          pokemonMoves: [],
+          pokemonHealth: '100%',
+          pokemonSpeed: pokemon.stats[5].base_stat,
+          pokemonHealthNumber: this.pokemonService.calculatePokemonsHealth(
+            pokemon.stats[0].base_stat
+          ),
+          pokemonHealthNumberTotal: this.pokemonService.calculatePokemonsHealth(
+            pokemon.stats[0].base_stat
+          ),
+        };
 
-      this.getPokemonMoves(this.pokemon);
-    });
+        this.getPokemonMoves(this.pokemon);
+      });
   }
 
   ngAfterViewChecked(): void {
@@ -267,16 +284,8 @@ export class OnlineArenaComponent implements OnInit, OnDestroy, AfterViewChecked
   }
 
   ngOnDestroy(): void {
-    this.rivalDisconnect$.unsubscribe();
-    this.pokemonOpponent$.unsubscribe();
-    this.pokemon$.unsubscribe();
-    this.opponentMoves$.unsubscribe();
-    this.roomIsFull$.unsubscribe();
-    this.timerStarts$.unsubscribe();
-    this.timer$.unsubscribe();
-    this.gameOver$.unsubscribe();
-    this.restart$.unsubscribe();
-    this.pokemonsSpeed$.unsubscribe();
+    this.destroyed$.next(true);
+    this.destroyed$.complete();
     this.pokemonService.resetMovesDamage();
     if(!this.wantRemach) {
       this.webSocket.emit('leave-room', {
@@ -287,16 +296,7 @@ export class OnlineArenaComponent implements OnInit, OnDestroy, AfterViewChecked
     }
   }
 
-  // sendMessage(message: any) {
-  //   // this.messages.push({message, id: this.webSocket.userId});
-  //   this.webSocket.emit('send-message', {
-  //     message: message.text,
-  //     id: this._userId,
-  //     arenaId: this.webSocket.roomId,
-  //   });
-  // }
-
-  getPokemonMoves(pokemon: Pokemon, isOpponent = false) {
+  getPokemonMoves(pokemon: Pokemon) {
     if (this.pokemon.pokemonMoves.length > 3) return;
     const randomNumber = this.pokemonService.generateRandomNumber(
       0,
@@ -369,41 +369,6 @@ export class OnlineArenaComponent implements OnInit, OnDestroy, AfterViewChecked
     }
   }
 
-  attack(move: MoveData) {
-    (async () => {
-      this.pokemonOpponent.pokemonHealthNumber =
-        this.pokemonService.calculateHealthAfterAttack(
-          this.effectivinessIndex,
-          this.pokemonOpponent.pokemonHealthNumber!,
-          move.power,
-          move.isCritical,
-          true
-        );
-      this.pokemonOpponent.pokemonHealth =
-        (this.pokemonOpponent.pokemonHealthNumber /
-          this.pokemonOpponent.pokemonHealthNumberTotal!) *
-          100 +
-        '%';
-    })();
-  }
-
-  opponentAttacks(move: MoveData) {
-    (async () => {
-      this.pokemon.pokemonHealthNumber =
-        this.pokemonService.calculateHealthAfterAttack(
-          this.effectivinessIndex,
-          this.pokemon.pokemonHealthNumber,
-          move.power,
-          move.isCritical
-        );
-      this.pokemon.pokemonHealth =
-        (this.pokemon.pokemonHealthNumber /
-          this.pokemon.pokemonHealthNumberTotal) *
-          100 +
-        '%';
-    })();
-  }
-
   gameLoop(turn: number, move: MoveData) {
     this.waitingForRival = false;
     this.effectivinessIndex =
@@ -453,7 +418,9 @@ export class OnlineArenaComponent implements OnInit, OnDestroy, AfterViewChecked
       await wait(600);
       this.pokemonOpponentClassName = '';
       this.pokemonClassName = '';
-      turn === 0 ? this.attack(move) : this.opponentAttacks(move);
+      turn === 0 
+        ? this.pokemonOpponent = this.pokemonService.attack(move, this.pokemonOpponent, this.effectivinessIndex, true) 
+        : this.pokemon = this.pokemonService.attack(move, this.pokemon, this.effectivinessIndex);
       if (this.effectivinessIndex !== 1 && !move.isCritical) {
         this.boxMessage = this.moveEffectivinessService.messageByEffectiviness(
           this.effectivinessIndex

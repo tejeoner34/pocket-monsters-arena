@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, map, Observable, tap } from 'rxjs';
-import { Name, Pokemon, PokemonSpecies, Type } from '../interfaces/interfaces';
+import { Name, Pokemon, PokemonEdit, PokemonSpecies, Type } from '../interfaces/interfaces';
 import { MoveData } from '../interfaces/movements.interface';
 import { TypeData } from '../interfaces/type.interface';
 import { TranslateService } from '@ngx-translate/core';
@@ -97,6 +97,24 @@ export class PokemonService {
     return finalHealth;
   }
 
+  attack(move: MoveData, pokemonData: PokemonEdit, effectivinessIndex: number, isMyUser = false) {
+    const pokemon = pokemonData;
+    pokemon.pokemonHealthNumber =
+      this.calculateHealthAfterAttack(
+        effectivinessIndex,
+        pokemon.pokemonHealthNumber,
+        move.power,
+        move.isCritical,
+        isMyUser
+      );
+    pokemon.pokemonHealth =
+      (pokemon.pokemonHealthNumber /
+        pokemon.pokemonHealthNumberTotal) *
+        100 +
+      '%';
+    return pokemon;
+  }
+
   calculateDamage(index: number, attackPower: number) {
     return index * attackPower;
   }
@@ -126,9 +144,9 @@ export class PokemonService {
   }
 
   getMostPowerfulAttack(attacks: MoveData[]) {
-    if(this.turnsCounter >= 1) {
+    if(this.turnsCounter >= 2) {
       this.turnsCounter = 0;
-      return this.generateRandomNumber(0, 4);
+      return this.generateRandomNumber(0, 3);
     } else {
       this.turnsCounter += 1;
       let attackIndex = 0;
@@ -146,8 +164,8 @@ export class PokemonService {
 
   getSelectedMoveEffectiviness(move: MoveData) {
     let index = 1;
-    console.log(move, 'move parametro');
-    console.log(this._movesDamage, '_movesdamages')
+    // console.log(move, 'move parametro');
+    // console.log(this._movesDamage, '_movesdamages')
     for(let i in this._movesDamage) {
       const foundIndex = this._movesDamage[i as keyof MovesDamage].find(movement => movement.name.toLowerCase() === move.name.toLowerCase())?.index;
       foundIndex === undefined 

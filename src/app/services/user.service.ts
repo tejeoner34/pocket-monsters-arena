@@ -10,7 +10,7 @@ import { LoadingService } from './loading.service';
 })
 export class UserService {
 
-  url = 'https://my-monsters-app.herokuapp.com/users/';
+  url = 'https://my-monsters-arena.onrender.com/users/';
   private userSubject$ = new BehaviorSubject<User | null>(null);
   user$ = this.userSubject$.asObservable();
   private topUsersSubject$ = new BehaviorSubject<User[] | null>(null);

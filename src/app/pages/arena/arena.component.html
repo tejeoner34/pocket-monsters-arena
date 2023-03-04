@@ -46,8 +46,9 @@
       <div class="arena__pokemon__moves-container">
         <ng-container
           *ngIf="
-            pokemon?.pokemonMoves !== undefined &&
-              pokemon?.pokemonMoves?.length === 4;
+            pokemon?.pokemonMoves !== undefined 
+            && pokemonMovesLoaded
+            && pokemonOpponentMovesLoaded;
             else spinner
           "
         >

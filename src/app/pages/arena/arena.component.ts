@@ -8,11 +8,10 @@ import {
   ViewChild,
 } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { forkJoin, Observable, ReplaySubject, takeUntil } from 'rxjs';
+import { forkJoin, ReplaySubject, takeUntil } from 'rxjs';
 import { KEY_CODE, Pokemon, PokemonEdit } from 'src/app/interfaces/interfaces';
 import { MoveData } from 'src/app/interfaces/movements.interface';
 import { User } from 'src/app/interfaces/user.interface';
-import { PointsService } from 'src/app/services/points.service';
 import { PokemonService } from 'src/app/services/pokemon.service';
 import { RestartService } from 'src/app/services/restart.service';
 import { UserService } from 'src/app/services/user.service';
@@ -53,6 +52,8 @@ export class ArenaComponent implements OnInit, AfterViewChecked, OnDestroy {
   movesContainerOpen: boolean = false;
   pokemonClassName = '';
   pokemonOpponentClassName = '';
+  pokemonMovesLoaded: boolean = false;
+  pokemonOpponentMovesLoaded: boolean = false
   currentTurn!: number;
   turnCount = 0;
   movesContainerArray: HTMLElement[] = [];
@@ -134,7 +135,10 @@ export class ArenaComponent implements OnInit, AfterViewChecked, OnDestroy {
           pokemons[0].stats[0].base_stat
         ),
       };
-      this.getPokemonMoves(this.pokemon);
+      this.pokemon.moves.length <= 4 
+        ? this.getPokemonMovesShortArray(this.pokemon)
+        : this.getPokemonMoves(this.pokemon); 
+
 
       // Opponent data
       this.pokemonService.getLocalizedPokemonName(pokemons[1].id)
@@ -154,7 +158,10 @@ export class ArenaComponent implements OnInit, AfterViewChecked, OnDestroy {
         ),
       };
 
-      this.getPokemonMoves(this.pokemonOpponent, true);
+      this.pokemonOpponent.moves.length <= 4 
+        ? this.getPokemonMovesShortArray(this.pokemonOpponent, true)
+        : this.getPokemonMoves(this.pokemonOpponent, true); 
+
       this.pokemonService.updateTurn(
         this.pokemon.pokemonSpeed > this.pokemonOpponent.pokemonSpeed ? 0 : 1
       );
@@ -217,6 +224,7 @@ export class ArenaComponent implements OnInit, AfterViewChecked, OnDestroy {
               this.pokemon.types,
               true
             );
+            this.pokemonOpponentMovesLoaded = true;
             return;
           }
         }
@@ -250,10 +258,51 @@ export class ArenaComponent implements OnInit, AfterViewChecked, OnDestroy {
               this.pokemon.pokemonMoves,
               this.pokemonOpponent.types
             );
+            this.pokemonMovesLoaded = true;
             return;
           }
         }
       });
+  }
+
+  //situation in which moves array is 4 or less
+  getPokemonMovesShortArray(pokemon: Pokemon, isOpponent = false) {
+    if (!isOpponent && this.pokemon.pokemonMoves.length > 3) return;
+    if (isOpponent && this.pokemonOpponent.pokemonMoves.length > 3) return;
+    for(let i = 0; i < pokemon.moves.length; i++) {
+      this.pokemonService.getMovementInfo(pokemon.moves[i].move.url)
+      .pipe(takeUntil(this.destroyed$))
+      .subscribe((move) => {
+        if (isOpponent) {
+          move.name = this.pokemonService.getLocalizedPokemonMoves(move);
+          this.pokemonOpponent.pokemonMoves.push(move);
+          this.pokemonService.saveMovesInService(move);
+          if (i === pokemon.moves.length - 1) {
+            this.pokemonService.calculateEachMoveDamage(
+              this.pokemonOpponent.pokemonMoves,
+              this.pokemon.types,
+              true
+            );
+            this.pokemonOpponentMovesLoaded = true;
+            return;
+          }
+        }
+        if (!isOpponent) {
+          move.name = this.pokemonService.getLocalizedPokemonMoves(move);
+          this.pokemon.pokemonMoves.push(move);
+          this.pokemonService.saveMovesInService(move);
+          if (i === pokemon.moves.length - 1) {
+            this.pokemonService.calculateEachMoveDamage(
+              this.pokemon.pokemonMoves,
+              this.pokemonOpponent.types
+            );
+            this.pokemonMovesLoaded = true;
+            return;
+          }
+        }
+      });
+    }
+    
   }
 
   chooseMove(move: MoveData, i: number) {

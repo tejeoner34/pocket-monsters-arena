@@ -268,7 +268,10 @@ export class OnlineArenaComponent implements OnInit, OnDestroy, AfterViewChecked
           ),
         };
 
-        this.getPokemonMoves(this.pokemon);
+        // this.getPokemonMoves(this.pokemon);
+        this.pokemon.moves.length <= 4 
+        ? this.getPokemonMovesShortArray(this.pokemon)
+        : this.getPokemonMoves(this.pokemon); 
       });
   }
 
@@ -335,6 +338,31 @@ export class OnlineArenaComponent implements OnInit, OnDestroy, AfterViewChecked
           roomId: this.webSocket.roomId,
         });
       });
+  }
+
+  getPokemonMovesShortArray(pokemon: Pokemon, isOpponent = false) {
+    if (this.pokemon.pokemonMoves.length > 3) return;
+    for(let i = 0; i < pokemon.moves.length; i++) {
+      this.pokemonService.getMovementInfo(pokemon.moves[i].move.url)
+      .pipe(takeUntil(this.destroyed$))
+      .subscribe((move) => {
+        move.name = this.pokemonService.getLocalizedPokemonMoves(move);
+        this.pokemon.pokemonMoves.push(move);
+        this.pokemonService.saveMovesInService(move);
+        if (i === pokemon.moves.length - 1) {
+          this.pokemonService.calculateEachMoveDamage(
+            this.pokemon.pokemonMoves,
+            this.pokemonOpponent.types
+          );
+          this.webSocket.emit('join-room', {
+            userId: this._userId,
+            roomId: this.webSocket.roomId,
+          });
+          return;
+        }
+      });
+    }
+    
   }
 
   chooseMove(move: MoveData, i: number) {
